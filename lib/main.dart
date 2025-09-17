@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/splash_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/language_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LanguageProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,9 +21,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    
     return MaterialApp(
       title: 'BankID App',
       debugShowCheckedModeBanner: false,
+      // Localization support
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('ar'), // Arabic
+      ],
+      // Use the current locale from the provider
+      locale: languageProvider.currentLocale,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2ECC71),
@@ -24,8 +49,16 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2ECC71),
+            backgroundColor: const Color(0xFF37C293),
             foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: const Color(0xFF37C293),
+            side: const BorderSide(color: Color(0xFF37C293)),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
@@ -33,6 +66,15 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const SplashScreen(),
+      // Enable RTL text direction based on locale
+      builder: (context, child) {
+        return Directionality(
+          textDirection: Localizations.localeOf(context).languageCode == 'ar' 
+              ? TextDirection.rtl 
+              : TextDirection.ltr,
+          child: child!,
+        );
+      },
     );
   }
 }

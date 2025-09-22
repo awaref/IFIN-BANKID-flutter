@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:bankid_app/l10n/app_localizations.dart';
-import 'package:bankid_app/screens/digital_signatures_list_screen.dart'; // Assuming this will be the next screen
+import 'package:bankid_app/screens/digital_signatures_list_screen.dart';
+import 'package:bankid_app/screens/national_id_card_screen.dart';
 import 'package:bankid_app/providers/language_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,13 +14,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // For bottom navigation bar
+  late Color primaryColor;
 
+  @override
+  void initState() {
+     super.initState();
+  }
+ 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
     // Handle navigation based on index
-    // For now, only Digital Signatures is implemented
     if (index == 0) {
       // Home
     } else if (index == 1) {
@@ -36,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    primaryColor = Theme.of(context).primaryColor;
     final languageProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
@@ -60,10 +66,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Row(
                   children: [
-                    // User image
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/images/profile_placeholder.svg'), // Placeholder image
+                    // User image placeholder (use HugeIcons instead of SVG)
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedUserCircle,
+                      color: Colors.white,
+                      size: 60,
                     ),
                     const SizedBox(width: 16),
                     Column(
@@ -87,10 +94,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(Icons.verified_user, color: Colors.greenAccent, size: 16),
+                            HugeIcon(
+                              icon: HugeIcons.strokeRoundedUserCheck01,
+                              color: const Color(0xFF37C293),
+                              size: 24,
+                            ),
                             const SizedBox(width: 4),
                             Text(
-                              AppLocalizations.of(context)?.verifiedAccount ?? 'Verified Account',
+                              'Verified Account',
                               style: const TextStyle(
                                 color: Colors.greenAccent,
                                 fontSize: 12,
@@ -129,11 +140,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Row(
                     children: [
-                      SvgPicture.asset(
-                        'assets/images/signature_icon.svg', // Placeholder icon
-                        height: 24,
-                        width: 24,
-                        colorFilter: const ColorFilter.mode(Color(0xFFDC3545), BlendMode.srcIn),
+                      HugeIcon(
+                        icon: HugeIcons.strokeRoundedSignature,
+                        color: const Color(0xFFDC3545),
+                        size: 24,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -141,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              AppLocalizations.of(context)?.digitalSignatures ?? 'Digital Signatures',
+                              'Digital Signatures',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -149,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Text(
-                              AppLocalizations.of(context)?.uploadedDocumentsAndFiles ?? 'Uploaded Documents and Files',
+                              'Uploaded Documents and Files',
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -158,7 +168,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+                      const HugeIcon(
+                        icon: HugeIcons.strokeRoundedArrowRight01,
+                        color: Colors.grey,
+                        size: 16,
+                      ),
                     ],
                   ),
                 ),
@@ -172,9 +186,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     // Handle QR code scan
                   },
-                  icon: const Icon(Icons.qr_code_scanner, color: Colors.white),
+                  icon: const HugeIcon(icon: HugeIcons.strokeRoundedQrCode01, color: Colors.white),
                   label: Text(
-                    AppLocalizations.of(context)?.scanQrCode ?? 'Scan the QR Code',
+                    'Scan the QR Code',
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -189,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Security message
               Text(
-                AppLocalizations.of(context)?.keepYourDigitalIdentitySecure ?? 'Keep your digital identity secure. Do not share it or use it at someone else\'s request.',
+                'Keep your digital identity secure. Do not share it or use it at someone\'s request.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 12,
@@ -203,31 +217,46 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: AppLocalizations.of(context)?.home ?? 'Home',
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome01,
+              color: _selectedIndex == 0 ? primaryColor : const Color(0xFF9AA5B1),
+            ),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.history),
-            label: AppLocalizations.of(context)?.history ?? 'History',
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedWorkHistory,
+              color: _selectedIndex == 1 ? primaryColor : const Color(0xFF9AA5B1),
+            ),
+            label: 'History',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.credit_card),
-            label: AppLocalizations.of(context)?.idCard ?? 'ID Card',
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedCreditCard,
+              color: _selectedIndex == 2 ? primaryColor : const Color(0xFF9AA5B1),
+            ),
+            label: 'Cards',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: AppLocalizations.of(context)?.account ?? 'Account',
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedUser,
+              color: _selectedIndex == 3 ? primaryColor : const Color(0xFF9AA5B1),
+            ),
+            label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
-            label: AppLocalizations.of(context)?.settings ?? 'Settings',
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedSettings01,
+              color: _selectedIndex == 4 ? primaryColor : const Color(0xFF9AA5B1),
+            ),
+            label: 'Settings',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed, // Ensures all items are visible
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

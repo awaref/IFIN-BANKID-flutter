@@ -41,12 +41,12 @@ class MyApp extends StatelessWidget {
       locale: languageProvider.currentLocale,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2ECC71),
-          primary: const Color(0xFF2ECC71),
+          seedColor: const Color(0xFF37C293),
+          primary: const Color(0xFF37C293),
         ),
-        primaryColor: const Color(0xFF2ECC71),
+        primaryColor: const Color(0xFF37C293),
         scaffoldBackgroundColor: Colors.white,
-        textTheme: GoogleFonts.interTextTheme(),
+        textTheme: GoogleFonts.rubikTextTheme(),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF37C293),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/check_information_screen.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class NationalIdCardScreen extends StatelessWidget {
   const NationalIdCardScreen({super.key});
@@ -7,27 +9,68 @@ class NationalIdCardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Take a picture of your National ID card.'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              'assets/images/id_card_placeholder.svg', // Placeholder image
-              height: 200,
+            Text(
+              ('Take a picture of your National ID card.'),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w700,
+                fontSize: 24,
+                height: 1.6,
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 38),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(
+                8.0,
+              ), // Adjust the radius as needed
+              child: Image.asset(
+                'assets/images/selfie_placeholder.png',
+                height: 124,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Please Ensure:',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.start,
+            ),
+            const SizedBox(height: 16),
             _buildInstructionPoint(
-              'The National ID card must be valid and not expired.',
+              'You are using the correct National ID Card',
             ),
             _buildInstructionPoint(
-              'The National ID card must be placed on a flat surface.',
+              'The National ID Card is within the scanning frame and is fully visible',
             ),
             _buildInstructionPoint(
-              'Make sure the image is clear and without any glare or shadows.',
+              'Your Fingers don’t cover any part of the National ID',
+            ),
+            _buildInstructionPoint(
+              'The image is clear without any glare or shadows',
             ),
             const Spacer(),
             SizedBox(
@@ -35,22 +78,25 @@ class NationalIdCardScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const CheckInformationScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const CheckInformationScreen(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Color(0xFF37C293),
+                  padding: const EdgeInsets.symmetric(vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text(
                   'Take a Picture',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
+            SizedBox(height: 64),
           ],
         ),
       ),
@@ -63,14 +109,9 @@ class NationalIdCardScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 20),
+          const Icon(Icons.circle, color: Color(0xFF37C293), size: 4),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
         ],
       ),
     );

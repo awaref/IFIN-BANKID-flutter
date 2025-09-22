@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:bankid_app/screens/setup_passcode_screen.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class AppProtectionScreen extends StatefulWidget {
   const AppProtectionScreen({super.key});
@@ -41,9 +42,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
     try {
       authenticated = await auth.authenticate(
         localizedReason: 'Scan your fingerprint to authenticate',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-        ),
+        options: const AuthenticationOptions(stickyAuth: true),
       );
     } catch (e) {
       print("Error authenticating: $e");
@@ -64,56 +63,88 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Activate app protection'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Choose the method to protect your login into the app.',
-              style: TextStyle(fontSize: 16),
+              'Activate app protection',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                height: 1.6,
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
+            const Text(
+              'Choose the option to secure your login using the app ID',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF9E9E9E),
+                height: 1.6,
+              ),
+            ),
+            const SizedBox(height: 24),
             _buildProtectionOption(
               context,
-              icon: Icons.fingerprint,
-              title: 'Use Biometrics',
+              icon: HugeIcons.strokeRoundedFingerPrint,
+              title: 'Use biometrics',
               subtitle: 'Use the ID APP in the most secure way',
               isRecommended: true,
               onTap: _canCheckBiometrics ? _authenticate : null,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             _buildProtectionOption(
               context,
-              icon: Icons.lock,
+              icon: HugeIcons.strokeRoundedLock,
               title: 'Set up a passcode',
               subtitle: 'Create your 6-digit PIN to protect your personal data',
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const SetupPasscodeScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const SetupPasscodeScreen(),
+                  ),
                 );
               },
             ),
             const Spacer(),
-            SizedBox(
+            Container(
               width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 64),
               child: ElevatedButton(
                 onPressed: () {
                   // Handle continue button press
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFF37C293),
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text(
                   'Continue',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -125,7 +156,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
 
   Widget _buildProtectionOption(
     BuildContext context, {
-    required IconData icon,
+    required dynamic icon,
     required String title,
     required String subtitle,
     bool isRecommended = false,
@@ -134,48 +165,74 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 40, color: Colors.green),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xFF37C293).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: HugeIcon(
+                icon: icon,
+                size: 24,
+                color: const Color(0xFF37C293),
+              ),
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
-                  if (isRecommended)
+                  if (isRecommended) ...[
+                    const SizedBox(width: 8),
                     Container(
-                      margin: const EdgeInsets.only(top: 4),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(208, 31, 57, 0.12),
-                        borderRadius: BorderRadius.circular(4),
+                        color: const Color(0xFFD01F39).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(28),
                       ),
                       child: const Text(
                         'RECOMMENDED',
                         style: TextStyle(
-                        color: Color.fromRGBO(208, 31, 57, 1),
+                          color: Color(0xFFD01F39),
                           fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 0,
                         ),
                       ),
                     ),
+                  ],
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF637381),
+                      height: 1.6,
+                    ),
                   ),
                 ],
               ),

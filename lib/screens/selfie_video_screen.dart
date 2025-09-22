@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/national_id_card_screen.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SelfieVideoScreen extends StatelessWidget {
   const SelfieVideoScreen({super.key});
@@ -7,30 +9,54 @@ class SelfieVideoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Take a selfie video.'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              'assets/images/selfie_placeholder.svg', // Placeholder image
-              height: 200,
-            ),
-            const SizedBox(height: 32),
             const Text(
-              'On the next screen, you will be asked to record a short video of yourself.',
+              'Take a selfie video.',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 24,
+                height: 1.6,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'On the next screen, follow the instructions to record a selfie.',
               style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            _buildInstructionPoint(
-              'Please record the video in a bright area with no strong light.',
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0), // Adjust the radius as needed
+              child: Image.asset(
+                'assets/images/selfie_placeholder.png',
+                height: 124,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
+            const SizedBox(height: 24),
             _buildInstructionPoint(
-              'Turn your head slowly to the right and left, and make sure your face is clearly visible.',
+              'Please note that your surroundings will be visible while taking the selfie',
+            ),
+            const SizedBox(height: 16),
+            _buildInstructionPoint(
+              'Try moving to an area with better lighting and remove your glasses or anything else covering your face',
             ),
             const Spacer(),
             SizedBox(
@@ -38,12 +64,14 @@ class SelfieVideoScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const NationalIdCardScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const NationalIdCardScreen(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Color(0xFF37C293),
+                  padding: const EdgeInsets.symmetric(vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -54,6 +82,7 @@ class SelfieVideoScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 64,)
           ],
         ),
       ),
@@ -62,18 +91,13 @@ class SelfieVideoScreen extends StatelessWidget {
 
   Widget _buildInstructionPoint(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 20),
+          const Icon(Icons.circle, color: Color(0xFF37C293), size: 4),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 14, height: 1.6))),
         ],
       ),
     );

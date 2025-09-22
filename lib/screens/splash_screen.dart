@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,46 +20,36 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
     // ⏳ Show splash for 3 seconds, then check permission
     Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        _requestNotificationPermission();
-      }
+      if (mounted) _requestNotificationPermission();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          // Ensure proper text direction based on locale
-          textDirection: Localizations.localeOf(context).languageCode == 'ar' 
-              ? TextDirection.rtl 
-              : TextDirection.ltr,
-          children: [
-            SvgPicture.asset(
-              'assets/images/logo.svg',
-              height: 100,
-              width: 100,
-              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              AppLocalizations.of(context)?.splashScreenLogo ?? "Logo",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.rubik(
-                 fontSize: 40.49,
-                 fontWeight: FontWeight.w700,
-                 color: Colors.white,
-                 height: 1.6,
-                 letterSpacing: 0.0,
-               ),
-            ),
-          ],
+    final localeCode = Localizations.localeOf(context).languageCode;
+
+    return Directionality(
+      textDirection: localeCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: Colors.white, // 🔹 Brand/splash color
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                AppLocalizations.of(context)?.splashScreenLogo ?? "BankID",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.rubik(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                  height: 1.6,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -74,26 +65,24 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  /// 🔹 Request system notification permission
+  /// 🔹 Request system notification permission (Android 13+, iOS 12+)
   Future<void> _requestNotificationPermission() async {
-    // Request notification permission using system dialog
-    final status = await Permission.notification.request();
-    
-    if (!mounted) return;
-    
-    // Log permission status
-    if (status.isGranted) {
-      debugPrint("✅ Notifications allowed");
-    } else if (status.isPermanentlyDenied) {
-      debugPrint("❌ Permanently denied → opening settings");
-      await openAppSettings();
-    } else {
-      debugPrint("⚠️ Denied (temporary)");
+    if (Platform.isAndroid || Platform.isIOS) {
+      final status = await Permission.notification.request();
+
+      if (!mounted) return;
+
+      if (status.isGranted) {
+        debugPrint("✅ Notifications allowed");
+      } else if (status.isPermanentlyDenied) {
+        debugPrint("❌ Permanently denied → opening settings");
+        await openAppSettings();
+      } else {
+        debugPrint("⚠️ Notifications denied temporarily");
+      }
     }
-    
+
     // 👉 Navigate to language screen after permission request
     _navigateToLanguageScreen();
   }
-  
-
 }

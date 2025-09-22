@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/national_id_screen.dart';
+import 'package:hugeicons/hugeicons.dart' show HugeIcon, HugeIcons;
 import 'package:pinput/pinput.dart'; // Import pinput package
 
 class SetupPasscodeScreen extends StatefulWidget {
@@ -14,13 +15,19 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(''), // Empty title
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -29,19 +36,19 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
           children: [
             const Text(
               'Setup the passcode',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold , height: 1.6 ,color: Color(0xFF172A47) ),
             ),
             const SizedBox(height: 8),
             const Text(
               'Create your 6-digit PIN to protect your personal data',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: TextStyle(fontSize: 16, color: Color(0xFF919EAB)),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 48),
             const Text(
               'Passcode',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             // Replace TextField with a custom passcode input display and a hidden TextField for input
             // Stack(
             //   children: [
@@ -84,7 +91,7 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
                   height: 48,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey),
+                    border: Border.all(color: Color(0xFFE2E8F0)),
                   ),
                   textStyle: const TextStyle(
                     fontSize: 24,
@@ -97,7 +104,7 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
                   height: 48,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF28B446), width: 2),
+                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                   ),
                   textStyle: const TextStyle(
                     fontSize: 24,
@@ -110,7 +117,7 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
                   height: 48,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF28B446), width: 2),
+                    border: Border.all(color: const Color(0xFF37C293), width: 1),
                   ),
                   textStyle: const TextStyle(
                     fontSize: 24,
@@ -134,18 +141,19 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF28B446), // Green color from image
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const  Color(0xFF37C293), // Green color from image
+                  padding: const EdgeInsets.symmetric(vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text(
                   'Set passcode',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
+            const SizedBox( height: 64,)
           ],
         ),
       ),
@@ -163,13 +171,13 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isActive ? const Color(0xFF28B446) : Colors.grey,
-              width: 2,
+              color: isActive ? const Color(0xFF37C293) : Colors.grey,
+              width: 1,
             ),
           ),
           child: Center(
             child: Text(
-              isActive ? _passcode[index] : '',
+              isActive ? _passcode[index] : '-',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),

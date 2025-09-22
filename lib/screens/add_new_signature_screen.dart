@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class AddNewSignatureScreen extends StatefulWidget {
   const AddNewSignatureScreen({super.key});
@@ -30,7 +31,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -5,6 +5,7 @@ import 'package:bankid_app/screens/add_new_signature_screen.dart';
 import 'package:bankid_app/screens/signature_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class DigitalSignaturesListScreen extends StatefulWidget {
   const DigitalSignaturesListScreen({super.key});
@@ -23,7 +24,7 @@ class _DigitalSignaturesListScreenState extends State<DigitalSignaturesListScree
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -66,7 +67,7 @@ class _DigitalSignaturesListScreenState extends State<DigitalSignaturesListScree
                 MaterialPageRoute(builder: (context) => const AddNewSignatureScreen()),
               );
             },
-            icon: const Icon(Icons.add, color: Colors.white),
+            icon: const HugeIcon(icon: HugeIcons.strokeRoundedAdd01, color: Colors.white),
             label: Text(
               AppLocalizations.of(context)?.addNewSignature ?? 'Add New Signature',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
@@ -135,7 +136,7 @@ class _DigitalSignaturesListScreenState extends State<DigitalSignaturesListScree
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+            const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01, color: Colors.grey, size: 16),
           ],
         ),
       ),

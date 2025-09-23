@@ -160,29 +160,4 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
     );
   }
 
-  Widget _buildPasscodeInput() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(6, (index) {
-        bool isActive = index < _passcode.length;
-        return Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isActive ? const Color(0xFF37C293) : Colors.grey,
-              width: 1,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              isActive ? _passcode[index] : '-',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-        );
-      }),
-    );
-  }
 }

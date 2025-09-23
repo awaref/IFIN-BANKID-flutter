@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bankid_app/l10n/app_localizations.dart';
+
 import 'package:bankid_app/screens/check_information_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 

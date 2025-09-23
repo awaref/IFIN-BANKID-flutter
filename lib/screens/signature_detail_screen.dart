@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
@@ -122,7 +121,7 @@ class _SignatureDetailScreenState extends State<SignatureDetailScreen> {
             ),
             if (_showDeleteConfirmation)
               Container(
-                color: Colors.black.withOpacity(0.5),
+                color: Color.fromRGBO(0, 0, 0, 0.5),
                 child: Center(
                   child: _buildDeleteConfirmationDialog(context),
                 ),

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bankid_app/screens/language_selection_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';

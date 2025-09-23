@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/national_id_card_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SelfieVideoScreen extends StatelessWidget {
   const SelfieVideoScreen({super.key});

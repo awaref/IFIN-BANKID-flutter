@@ -11,26 +11,36 @@ class DigitalSignaturesListScreen extends StatefulWidget {
   const DigitalSignaturesListScreen({super.key});
 
   @override
-  State<DigitalSignaturesListScreen> createState() => _DigitalSignaturesListScreenState();
+  State<DigitalSignaturesListScreen> createState() =>
+      _DigitalSignaturesListScreenState();
 }
 
-class _DigitalSignaturesListScreenState extends State<DigitalSignaturesListScreen> {
+class _DigitalSignaturesListScreenState
+    extends State<DigitalSignaturesListScreen> {
+  final List<Map<String, dynamic>> signatures = [
+    {"title": "Digital Signature Number 1", "date": "March 25, 2025", "svg": _signature1SVG()},
+    {"title": "Digital Signature Number 2", "date": "March 25, 2025", "svg": _signature2SVG()},
+    {"title": "Digital Signature Number 3", "date": "March 25, 2025", "svg": _signature3SVG()},
+    {"title": "Digital Signature Number 4", "date": "March 25, 2025", "svg": _signature1SVG()},
+  ];
+
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          icon: const HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowLeft01, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.digitalSignatures ?? 'Digital Signatures',
+          AppLocalizations.of(context)?.digitalSignatures ??
+              'Digital Signatures',
           style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -40,43 +50,58 @@ class _DigitalSignaturesListScreenState extends State<DigitalSignaturesListScree
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            textDirection: languageProvider.isRTL ? TextDirection.rtl : TextDirection.ltr,
-            children: [
-              _buildSignatureCard(context, 'Digital Signature Number 1', 'March 25, 2025', 'assets/images/signature_placeholder.svg', 1),
-              const SizedBox(height: 16),
-              _buildSignatureCard(context, 'Digital Signature Number 2', 'March 25, 2025', 'assets/images/signature_placeholder.svg', 2),
-              const SizedBox(height: 16),
-              _buildSignatureCard(context, 'Digital Signature Number 3', 'March 25, 2025', 'assets/images/signature_placeholder.svg', 3),
-              const SizedBox(height: 16),
-              _buildSignatureCard(context, 'Digital Signature Number 4', 'March 25, 2025', 'assets/images/signature_placeholder.svg', 4),
-            ],
-          ),
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: signatures.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final sig = signatures[index];
+            return _buildSignatureCard(
+              context,
+              sig["title"],
+              sig["date"],
+              sig["svg"],
+              index + 1,
+              languageProvider.isRTL,
+            );
+          },
         ),
       ),
-      bottomNavigationBar: Padding(
+      bottomNavigationBar: Container(
+        color: Colors.white,
         padding: const EdgeInsets.all(16.0),
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const AddNewSignatureScreen()),
-              );
-            },
-            icon: const HugeIcon(icon: HugeIcons.strokeRoundedAdd01, color: Colors.white),
-            label: Text(
-              AppLocalizations.of(context)?.addNewSignature ?? 'Add New Signature',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF28A745), // Green background
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              elevation: 0,
+        child: SafeArea(
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const AddNewSignatureScreen()),
+                );
+              },
+              icon: const HugeIcon(
+                icon: HugeIcons.strokeRoundedAdd01,
+                color: Colors.white,
+                size: 18,
+              ),
+              label: Text(
+                AppLocalizations.of(context)?.addNewSignature ??
+                    'Add New Signature',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF37C293),
+                padding: const EdgeInsets.symmetric(vertical: 9),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
             ),
           ),
         ),
@@ -84,62 +109,121 @@ class _DigitalSignaturesListScreenState extends State<DigitalSignaturesListScree
     );
   }
 
-  Widget _buildSignatureCard(BuildContext context, String title, String date, String imagePath, int signatureNumber) {
+  Widget _buildSignatureCard(
+    BuildContext context,
+    String title,
+    String date,
+    String svgString,
+    int signatureNumber,
+    bool isRTL,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => SignatureDetailScreen(signatureNumber: signatureNumber)),
+          MaterialPageRoute(
+            builder: (context) =>
+                SignatureDetailScreen(signatureNumber: signatureNumber),
+          ),
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(16.0),
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment:
+              isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset(
-              imagePath,
-              height: 50,
-              width: 100,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF2C3E50),
-                    ),
-                  ),
-                  Text(
-                    AppLocalizations.of(context)?.fileAddedOn ?? 'File added on ' + date,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
+            // Signature preview
+            Container(
+              width: double.infinity,
+              height: 120,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: SvgPicture.string(
+                  svgString,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-            const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01, color: Colors.grey, size: 16),
+            const SizedBox(height: 8),
+
+            // Icon + Title
+            Row(
+              mainAxisAlignment:
+                  isRTL ? MainAxisAlignment.end : MainAxisAlignment.start,
+              children: [
+                const HugeIcon(
+                  icon: HugeIcons.strokeRoundedSignature,
+                  color: Colors.black,
+                  size: 20,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    title,
+                    textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+
+            // Date
+            Align(
+              alignment: isRTL ? Alignment.centerRight : Alignment.centerLeft,
+              child: Text(
+                '${AppLocalizations.of(context)?.fileAddedOn ?? 'File added on'} $date',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF8E8E93),
+                ),
+                textAlign: isRTL ? TextAlign.right : TextAlign.left,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+
+  /// SVG Signatures
+  static String _signature1SVG() => '''
+    <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 45 C25 25, 45 35, 75 30 C95 27, 115 40, 135 35 C155 30, 175 45, 185 40" 
+            stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  ''';
+
+  static String _signature2SVG() => '''
+    <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M25 55 C35 35, 55 45, 85 40 C105 35, 125 50, 145 45" 
+            stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  ''';
+
+  static String _signature3SVG() => '''
+    <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M35 65 C45 50, 55 60, 65 55 C70 53, 75 57, 80 55" 
+            stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  ''';
 }

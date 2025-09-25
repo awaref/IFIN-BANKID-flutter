@@ -117,7 +117,7 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                       // Handle bar
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 12),
-                        width: 40,
+                        width: 80,
                         height: 5,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
@@ -127,23 +127,24 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                       // Content
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                          padding: const EdgeInsets.fromLTRB(16, 28, 16, 32),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
                                 'Your Phone numbers',
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.6
                                 ),
                               ),
                               const SizedBox(height: 8),
                               const Text(
                                 'We found these numbers on your National ID. Pick one to start with it.',
-                                style: TextStyle(fontSize: 16, color: Colors.grey),
+                                style: TextStyle(fontSize: 14, color: Color(0xFF919EAB), fontWeight: FontWeight.w400),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 24),
                               _buildPhoneNumberOption(setModalState, '+9** *** *** 999'),
                               const SizedBox(height: 8),
                               _buildPhoneNumberOption(setModalState, '+9** *** *** 888'),
@@ -151,7 +152,7 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                               _buildPhoneNumberOption(setModalState, '+9** *** *** 777'),
                               const SizedBox(height: 8),
                               _buildPhoneNumberOption(setModalState, '+9** *** *** 666'),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 60),
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
@@ -166,19 +167,19 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF37C293),
                                     disabledBackgroundColor: Colors.grey[300],
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(vertical: 9),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                   child: const Text(
                                     'Pick number',
-                                    style: TextStyle(fontSize: 18, color: Colors.white),
+                                    style: TextStyle(fontSize: 16, color: Colors.white),
                                   ),
                                 ),
                               ),
                               // Add extra padding at bottom for safe area
-                              SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+                              SizedBox(height: 32),
                             ],
                           ),
                         ),
@@ -205,14 +206,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: _selectedPhoneNumber == phoneNumber
-                ? Colors.green
-                : Colors.grey.shade300,
-            width: _selectedPhoneNumber == phoneNumber ? 2 : 1,
-          ),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -225,11 +220,11 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                   _selectedPhoneNumber = value;
                 });
               },
-              activeColor: Colors.green,
+              activeColor: Color(0xFF37C293),
             ),
             Text(
               phoneNumber,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
             ),
           ],
         ),

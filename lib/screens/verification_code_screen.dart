@@ -24,8 +24,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
   }
 
   void _startTimer() {
-    _secondsRemaining = 60;
-    _isTimerExpired = false;
+    setState(() {
+      _secondsRemaining = 60;
+      _isTimerExpired = false;
+    });
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_secondsRemaining == 0) {
@@ -41,6 +43,23 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     });
   }
 
+  String get _formattedTime {
+    final minutes = (_secondsRemaining ~/ 60).toString().padLeft(2, '0');
+    final seconds = (_secondsRemaining % 60).toString().padLeft(2, '0');
+    return "$minutes:$seconds";
+  }
+
+  Future<bool> _verifyCode(String pin) async {
+    // TODO: Replace with your API verification
+    await Future.delayed(const Duration(milliseconds: 500));
+    return pin == "123456"; // mock validation
+  }
+
+  void _resendCode() {
+    // TODO: Implement backend resend SMS API
+    _startTimer();
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -53,7 +72,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: HugeIcon(
@@ -72,57 +91,60 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             Text(
               'Enter Verification code.',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color: Color(0xFF212B36),
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  'Verification code has been sent to',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(width: 6), // spacing between texts
-                Text(
-                  '+9** *** *** 999',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: const Color(0xFF212B36),
-                    fontSize: 14,
+                    fontSize: 24,
                     fontWeight: FontWeight.w700,
                   ),
-                ),
-              ],
             ),
-
+            const SizedBox(height: 16),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Verification code has been sent to ',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 14,
+                        ),
+                  ),
+                  TextSpan(
+                    text: '+9** *** *** 999',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: const Color(0xFF212B36),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 70),
             Text(
               'Verification code',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color: Color(0xFF212B36),
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
+                    color: const Color(0xFF212B36),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
             const SizedBox(height: 16),
             Center(
               child: Pinput(
                 length: 6,
                 controller: _codeController,
-                onChanged: (value) {
-                  // No explicit action needed here as _codeController is updated automatically
-                },
-                onCompleted: (pin) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const IdAppIdentityScreen(),
-                    ),
-                  );
+                onCompleted: (pin) async {
+                  final isValid = await _verifyCode(pin);
+                  if (isValid && context.mounted) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const IdAppIdentityScreen(),
+                      ),
+                    );
+                  } else {
+                    setState(() {
+                      _codeController.clear();
+                    });
+                  }
                 },
                 defaultPinTheme: PinTheme(
                   width: 48,
@@ -179,40 +201,33 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             ),
             const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   'You can resend the SMS within',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
-                const SizedBox(width: 6), // spacing between texts
+                const SizedBox(width: 6),
                 Text(
-                  '00:00:${_secondsRemaining.toString().padLeft(2, '0')}',
+                  _formattedTime,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Color(0xFF212B36),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: const Color(0xFF212B36),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
               ],
             ),
-
             const Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _isTimerExpired
-                    ? () {
-                        _startTimer();
-                      }
-                    : null,
+                onPressed: _isTimerExpired ? _resendCode : null,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: _isTimerExpired
-                      ? Color(0xFF37C293)
-                      : Color(0xFF919EAB),
+                  backgroundColor:
+                      _isTimerExpired ? const Color(0xFF37C293) : const Color(0xFF919EAB),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -220,9 +235,9 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                 child: Text(
                   'Retry Verification',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
               ),
             ),

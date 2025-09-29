@@ -4,6 +4,8 @@ import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class AddNewSignatureScreen extends StatefulWidget {
   const AddNewSignatureScreen({super.key});
@@ -13,8 +15,9 @@ class AddNewSignatureScreen extends StatefulWidget {
 }
 
 class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
-  final TextEditingController _signatureNameController = TextEditingController();
-  bool _imageUploaded = false;
+  final TextEditingController _signatureNameController =
+      TextEditingController();
+  File? _selectedImage;
 
   @override
   void dispose() {
@@ -25,16 +28,18 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           AppLocalizations.of(context)?.addNewSignature ?? 'Add New Signature',
@@ -47,168 +52,213 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            textDirection: languageProvider.isRTL ? TextDirection.rtl : TextDirection.ltr,
-            children: [
-              Text(
-                AppLocalizations.of(context)?.signatureName ?? 'Signature Name',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF2C3E50),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _signatureNameController,
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)?.enterNameHere ?? 'Enter name here',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                AppLocalizations.of(context)?.uploadSignatureFile ?? 'Upload Signature File',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF2C3E50),
-                ),
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _imageUploaded = true; // Simulate image upload
-                  });
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F8F8),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
-                  ),
-                  child: Column(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/upload_icon.svg', // Placeholder upload icon
-                        height: 40,
-                        width: 40,
-                        colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  textDirection: languageProvider.isRTL
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
+                  children: [
+                    /// Signature Name
+                    Text(
+                      AppLocalizations.of(context)?.signatureName ??
+                          'Signature Name',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF212B36),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _signatureNameController,
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)?.enterNameHere ??
+                            'Enter name here',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE0E0E0)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE0E0E0)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor, width: 2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    /// Upload Section
+                    Text(
+                      AppLocalizations.of(context)?.uploadSignatureFile ??
+                          'Upload Signature File',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF212B36),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // If no image selected -> upload button
+                    if (_selectedImage == null)
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 9),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFEEF5).withOpacity(0.24),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: const Color(0xFFEFEEF5), width: 1),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedImage01,
+                                color: Color(0xFF212B36),
+                                size: 16,
+                              ),
+                              const SizedBox(width: 16),
+                              Text(
+                                AppLocalizations.of(context)?.uploadImages ??
+                                    'Upload Images',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                color: Color(0xFF212B36),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    // If image selected -> preview + delete button
+                    if (_selectedImage != null) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: const Color(0xFFE0E0E0), width: 1),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            _selectedImage!,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        AppLocalizations.of(context)?.uploadImages ?? 'Upload Images',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton.icon(
+                          style: TextButton.styleFrom(
+                            backgroundColor: const Color(0xFFF9E4E7),
+                            padding: const EdgeInsets.symmetric(vertical: 7),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _selectedImage = null;
+                            });
+                          },
+                          icon: const Icon(Icons.close, color: Color(0xFFD01F39)),
+                          label: Text(
+                            AppLocalizations.of(context)?.deleteImage ??
+                                'Delete Image',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFD01F39),
+                              height: 2.0
+                            ),
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              if (_imageUploaded)
-                Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/images/signature_placeholder.svg'), // Placeholder image
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _imageUploaded = false;
-                          });
-                        },
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        label: Text(
-                          AppLocalizations.of(context)?.deleteImage ?? 'Delete Image',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDC3545), // Red background
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          elevation: 0,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
-              const Spacer(),
-              Row(
+              ),
+            ),
+
+            /// Bottom Buttons
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        side: const BorderSide(color: Color(0xFFE0E0E0)),
-                      ),
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
                       child: Text(
                         AppLocalizations.of(context)?.cancel ?? 'Cancel',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF2C3E50)),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF212B36),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Handle save signature
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: () => Navigator.of(context).pop(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF28A745), // Green background
+                        backgroundColor: const Color(0xFF37C293),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(vertical: 7),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         elevation: 0,
                       ),
                       child: Text(
-                        AppLocalizations.of(context)?.saveSignature ?? 'Save Signature',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        AppLocalizations.of(context)?.saveSignature ??
+                            'Save Signature',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
 }
+

@@ -42,15 +42,10 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           counterText: "",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Color(0xFF2D9CDB), width: 2),
             borderRadius: BorderRadius.circular(8),
@@ -101,11 +96,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
             const SizedBox(height: 8),
             const Text(
               "Are you sure you want to delete your account? You must enter your password to confirm.",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-                height: 1.4,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
             ),
             const SizedBox(height: 30),
             const Text(
@@ -124,13 +115,20 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
             const Spacer(),
             SizedBox(
               width: double.infinity,
-              height: 56,
+              height: 40,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD32F2F),
+                  backgroundColor: const Color(0xFFD01F39),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  padding: const EdgeInsets.fromLTRB(
+                    32,
+                    9,
+                    32,
+                    9,
+                  ), // ✅ match design padding
+                  alignment: Alignment.center, // ✅ keep text centered
                 ),
                 onPressed: _handleDelete,
                 child: const Text(
@@ -140,9 +138,12 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
+
+            SizedBox(height: 64),
           ],
         ),
       ),

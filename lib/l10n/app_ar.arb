@@ -42,5 +42,12 @@
   "setupPasscode": "إعداد رمز المرور",
   "createPinDescription": "أنشئ رقم التعريف الشخصي المكون من 6 أرقام لحماية بياناتك الشخصية",
   "passcode": "رمز المرور",
-  "setPasscode": "تعيين رمز المرور"
+  "setPasscode": "تعيين رمز المرور",
+  "deleteAccount": "حذف الحساب",
+  "deleteAccountConfirmationTitle": "تأكيد حذف الحساب",
+  "deleteAccountConfirmationMessage": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+  "enterPinToDeleteAccount": "أدخل رقم التعريف الشخصي المكون من 6 أرقام لتأكيد حذف الحساب.",
+  "sixDigitPin": "رقم التعريف الشخصي المكون من 6 أرقام",
+  "pleaseEnterSixDigitPin": "الرجاء إدخال رقم التعريف الشخصي المكون من 6 أرقام.",
+  "accountDeletionSuccess": "تم حذف الحساب بنجاح."
 }

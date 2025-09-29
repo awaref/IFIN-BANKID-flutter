@@ -340,6 +340,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Account Deletion'**
+  String get deleteAccountConfirmationTitle;
+
+  /// No description provided for @deleteAccountConfirmationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? This action cannot be undone.'**
+  String get deleteAccountConfirmationMessage;
+
+  /// No description provided for @enterPinToDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your 6-digit PIN to confirm account deletion.'**
+  String get enterPinToDeleteAccount;
+
+  /// No description provided for @sixDigitPin.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit PIN'**
+  String get sixDigitPin;
+
+  /// No description provided for @pleaseEnterSixDigitPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a 6-digit PIN.'**
+  String get pleaseEnterSixDigitPin;
+
+  /// No description provided for @accountDeletionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully.'**
+  String get accountDeletionSuccess;
 }
 
 class _AppLocalizationsDelegate

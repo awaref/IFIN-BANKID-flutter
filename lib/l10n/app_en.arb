@@ -42,5 +42,12 @@
   "cancel": "Cancel",
   "digitalSignatures": "Digital Signatures",
   "fileAddedOn": "File added on ",
-  "settings": "Settings"
+  "settings": "Settings",
+  "deleteAccount": "Delete Account",
+  "deleteAccountConfirmationTitle": "Confirm Account Deletion",
+  "deleteAccountConfirmationMessage": "Are you sure you want to delete your account? This action cannot be undone.",
+  "enterPinToDeleteAccount": "Enter your 6-digit PIN to confirm account deletion.",
+  "sixDigitPin": "6-digit PIN",
+  "pleaseEnterSixDigitPin": "Please enter a 6-digit PIN.",
+  "accountDeletionSuccess": "Account deleted successfully."
 }

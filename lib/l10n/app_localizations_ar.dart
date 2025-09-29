@@ -137,4 +137,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settings => 'الإعدادات';
+
+  @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'تأكيد حذف الحساب';
+
+  @override
+  String get deleteAccountConfirmationMessage =>
+      'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get enterPinToDeleteAccount =>
+      'أدخل رقم التعريف الشخصي المكون من 6 أرقام لتأكيد حذف الحساب.';
+
+  @override
+  String get sixDigitPin => 'رقم التعريف الشخصي المكون من 6 أرقام';
+
+  @override
+  String get pleaseEnterSixDigitPin =>
+      'الرجاء إدخال رقم التعريف الشخصي المكون من 6 أرقام.';
+
+  @override
+  String get accountDeletionSuccess => 'تم حذف الحساب بنجاح.';
 }

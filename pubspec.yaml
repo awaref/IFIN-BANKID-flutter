@@ -52,7 +52,7 @@ dependencies:
   shared_preferences: ^2.2.2
   local_auth: ^2.3.0
   pinput: ^4.0.0 # Added for PIN code input
-  flutter_gen: ^5.11.0
+  flutter_gen: ^5.12.0
 
 dev_dependencies:
   flutter_test:

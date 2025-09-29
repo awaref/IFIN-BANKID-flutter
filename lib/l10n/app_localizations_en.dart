@@ -137,4 +137,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Confirm Account Deletion';
+
+  @override
+  String get deleteAccountConfirmationMessage =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
+  String get enterPinToDeleteAccount =>
+      'Enter your 6-digit PIN to confirm account deletion.';
+
+  @override
+  String get sixDigitPin => '6-digit PIN';
+
+  @override
+  String get pleaseEnterSixDigitPin => 'Please enter a 6-digit PIN.';
+
+  @override
+  String get accountDeletionSuccess => 'Account deleted successfully.';
 }

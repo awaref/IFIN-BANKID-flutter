@@ -1,3 +1,4 @@
+import 'package:bankid_app/screens/update_information_screen.dart' show UpdateInformationScreen;
 import 'package:flutter/material.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
@@ -66,6 +67,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     final password = _controllers.map((c) => c.text).join();
     debugPrint("Password entered: $password");
     // TODO: Implement account deletion logic here
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const UpdateInformationScreen()));
   }
 
   @override

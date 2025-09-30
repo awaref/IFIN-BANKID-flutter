@@ -51,7 +51,7 @@ dependencies:
   meta: ^1.16.0
   shared_preferences: ^2.2.2
   local_auth: ^2.3.0
-  pinput: ^4.0.0 # Added for PIN code input
+  pinput: ^5.0.2 # Added for PIN code input
   flutter_gen: ^5.12.0
 
 dev_dependencies:

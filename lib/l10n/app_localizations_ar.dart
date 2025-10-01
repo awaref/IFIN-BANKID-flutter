@@ -156,6 +156,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sixDigitPin => 'رقم التعريف الشخصي المكون من 6 أرقام';
 
   @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  @override
   String get pleaseEnterSixDigitPin =>
       'الرجاء إدخال رقم التعريف الشخصي المكون من 6 أرقام.';
 

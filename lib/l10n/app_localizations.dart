@@ -371,6 +371,12 @@ abstract class AppLocalizations {
   /// **'6-digit PIN'**
   String get sixDigitPin;
 
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
   /// No description provided for @pleaseEnterSixDigitPin.
   ///
   /// In en, this message translates to:

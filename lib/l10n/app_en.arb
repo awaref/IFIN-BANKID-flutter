@@ -48,6 +48,7 @@
   "deleteAccountConfirmationMessage": "Are you sure you want to delete your account? This action cannot be undone.",
   "enterPinToDeleteAccount": "Enter your 6-digit PIN to confirm account deletion.",
   "sixDigitPin": "6-digit PIN",
+  "saveChanges": "Save changes",
   "pleaseEnterSixDigitPin": "Please enter a 6-digit PIN.",
   "accountDeletionSuccess": "Account deleted successfully."
 }

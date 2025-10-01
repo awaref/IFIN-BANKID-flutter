@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/digital_signatures_list_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/screens/settings_screen.dart';
+import 'package:bankid_app/screens/history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -237,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late final List<Widget> _widgetOptions = <Widget>[
     _homeWidget(), // Home Screen
-    const Text('History Page'), // Placeholder for History
+    const HistoryScreen(), // Placeholder for History
     const Text('ID Card Page'), // Placeholder for ID Card
     const Text('Account Page'), // Placeholder for Account
     const SettingsScreen(), // Settings Screen
@@ -270,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label: "Home"),
           BottomNavigationBarItem(
               icon: HugeIcon(
-                icon: HugeIcons.strokeRoundedTransactionHistory,
+                icon: HugeIcons.strokeRoundedClock04,
                 color: _selectedIndex == 1
                         ? const Color(0xFFDC3545)
                         : const Color(0xFF9AA5B1),
@@ -278,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label: "History"),
           BottomNavigationBarItem(
               icon: HugeIcon(
-                icon: HugeIcons.strokeRoundedCreditCard,
+                icon: HugeIcons.strokeRoundedId,
                 color: _selectedIndex == 2 ? const Color(0xFFDC3545) : const Color(0xFF9AA5B1),
               ),
               label: "ID Card"),

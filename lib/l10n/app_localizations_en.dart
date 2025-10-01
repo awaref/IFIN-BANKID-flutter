@@ -156,6 +156,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sixDigitPin => '6-digit PIN';
 
   @override
+  String get saveChanges => 'Save changes';
+
+  @override
   String get pleaseEnterSixDigitPin => 'Please enter a 6-digit PIN.';
 
   @override

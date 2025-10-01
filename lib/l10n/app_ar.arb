@@ -49,5 +49,7 @@
   "enterPinToDeleteAccount": "أدخل رقم التعريف الشخصي المكون من 6 أرقام لتأكيد حذف الحساب.",
   "sixDigitPin": "رقم التعريف الشخصي المكون من 6 أرقام",
   "pleaseEnterSixDigitPin": "الرجاء إدخال رقم التعريف الشخصي المكون من 6 أرقام.",
-  "accountDeletionSuccess": "تم حذف الحساب بنجاح."
+  "accountDeletionSuccess": "تم حذف الحساب بنجاح.",
+    "saveChanges": "حفظ التغييرات"
+
 }

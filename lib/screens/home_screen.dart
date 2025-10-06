@@ -3,6 +3,9 @@ import 'package:bankid_app/screens/digital_signatures_list_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/screens/settings_screen.dart';
 import 'package:bankid_app/screens/history_screen.dart';
+import 'package:bankid_app/screens/id_card_screen.dart';
+import 'package:bankid_app/screens/account_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -239,8 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late final List<Widget> _widgetOptions = <Widget>[
     _homeWidget(), // Home Screen
     const HistoryScreen(), // Placeholder for History
-    const Text('ID Card Page'), // Placeholder for ID Card
-    const Text('Account Page'), // Placeholder for Account
+    const IDCardScreen(), // Placeholder for ID Card
+    const ProfileScreen(), // Placeholder for Account
     const SettingsScreen(), // Settings Screen
   ];
 

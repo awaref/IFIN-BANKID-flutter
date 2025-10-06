@@ -1,6 +1,7 @@
+import 'package:bankid_app/screens/id_card_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:bankid_app/screens/id_card_viewer_screen.dart';
+import 'package:bankid_app/screens/edit_phone_number_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool isVerified;
@@ -34,15 +35,16 @@ class ProfileScreen extends StatelessWidget {
                       color: Colors.black.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
-                    )
+                    ),
                   ],
                 ),
                 child: Row(
                   children: [
                     const CircleAvatar(
                       radius: 30,
-                      backgroundImage:
-                          AssetImage('assets/images/selfie_placeholder.png'),
+                      backgroundImage: AssetImage(
+                        'assets/images/selfie_placeholder.png',
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -105,8 +107,10 @@ class ProfileScreen extends StatelessWidget {
               offset: const Offset(0, -36),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 20,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -115,7 +119,7 @@ class ProfileScreen extends StatelessWidget {
                       color: Colors.black.withOpacity(0.04),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -126,7 +130,12 @@ class ProfileScreen extends StatelessWidget {
                       'Phone Number',
                       '+999 999 999 999',
                       editable: true,
-                      onTap: () => Navigator.pushNamed(context, '/edit_phone'),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EditPhoneNumberScreen(),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     _infoField(context, 'Gender', 'Male'),
@@ -158,7 +167,7 @@ class ProfileScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const HugeIcon(
-                              icon:HugeIcons.strokeRoundedIdentityCard,
+                              icon: HugeIcons.strokeRoundedIdentityCard,
                               color: Colors.black54,
                               size: 22,
                             ),
@@ -188,8 +197,13 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            onPressed: () =>
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const IDCardViewerScreen())),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const IDCardViewerScreen(),
+                              ),
+                            ),
                             icon: const Icon(
                               Icons.remove_red_eye_outlined,
                               color: Color(0xFF9CA3AF),
@@ -209,8 +223,13 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget  _infoField(BuildContext context, String label, String value,
-      {bool editable = false, VoidCallback? onTap}) {
+  Widget _infoField(
+    BuildContext context,
+    String label,
+    String value, {
+    bool editable = false,
+    VoidCallback? onTap,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -224,10 +243,7 @@ class ProfileScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF111827),
-                ),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF111827)),
               ),
             ),
             if (editable) ...[

@@ -92,7 +92,15 @@ class IDCardScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-
+                        Positioned(
+                          top: 8,
+                          right: 0,
+                          
+                            child: Image.asset(
+                              'assets/images/oman_emblem.png',
+                              width: 194,
+                            ),
+                        ),
                         // Profile image
                         Positioned(
                           top: -47,

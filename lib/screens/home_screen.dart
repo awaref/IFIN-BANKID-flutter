@@ -1,3 +1,4 @@
+import 'package:bankid_app/screens/contract_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/screens/digital_signatures_list_screen.dart';
@@ -213,7 +214,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   // Sign a contract
                   InkWell(
-                    onTap: () {},
+                    onTap: () { Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ContractScreen(),
+                  ),
+                );},
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),

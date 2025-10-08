@@ -1,6 +1,7 @@
 import 'package:bankid_app/screens/about_screen.dart' show AboutScreen;
 import 'package:bankid_app/screens/privacy_screen.dart';
 import 'package:bankid_app/screens/terms_screen.dart';
+import 'package:bankid_app/screens/two_factor_auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/delete_account_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
@@ -362,6 +363,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Account Settings',
               style: Theme.of(context).textTheme.titleLarge?.merge(_rubikTextStyle),
             ),
+          ),
+          ListTile(
+            leading: const HugeIcon(
+              icon: HugeIcons.strokeRoundedTwoFactorAccess,
+              size: 20.0,
+            ),
+            title: Text('Two Factor Authentication', style: _rubikTextStyle),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TwoFactorAuthScreen())),
           ),
           ListTile(
             leading: const HugeIcon(

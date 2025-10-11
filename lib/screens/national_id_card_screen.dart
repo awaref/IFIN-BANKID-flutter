@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:bankid_app/screens/check_information_screen.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class NationalIdCardScreen extends StatelessWidget {
@@ -28,7 +29,7 @@ class NationalIdCardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              ('Take a picture of your National ID card.'),
+              AppLocalizations.of(context)!.takeAPictureOfYourNationalIdCard,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
@@ -49,8 +50,8 @@ class NationalIdCardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Please Ensure:',
+            Text(
+              AppLocalizations.of(context)!.pleaseEnsure,
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w400,
@@ -61,16 +62,16 @@ class NationalIdCardScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _buildInstructionPoint(
-              'You are using the correct National ID Card',
+              AppLocalizations.of(context)!.usingCorrectNationalIdCard,
             ),
             _buildInstructionPoint(
-              'The National ID Card is within the scanning frame and is fully visible',
+              AppLocalizations.of(context)!.nationalIdCardWithinScanningFrame,
             ),
             _buildInstructionPoint(
-              'Your Fingers don’t cover any part of the National ID',
+              AppLocalizations.of(context)!.fingersDontCoverNationalId,
             ),
             _buildInstructionPoint(
-              'The image is clear without any glare or shadows',
+              AppLocalizations.of(context)!.imageClearWithoutGlare,
             ),
             const Spacer(),
             SizedBox(
@@ -90,8 +91,8 @@ class NationalIdCardScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Take a Picture',
+                child: Text(
+                  AppLocalizations.of(context)!.takeAPicture,
                   style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w700),
                 ),
               ),

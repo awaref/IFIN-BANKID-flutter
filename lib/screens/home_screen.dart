@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/contract_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -61,8 +62,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Ayham Mahmoud Azeemah",
+                      Text(
+                        AppLocalizations.of(context)!.userName,
                         style: TextStyle(
                           color: Color(0xFF212B36),
                           fontSize: 18,
@@ -80,16 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 10),
                       Row(
-                        children: const [
-                          Icon(
+                        children: [
+                          const Icon(
                             Icons.verified,
                             color: Color(0xFF10B67E),
                             size: 20,
                           ),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Text(
-                            "Verified Account",
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.verifiedAccount,
+                            style: const TextStyle(
                               color: Color(0xFF10B67E),
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -157,23 +158,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 26,
                     ),
                     const SizedBox(width: 14),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Digital Signatures",
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.digitalSignatures,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF2C3E50),
                             ),
                           ),
-                          SizedBox(height: 3),
+                          const SizedBox(height: 3),
                           Text(
-                            "Uploaded Documents and Files",
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.uploadedDocumentsAndFiles,
+                            style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF919EAB),
                             ),
@@ -233,28 +234,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       child: Row(
-                        children: const [
-                          HugeIcon(
+                        children: [
+                          const HugeIcon(
                             icon: HugeIcons.strokeRoundedPencilEdit01,
                             color: Color(0xFF212B36),
                             size: 24,
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Sign a contract",
-                                  style: TextStyle(
+                                  AppLocalizations.of(context)!.signAContract,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: Color(0xFF212B36),
                                   ),
                                 ),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Text(
-                                  "You can sign a contract from here",
+                                  AppLocalizations.of(context)!.youCanSignAContractFromHere,
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Color(0xFF919EAB),
@@ -263,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.arrow_forward_ios,
                             color: Color(0xFF919EAB),
                             size: 16,
@@ -289,24 +290,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       child: Row(
-                        children: const [
-                          HugeIcon(
+                        children: [
+                          const HugeIcon(
                             icon: HugeIcons.strokeRoundedQrCode01,
                             color: Colors.white,
                             size: 26,
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              "Scan the QR Code",
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.scanTheQrCode,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.arrow_forward_ios,
                             color: Colors.white,
                             size: 18,
@@ -317,12 +318,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   // Security Text
-                  const Padding(
-                    padding: EdgeInsets.all(16),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Text(
-                      "Keep your digital identity secure. Do not share it or use it at someone else's request.",
+                      AppLocalizations.of(context)!.keepDigitalIdentitySecure,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Color(0xFF212B36),
                         fontWeight: FontWeight.w400,
@@ -367,11 +368,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         unselectedLabelStyle: const TextStyle(fontSize: 12),
         items: [
-          _navItem(HugeIcons.strokeRoundedHome01, "Home", 0),
-          _navItem(HugeIcons.strokeRoundedClock04, "History", 1),
-          _navItem(HugeIcons.strokeRoundedId, "ID Card", 2),
-          _navItem(HugeIcons.strokeRoundedUser, "Account", 3),
-          _navItem(HugeIcons.strokeRoundedSettings01, "Settings", 4),
+          _navItem(HugeIcons.strokeRoundedHome01, AppLocalizations.of(context)!.home, 0),
+          _navItem(HugeIcons.strokeRoundedClock04, AppLocalizations.of(context)!.history, 1),
+          _navItem(HugeIcons.strokeRoundedId, AppLocalizations.of(context)!.idCard, 2),
+          _navItem(HugeIcons.strokeRoundedUser, AppLocalizations.of(context)!.account, 3),
+          _navItem(HugeIcons.strokeRoundedSettings01, AppLocalizations.of(context)!.settings, 4),
         ],
       ),
     );

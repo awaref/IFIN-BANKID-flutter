@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/onetime_recovery_code_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +36,7 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -44,9 +46,9 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1D1F)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Two-Factor Authentication',
-          style: TextStyle(
+        title: Text(
+          l10n.twoFactorAuthenticationTitle,
+          style: const TextStyle(
             color: Color(0xFF1A1D1F),
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -60,9 +62,9 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 37),
-            const Text(
-              'Enter confirmation code',
-              style: TextStyle(
+            Text(
+              l10n.enterConfirmationCode,
+              style: const TextStyle(
                 color: Color(0xFF172A47),
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -70,9 +72,9 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Awesome! Now we just need to confirm everything. Open your authenticator app and input the generated code.',
-              style: TextStyle(
+            Text(
+              l10n.confirmationCodeDescription,
+              style: const TextStyle(
                 color: Color(0xFF9A9FA5),
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -80,9 +82,9 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            const Text(
-              'Code',
-              style: TextStyle(
+            Text(
+              l10n.codeLabel,
+              style: const TextStyle(
                 color: Color(0xFF1A1D1F),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -92,7 +94,7 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
             TextField(
               controller: codeController,
               decoration: InputDecoration(
-                hintText: '+999 999 999 999',
+                hintText: l10n.codeHint,
                 hintStyle: const TextStyle(
                   color: Color(0xFFCFD2D6),
                   fontSize: 16,
@@ -132,9 +134,9 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Back',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.backButton,
+                      style: const TextStyle(
                         color: Color(0xFF1A1D1F),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -163,9 +165,9 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Confirm',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.confirmButton,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

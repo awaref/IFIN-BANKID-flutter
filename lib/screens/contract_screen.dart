@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/verify_pin_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,7 @@ class ContractScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -33,9 +35,9 @@ class ContractScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: const Text(
-          'Sign a contract',
-          style: TextStyle(
+        title: Text(
+          l10n.contractScreenTitle,
+          style: const TextStyle(
             color: Color(0xFF1A1D3D),
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -52,34 +54,34 @@ class ContractScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Party One:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenPartyOneTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _buildInfoRow('Name:', 'Ahmad Khaled Mustafa'),
+                  _buildInfoRow(l10n.contractScreenNameLabel, l10n.contractScreenPartyOneNameValue),
                   const SizedBox(height: 8),
-                  _buildInfoRow('ID/Passport Number:', 'SY24567891'),
+                  _buildInfoRow(l10n.contractScreenIdPassportNumberLabel, l10n.contractScreenPartyOneIdPassportNumberValue),
                   const SizedBox(height: 8),
                   _buildInfoRow(
-                    'Address:',
-                    'Damascus – Dummar Project – Al-Yarmouk Street – Building No. 12',
+                    l10n.contractScreenAddressLabel,
+                    l10n.contractScreenPartyOneAddressValue,
                   ),
                   const SizedBox(height: 8),
-                  _buildInfoRow('Phone:', '+963 944 321 567'),
+                  _buildInfoRow(l10n.contractScreenPhoneLabel, l10n.contractScreenPartyOnePhoneValue),
                   const SizedBox(height: 8),
                   _buildInfoRowWithLink(
-                    'Email:',
-                    'ahmad.mustafa@example.com',
+                    l10n.contractScreenEmailLabel,
+                    l10n.contractScreenPartyOneEmailValue,
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Party Two:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenPartyTwoTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
@@ -87,170 +89,170 @@ class ContractScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   _buildInfoRow(
-                    'Name:',
-                    'Al-Noor Modern Technologies Company (represented by Mr. Samer Abdullah)',
+                    l10n.contractScreenNameLabel,
+                    l10n.contractScreenPartyTwoNameValue,
                   ),
                   const SizedBox(height: 8),
                   _buildInfoRow(
-                    'Commercial Registration:',
-                    '102547 – Damascus',
+                    l10n.contractScreenCommercialRegistrationLabel,
+                    l10n.contractScreenPartyTwoCommercialRegistrationValue,
                   ),
                   const SizedBox(height: 8),
                   _buildInfoRow(
-                    'Address:',
-                    'Damascus – Abu Rummaneh – Al-Jalaa Street – Building No. 8',
+                    l10n.contractScreenAddressLabel,
+                    l10n.contractScreenPartyTwoAddressValue,
                   ),
                   const SizedBox(height: 8),
-                  _buildInfoRow('Phone:', '+963 944 654 789'),
+                  _buildInfoRow(l10n.contractScreenPhoneLabel, l10n.contractScreenPartyTwoPhoneValue),
                   const SizedBox(height: 8),
-                  _buildInfoRowWithLink('Email:', 'info@alnoortech.com'),
+                  _buildInfoRowWithLink(l10n.contractScreenEmailLabel, l10n.contractScreenPartyTwoEmailValue),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Contract Introduction:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenIntroductionTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Whereas Party One wishes to design and develop a mobile application for managing bookings, and whereas Party Two has the necessary expertise to implement this project, the parties have agreed as follows:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenIntroductionDescription,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF6B7280),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Article One – Subject of the Contract:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleOneTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Party Two (Al-Noor Modern Technologies) undertakes to design and develop a mobile application that works on both Android and iOS systems, dedicated to managing and booking appointments, according to the specifications agreed upon with Party One.',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleOneDescription,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF6B7280),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Article Two – Duration of the Contract:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleTwoTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'The duration of the contract starts from 15/08/2025 for a period of three months, renewable with the written consent of both parties.',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleTwoDescription,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF6B7280),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Article Three – Financial Compensation:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleThreeTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Party One commits to pay an amount of 4,500 US dollars, to be paid as follows: First payment: 2,000 dollars upon signing the contract. Final payment: 2,500 dollars upon final delivery of the project.',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleThreeDescription,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF6B7280),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Article Four – Rights and Obligations of the Parties:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleFourTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Party Two is committed to delivering the project within the specified time and according to technical standards. Party One is committed to providing all necessary information and materials for design and development in a timely manner.',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleFourDescription,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF6B7280),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Article Five – Termination:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleFiveTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Either party may terminate the contract with written notice at least 15 days in advance, with payment of the financial dues to the other party according to the work completed.',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleFiveDescription,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF6B7280),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Article Six – Governing Law:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleSixTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'This contract is subject to the laws and regulations of the Syrian Arab Republic, and any dispute shall be resolved amicably, and if that is not possible, it shall be referred to the Civil Court of Damascus.',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenArticleSixDescription,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF6B7280),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Signatures:',
-                    style: TextStyle(
+                  Text(
+                    l10n.contractScreenSignaturesTitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1D3D),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _buildInfoRow('Party One:', 'Ahmad Khaled Mustafa'),
+                  _buildInfoRow(l10n.contractScreenPartyOneTitle, l10n.contractScreenPartyOneNameValue),
                   const SizedBox(height: 8),
-                  _buildInfoRow('Signature:', '___________'),
+                  _buildInfoRow(l10n.contractScreenSignatureLabel, l10n.contractScreenSignatureValue),
                   const SizedBox(height: 8),
-                  _buildInfoRow('Date:', '15/08/2025'),
+                  _buildInfoRow(l10n.contractScreenDateLabel, l10n.contractScreenDateValue),
                   const SizedBox(height: 16),
-                  _buildInfoRow('Party Two:', 'Al-Noor Modern Technologies – Representative: Samer Abdullah'),
+                  _buildInfoRow(l10n.contractScreenPartyTwoTitle, l10n.contractScreenPartyTwoSignatureValue),
                   const SizedBox(height: 8),
-                  _buildInfoRow('Signature:', '___________'),
+                  _buildInfoRow(l10n.contractScreenSignatureLabel, l10n.contractScreenSignatureValue),
                   const SizedBox(height: 8),
-                  _buildInfoRow('Date:', '15/08/2025'),
+                  _buildInfoRow(l10n.contractScreenDateLabel, l10n.contractScreenDateValue),
                   const SizedBox(height: 80),
                 ],
               ),
@@ -289,9 +291,9 @@ class ContractScreen extends StatelessWidget {
               ),
               elevation: 0,
             ),
-            child: const Text(
-              'Sign the contract',
-              style: TextStyle(
+            child: Text(
+              l10n.contractScreenSignContractButton,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -299,8 +301,7 @@ class ContractScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ); }
 
   Widget _buildInfoRow(String label, String value) {
     return RichText(

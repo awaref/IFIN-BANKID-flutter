@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class OneTimeRecoveryCodeScreen extends StatelessWidget {
   const OneTimeRecoveryCodeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -15,8 +17,8 @@ class OneTimeRecoveryCodeScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Two-Factor Authentication',
+        title: Text(
+          l10n.twoFactorAuthenticationTitle,
           style: TextStyle(
             color: Color(0xFF1A1D2E),
             fontSize: 18,
@@ -31,8 +33,8 @@ class OneTimeRecoveryCodeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            const Text(
-              'Save this one-time recovery code',
+             Text(
+              l10n.saveOneTimeRecoveryCodeTitle,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -42,7 +44,7 @@ class OneTimeRecoveryCodeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'If you lose access to your email there\'s a possibility you could get locked out of your account. Save this code in a safe place to use if you can\'t log in with your email.',
+              l10n.oneTimeRecoveryCodeDescription,
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.grey[600],
@@ -58,7 +60,7 @@ class OneTimeRecoveryCodeScreen extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'ukuy-tvao-tn9e-sj9q',
+                  'ukuy-tvao-tn9e-sj9q', // This is a placeholder, not to be localized
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -77,9 +79,9 @@ class OneTimeRecoveryCodeScreen extends StatelessWidget {
                     const ClipboardData(text: 'ukuy-tvao-tn9e-sj9q'),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Code copied to clipboard'),
-                      duration: Duration(seconds: 2),
+                    SnackBar(
+                      content: Text(l10n.codeCopiedToClipboard),
+                      duration: const Duration(seconds: 2),
                     ),
                   );
                 },
@@ -87,9 +89,9 @@ class OneTimeRecoveryCodeScreen extends StatelessWidget {
                   Icons.copy,
                   size: 20,
                 ),
-                label: const Text(
-                  'Copy code',
-                  style: TextStyle(
+                label: Text(
+                  l10n.copyCodeButton,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -123,9 +125,9 @@ class OneTimeRecoveryCodeScreen extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Done',
-                  style: TextStyle(
+                child: Text(
+                  l10n.doneButton,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),

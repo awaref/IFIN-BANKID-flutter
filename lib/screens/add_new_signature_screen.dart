@@ -27,6 +27,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final languageProvider = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
@@ -42,7 +43,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.addNewSignature ?? 'Add New Signature',
+          l10n.addNewSignature,
           style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -65,8 +66,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
                   children: [
                     /// Signature Name
                     Text(
-                      AppLocalizations.of(context)?.signatureName ??
-                          'Signature Name',
+                      l10n.signatureName,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -77,8 +77,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
                     TextField(
                       controller: _signatureNameController,
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)?.enterNameHere ??
-                            'Enter name here',
+                        hintText: l10n.enterNameHere,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide:
@@ -100,8 +99,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
 
                     /// Upload Section
                     Text(
-                      AppLocalizations.of(context)?.uploadSignatureFile ??
-                          'Upload Signature File',
+                      l10n.uploadSignatureFile,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -134,8 +132,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
                               ),
                               const SizedBox(width: 16),
                               Text(
-                                AppLocalizations.of(context)?.uploadImages ??
-                                    'Upload Images',
+                                l10n.uploadImages,
                                 style: const TextStyle(
                                   fontSize: 12,
                                 color: Color(0xFF212B36),
@@ -184,8 +181,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
                           },
                           icon: const Icon(Icons.close, color: Color(0xFFD01F39)),
                           label: Text(
-                            AppLocalizations.of(context)?.deleteImage ??
-                                'Delete Image',
+                            l10n.deleteImage,
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -210,7 +206,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
                     child: GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
                       child: Text(
-                        AppLocalizations.of(context)?.cancel ?? 'Cancel',
+                        l10n.cancel,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -232,8 +228,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> {
                         elevation: 0,
                       ),
                       child: Text(
-                        AppLocalizations.of(context)?.saveSignature ??
-                            'Save Signature',
+                        l10n.saveSignature,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

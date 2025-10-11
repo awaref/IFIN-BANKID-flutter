@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/selfie_video_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -27,7 +28,7 @@ class IdAppIdentityScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Let\'s create your ID App identity.',
+              AppLocalizations.of(context)!.letsCreateYourIdAppIdentity,
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 color: const Color(0xFF172A47),
                 fontSize: 24,
@@ -58,7 +59,7 @@ class IdAppIdentityScreen extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: 'Performing this process ',
+                            text: AppLocalizations.of(context)!.performingThisProcess,
                             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color: const Color.fromRGBO(239, 116, 34, 1),
                               fontFamily: 'Rubik',
@@ -68,7 +69,7 @@ class IdAppIdentityScreen extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: 'for fun or as a test',
+                            text: AppLocalizations.of(context)!.forFunOrAsATest,
                             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color: const Color.fromRGBO(239, 116, 34, 1),
                               fontFamily: 'Rubik',
@@ -78,7 +79,7 @@ class IdAppIdentityScreen extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: ' may result in you being permanently blocked and can prohibit you from using ID App.',
+                            text: AppLocalizations.of(context)!.mayResultInPermanentBlock,
                             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color: const Color(0xFFEF7422),
                               fontFamily: 'Rubik',
@@ -96,7 +97,7 @@ class IdAppIdentityScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Follow these steps',
+              AppLocalizations.of(context)!.followTheseSteps,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
@@ -108,12 +109,12 @@ class IdAppIdentityScreen extends StatelessWidget {
             _buildMethodOption(
               context,
               icon: Icons.face_outlined,
-              title: 'Take a selfie video',
+              title: AppLocalizations.of(context)!.takeASelfieVideo,
             ),
             _buildMethodOption(
               context,
               icon: Icons.credit_card_outlined,
-              title: 'Take a photo of your National ID card',
+              title: AppLocalizations.of(context)!.takeAPhotoOfYourNationalIdCard,
             ),
             const Spacer(),
             SizedBox(
@@ -136,7 +137,7 @@ class IdAppIdentityScreen extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Start Enrollment',
+                  AppLocalizations.of(context)!.startEnrollment,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: Theme.of(context).colorScheme.onPrimary,
                     fontWeight: FontWeight.w700,

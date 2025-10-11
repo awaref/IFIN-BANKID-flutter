@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class IDCardScreen extends StatelessWidget {
   const IDCardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.idCardViewerTitle),
+        backgroundColor: const Color(0xFFD01F39),
+        foregroundColor: Colors.white,
+      ),
       backgroundColor: const Color(0xFFEFEEF5),
       body: SingleChildScrollView(
         child: Column(
@@ -52,18 +59,18 @@ class IDCardScreen extends StatelessWidget {
                             child: Column(
                               children: [
                                 const SizedBox(height: 140),
-                                const Text(
-                                  'Ayham Mahmoud Azeemah',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.userName,
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w500,
                                     color: Color(0xFF212B36),
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                const Text(
-                                  '711025–1357',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.accountPersonalId,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     color: Color(0xFF637381),
                                   ),
@@ -71,16 +78,16 @@ class IDCardScreen extends StatelessWidget {
                                 const SizedBox(height: 10),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    HugeIcon(
+                                  children: [
+                                    const HugeIcon(
                                       icon: HugeIcons.strokeRoundedCheckmarkBadge01,
                                       size: 20,
                                       color: Color(0xFF10B67E),
                                     ),
-                                    SizedBox(width: 6),
+                                    const SizedBox(width: 6),
                                     Text(
-                                      'Verified Account',
-                                      style: TextStyle(
+                                      l10n.accountVerifiedAccount,
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         color: Color(0xFF10B67E),
                                         fontWeight: FontWeight.w500,
@@ -164,9 +171,9 @@ class IDCardScreen extends StatelessWidget {
                         color: const Color(0xFFD01F39).withOpacity(0.12),
                         borderRadius: BorderRadius.circular(28),
                       ),
-                      child: const Text(
-                                  'Scan using the Digital ID app',
-                                  style: TextStyle(
+                      child: Text(
+                                  l10n.idCardScanUsingDigitalIdApp,
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Color(0xFFEF4444),
                                     fontWeight: FontWeight.w500,
@@ -177,15 +184,15 @@ class IDCardScreen extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 QrImageView(
                                   data:
-                                      'Image, Name, and Personal ID Number: Ayham Mahmoud Azeemah - 711025–1357',
+                                      l10n.idCardQrData,
                                   version: QrVersions.auto,
                                   size: 130.0,
                                 ),
                                 const SizedBox(height: 16),
-                                const Text(
-                                  'Share via QR code:\nImage, Name, and Personal ID Number',
+                                Text(
+                                  l10n.idCardShareViaQrCode,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.black54,
                                   ),

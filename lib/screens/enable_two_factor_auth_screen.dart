@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/confirmation_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -14,6 +15,7 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -23,9 +25,9 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Two-Factor Authentication',
-          style: TextStyle(
+        title: Text(
+          l10n.twoFactorAuthTitle,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -49,15 +51,15 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                 children: [
                   const SizedBox(height: 8),
                   _buildOptionCard(
-                    title: 'Authenticator App',
+                    title: l10n.authenticatorAppTitle,
                     description:
-                        'Use an authenticator app to generate a one-time code.',
+                        l10n.authenticatorAppDescription,
                     value: 'authenticator',
                   ),
                   const SizedBox(height: 16),
                   _buildOptionCard(
-                    title: 'Email',
-                    description: 'Receive an email with one-time code.',
+                    title: l10n.emailOptionTitle,
+                    description: l10n.emailOptionDescription,
                     value: 'email',
                   ),
                 ],
@@ -78,9 +80,9 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.cancelButton,
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -112,9 +114,9 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.continueButton,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -217,6 +219,7 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
   }
 
   void _showAuthenticatorPopup(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     const String accountEmail = 'ayhamazeemah@gmail.com';
     const String secretKey = 'OVHOEIWHVPKNPWE2645';
     const String issuer = 'Social Flow';
@@ -260,10 +263,10 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Set up your authenticator app',
+                              Text(
+                                l10n.setUpAuthenticatorAppTitle,
                                 textAlign: TextAlign.start,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black,
@@ -271,10 +274,10 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              const Text(
-                                'Scan the QR code below in your authenticator app and you’re all set! (If you haven’t installed an authenticator app yet.)',
+                              Text(
+                                l10n.setUpAuthenticatorAppDescription,
                                 textAlign: TextAlign.start,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
                                   height: 1.4,
@@ -292,7 +295,7 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                               const SizedBox(height: 8),
                               Center(
                                 child: Text(
-                                  'Issuer: $issuer\nAccount: $accountEmail\nSecret Key: $secretKey',
+                                  l10n.authenticatorDetails(issuer, accountEmail, secretKey),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 14,
@@ -315,9 +318,9 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
-                                      child: const Text(
-                                        'Back',
-                                        style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w700),
+                                      child: Text(
+                                        l10n.backButton,
+                                        style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w700),
                                       ),
                                     ),
                                   ),
@@ -339,9 +342,9 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
-                                      child: const Text(
-                                        'Continue',
-                                        style: TextStyle(fontSize: 16, color: Colors.white),
+                                      child: Text(
+                                        l10n.continueButton,
+                                        style: const TextStyle(fontSize: 16, color: Colors.white),
                                       ),
                                     ),
                                   ),

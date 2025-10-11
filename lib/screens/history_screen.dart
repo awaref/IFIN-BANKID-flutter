@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
@@ -13,13 +14,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   bool noInternet = false;
   List<Map<String, String>> _filteredHistoryItems = [];
+  late List<Map<String, String>> _historyItems;
 
   @override
   void initState() {
     super.initState();
     noInternet = true; // Temporarily set to true for demonstration
-    _filteredHistoryItems = historyItems;
     _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    _historyItems = [
+      {"title": "SEB", "subtitle": l10n.identity, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "identity"},
+      {"title": "Swish at SEB", "subtitle": l10n.signature, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "signature"},
+      {"title": "SEB", "subtitle": l10n.signature, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "signature"},
+      {"title": "Minimum application - date", "subtitle": l10n.identity, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "identity"},
+      {"title": "Application ID-Kort", "subtitle": l10n.identity, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "identity"},
+      {"title": "SEB", "subtitle": l10n.identity, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "identity"},
+    ];
+    _filteredHistoryItems = _historyItems;
   }
 
   @override
@@ -37,9 +53,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() {
       if (noInternet) return;
       if (query.isEmpty) {
-        _filteredHistoryItems = historyItems;
+        _filteredHistoryItems = _historyItems;
       } else {
-        _filteredHistoryItems = historyItems.where((item) {
+        _filteredHistoryItems = _historyItems.where((item) {
           final titleLower = item["title"]!.toLowerCase();
           final subtitleLower = item["subtitle"]!.toLowerCase();
           final dateLower = item["date"]!.toLowerCase();
@@ -52,17 +68,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
   }
 
-  final List<Map<String, String>> historyItems = [
-    {"title": "SEB", "subtitle": "Identity", "date": "March 24, 2025 - 1:50 PM (UTC+02)"},
-    {"title": "Swish at SEB", "subtitle": "Signature", "date": "March 24, 2025 - 1:50 PM (UTC+02)"},
-    {"title": "SEB", "subtitle": "Signature", "date": "March 24, 2025 - 1:50 PM (UTC+02)"},
-    {"title": "Minimum application - date", "subtitle": "Identity", "date": "March 24, 2025 - 1:50 PM (UTC+02)"},
-    {"title": "Application ID-Kort", "subtitle": "Identity", "date": "March 24, 2025 - 1:50 PM (UTC+02)"},
-    {"title": "SEB", "subtitle": "Identity", "date": "March 24, 2025 - 1:50 PM (UTC+02)"},
-  ];
+  
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -104,10 +114,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     Expanded(
                       child: TextField(
                         controller: _searchController,
-                        decoration: const InputDecoration(
-                          hintText: "Search",
+                        decoration: InputDecoration(
+                          hintText: l10n.search,
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                         ),
                         onChanged: (value) {
                           _filterHistoryItems(value);
@@ -137,9 +147,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
             // Content
             Expanded(
               child: noInternet
-                  ? _buildNoInternet()
+                  ? _buildNoInternet(l10n)
                   : _filteredHistoryItems.isEmpty && _searchController.text.isNotEmpty
-                      ? _buildNoResults(_searchController.text)
+                      ? _buildNoResults(l10n, _searchController.text)
                       : _buildHistoryList(),
             ),
           ],
@@ -167,7 +177,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               radius: 22,
               backgroundColor: Colors.grey.shade100,
               child: HugeIcon(
-                icon: item["subtitle"] == "Identity"
+                icon: item["type"] == "identity"
                     ? HugeIcons.strokeRoundedId
                     : HugeIcons.strokeRoundedSignature,
                 size: 20,
@@ -198,7 +208,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildNoInternet() {
+  Widget _buildNoInternet(AppLocalizations l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -211,13 +221,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
               color: Colors.black54,
             ),
             const SizedBox(height: 20),
-            const Text(
-              "No internet connection",
+            Text(
+              l10n.noInternetConnectionTitle,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 10),
-            const Text(
-              "Please check your internet connection and try again.",
+            Text(
+              l10n.noInternetConnectionDescription,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
@@ -235,7 +245,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   noInternet = false;
                 });
               },
-              child: const Text("Retry", style: TextStyle(color: Colors.white)),
+              child: Text(l10n.retryButton, style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -243,7 +253,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildNoResults(String searchQuery) {
+  Widget _buildNoResults(AppLocalizations l10n, String searchQuery) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -256,13 +266,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
               color: Colors.black54,
             ),
             const SizedBox(height: 20),
-            const Text(
-              "No results found",
+            Text(
+              l10n.noResultsFoundTitle,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 10),
             Text(
-              'No results match the search "${searchQuery}", please correct the search.',
+              l10n.noResultsFoundDescription(searchQuery),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),

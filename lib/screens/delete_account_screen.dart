@@ -1,4 +1,5 @@
-import 'package:bankid_app/screens/update_information_screen.dart' show UpdateInformationScreen;
+import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:bankid_app/screens/update_information_screen.dart';
 import 'package:flutter/material.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
@@ -72,6 +73,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -87,23 +89,23 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Delete account.",
-              style: TextStyle(
+            Text(
+              l10n.deleteAccountTitle,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1A1A1A),
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Are you sure you want to delete your account? You must enter your password to confirm.",
-              style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
+            Text(
+              l10n.deleteAccountDescription,
+              style: const TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
             ),
             const SizedBox(height: 30),
-            const Text(
-              "Password",
-              style: TextStyle(
+            Text(
+              l10n.deleteAccountPasswordLabel,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1A1A1A),
@@ -133,9 +135,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   alignment: Alignment.center, // ✅ keep text centered
                 ),
                 onPressed: _handleDelete,
-                child: const Text(
-                  "Delete",
-                  style: TextStyle(
+                child: Text(
+                  l10n.deleteAccountButton,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -145,7 +147,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               ),
             ),
 
-            SizedBox(height: 64),
+            const SizedBox(height: 64),
           ],
         ),
       ),

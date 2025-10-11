@@ -27,6 +27,7 @@ class _DigitalSignaturesListScreenState
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
@@ -39,8 +40,7 @@ class _DigitalSignaturesListScreenState
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.digitalSignatures ??
-              'Digital Signatures',
+          l10n.digitalSignaturesListTitle,
           style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -58,7 +58,7 @@ class _DigitalSignaturesListScreenState
             final sig = signatures[index];
             return _buildSignatureCard(
               context,
-              sig["title"],
+              l10n.digitalSignatureNumber(index + 1),
               sig["date"],
               sig["svg"],
               index + 1,
@@ -86,8 +86,7 @@ class _DigitalSignaturesListScreenState
                 size: 18,
               ),
               label: Text(
-                AppLocalizations.of(context)?.addNewSignature ??
-                    'Add New Signature',
+                l10n.addNewSignatureButton,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -191,7 +190,7 @@ class _DigitalSignaturesListScreenState
             Align(
               alignment: isRTL ? Alignment.centerRight : Alignment.centerLeft,
               child: Text(
-                '${AppLocalizations.of(context)?.fileAddedOn ?? 'File added on'} $date',
+                '${AppLocalizations.of(context)?.fileAddedOnLabel ?? 'File added on'} $date',
                 style: const TextStyle(
                   fontSize: 12,
                   color: Color(0xFF8E8E93),

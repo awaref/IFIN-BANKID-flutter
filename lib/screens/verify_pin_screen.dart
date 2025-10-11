@@ -1,6 +1,7 @@
 import 'package:bankid_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,6 +55,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -71,18 +73,18 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
-              const Text(
-                'Enter the PIN code.',
-                style: TextStyle(
+              Text(
+                l10n.enterPinCode,
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'This code is to confirm that you are sure about\nsigning the contract.',
-                style: TextStyle(
+              Text(
+                l10n.pinCodeDescription,
+                style: const TextStyle(
                   fontSize: 15,
                   color: Colors.grey,
                   height: 1.5,
@@ -100,9 +102,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
               ),
               if (isError) ...[
                 const SizedBox(height: 12),
-                const Text(
-                  'Incorrect PIN. Please try again.',
-                  style: TextStyle(
+                Text(
+                  l10n.incorrectPin,
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.red,
                   ),
@@ -152,9 +154,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Verify',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.verify,
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,

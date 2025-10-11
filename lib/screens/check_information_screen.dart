@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/home_screen.dart'; // Import home_screen.dart
 import 'package:hugeicons/hugeicons.dart';
@@ -7,6 +8,7 @@ class CheckInformationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -28,7 +30,7 @@ class CheckInformationScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Check your information.',
+                l10n.checkInformationTitle,
                 style: const TextStyle(
                   color: Color(0xFF172a47),
                   fontWeight: FontWeight.w700,
@@ -48,21 +50,21 @@ class CheckInformationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              _buildInfoRow('First Name', 'AYHAM'),
+              _buildInfoRow(l10n.checkInformationFirstName, l10n.checkInformationFirstNameValue),
               _buildDivider(),
-              _buildInfoRow('Last Name', 'AZEEMAH'),
+              _buildInfoRow(l10n.checkInformationLastName, l10n.checkInformationLastNameValue),
               _buildDivider(),
-              _buildInfoRow('Gender', 'Male'),
+              _buildInfoRow(l10n.checkInformationGender, l10n.checkInformationGenderValue),
               _buildDivider(),
-              _buildInfoRow('Date of Birth', '25/10/1971'),
+              _buildInfoRow(l10n.checkInformationDateOfBirth, l10n.checkInformationDateOfBirthValue),
               _buildDivider(),
-              _buildInfoRow('Nationality', 'British'),
+              _buildInfoRow(l10n.checkInformationNationality, l10n.checkInformationNationalityValue),
               _buildDivider(),
-              _buildInfoRow('National ID number', '71105350328'),
+              _buildInfoRow(l10n.checkInformationNationalIdNumber, l10n.checkInformationNationalIdNumberValue),
               _buildDivider(),
-              _buildInfoRow('Date of Issue', '19/01/2022'),
+              _buildInfoRow(l10n.checkInformationDateOfIssue, l10n.checkInformationDateOfIssueValue),
               _buildDivider(),
-              _buildInfoRow('Date of expiry', '19/01/2027'),
+              _buildInfoRow(l10n.checkInformationDateOfExpiry, l10n.checkInformationDateOfExpiryValue),
 
               const SizedBox(height: 32),
 
@@ -85,9 +87,9 @@ class CheckInformationScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Confirm',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.checkInformationConfirm,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                       fontWeight: FontWeight.w700,

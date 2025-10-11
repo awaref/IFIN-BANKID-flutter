@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/home_screen.dart'; // Import home_screen.dart
 import 'package:hugeicons/hugeicons.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class UpdateInformationScreen extends StatelessWidget {
   const UpdateInformationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -28,7 +30,7 @@ class UpdateInformationScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'UpdateInformationScreen your information.',
+                l10n.updateInformationTitle,
                 style: const TextStyle(
                   color: Color(0xFF172a47),
                   fontWeight: FontWeight.w700,
@@ -48,21 +50,21 @@ class UpdateInformationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              _buildInfoRow('First Name', 'AYHAM'),
+              _buildInfoRow(l10n.firstNameLabel, 'AYHAM'),
               _buildDivider(),
-              _buildInfoRow('Last Name', 'AZEEMAH'),
+              _buildInfoRow(l10n.lastNameLabel, 'AZEEMAH'),
               _buildDivider(),
-              _buildInfoRow('Gender', 'Male'),
+              _buildInfoRow(l10n.genderLabel, 'Male'),
               _buildDivider(),
-              _buildInfoRow('Date of Birth', '25/10/1971'),
+              _buildInfoRow(l10n.dateOfBirthLabel, '25/10/1971'),
               _buildDivider(),
-              _buildInfoRow('Nationality', 'British'),
+              _buildInfoRow(l10n.nationalityLabel, 'British'),
               _buildDivider(),
-              _buildInfoRow('National ID number', '71105350328'),
+              _buildInfoRow(l10n.nationalIdNumberLabel, '71105350328'),
               _buildDivider(),
-              _buildInfoRow('Date of Issue', '19/01/2022'),
+              _buildInfoRow(l10n.dateOfIssueLabel, '19/01/2022'),
               _buildDivider(),
-              _buildInfoRow('Date of expiry', '19/01/2027'),
+              _buildInfoRow(l10n.dateOfExpiryLabel, '19/01/2027'),
 
               const SizedBox(height: 32),
 
@@ -85,9 +87,9 @@ class UpdateInformationScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Update Information',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.updateInformationButton,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                       fontWeight: FontWeight.w700,

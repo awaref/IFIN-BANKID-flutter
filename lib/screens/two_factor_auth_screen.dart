@@ -1,5 +1,6 @@
 import 'package:bankid_app/screens/enable_two_factor_auth_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,7 @@ class TwoFactorAuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -31,9 +33,9 @@ class TwoFactorAuthScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1D1F)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Two-Factor Authentication',
-          style: TextStyle(
+        title: Text(
+          l10n.twoFactorAuthTitle,
+          style: const TextStyle(
             color: Color(0xFF1A1D1F),
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -77,9 +79,9 @@ class TwoFactorAuthScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               // Title
-              const Text(
-                'Two-Factor Authentication',
-                style: TextStyle(
+              Text(
+                l10n.twoFactorAuthTitle,
+                style: const TextStyle(
                   color: Color(0xFF1A1D1F),
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -88,9 +90,9 @@ class TwoFactorAuthScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               // Subtitle
-              const Text(
-                'Is a security process that adds an extra layer to protect your accounts.',
-                style: TextStyle(
+              Text(
+                l10n.twoFactorAuthDescription,
+                style: const TextStyle(
                   color: Color(0xFF6F767E),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -99,11 +101,11 @@ class TwoFactorAuthScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 150),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  'It requires you to enter a temporary code sent to your phone or email after entering your password. This step makes it harder for hackers to access your accounts even if they know your password.',
-                  style: TextStyle(
+                  l10n.twoFactorAuthExplanation,
+                  style: const TextStyle(
                     color: Color(0xFF6F767E),
                     fontSize: 13,
                     height: 1.6,
@@ -130,9 +132,9 @@ class TwoFactorAuthScreen extends StatelessWidget {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Enable Two-Factor Authentication',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.enableTwoFactorAuthButton,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,

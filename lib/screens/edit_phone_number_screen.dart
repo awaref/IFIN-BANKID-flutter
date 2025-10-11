@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/screens/verification_code_screen.dart';
@@ -20,6 +21,7 @@ class _EditPhoneNumberScreenState extends State<EditPhoneNumberScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -33,9 +35,9 @@ class _EditPhoneNumberScreenState extends State<EditPhoneNumberScreen> {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Edit Phone Number',
-          style: TextStyle(
+        title: Text(
+          l10n.editPhoneNumberTitle,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -57,9 +59,9 @@ class _EditPhoneNumberScreenState extends State<EditPhoneNumberScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Phone Number',
-                    style: TextStyle(
+                  Text(
+                    l10n.editPhoneNumberLabel,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.black87,
                       fontWeight: FontWeight.w500,
@@ -74,7 +76,7 @@ class _EditPhoneNumberScreenState extends State<EditPhoneNumberScreen> {
                       color: Colors.black54,
                     ),
                     decoration: InputDecoration(
-                      hintText: '+999 999 999 999',
+                      hintText: l10n.editPhoneNumberHint,
                       hintStyle: TextStyle(color: Colors.grey[400]),
                       filled: true,
                       fillColor: Colors.grey[50],
@@ -119,9 +121,9 @@ class _EditPhoneNumberScreenState extends State<EditPhoneNumberScreen> {
                       // Cancel button
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.cancel,
+                          style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -145,9 +147,9 @@ class _EditPhoneNumberScreenState extends State<EditPhoneNumberScreen> {
                             ),
                             elevation: 0,
                           ),
-                          child: const Text(
-                            'Save Changes',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.saveChanges,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),

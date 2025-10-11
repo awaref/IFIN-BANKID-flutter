@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class TermsScreen extends StatelessWidget {
   const TermsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -19,9 +21,9 @@ class TermsScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Text(
-          "Terms of Use",
-          style: TextStyle(
+        title: Text(
+          l10n.termsOfUseTitle,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -35,9 +37,9 @@ class TermsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "The terms of use for our app are a set of rules that users must adhere to when using the app. By downloading and using the app, you agree to comply with these terms.",
-                style: TextStyle(
+              Text(
+                l10n.termsOfUseDescription,
+                style: const TextStyle(
                   fontSize: 14,
                   height: 1.6,
                   color: Colors.black87,
@@ -52,12 +54,12 @@ class TermsScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: "1. ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: "**Acceptance of Terms**: By using the app, you agree to all the terms and conditions stated herein. If you do not agree to any of these terms, you must not use the app.",
+                      text: l10n.termsOfUseAcceptance,
                     ),
                   ],
                 ),
@@ -71,12 +73,12 @@ class TermsScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: "2. ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: "**Registration**: You may need to create an account to use certain features of the app. You must provide accurate and complete information when registering, and you are responsible for keeping your account information confidential.",
+                      text: l10n.termsOfUseRegistration,
                     ),
                   ],
                 ),
@@ -90,12 +92,12 @@ class TermsScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: "3. ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: "**Permitted Use**: You must use the app only for lawful purposes and in accordance with all applicable laws. You are not permitted to use the app in ways that may infringe on the rights of others or harm the app.",
+                      text: l10n.termsOfUsePermittedUse,
                     ),
                   ],
                 ),
@@ -109,12 +111,12 @@ class TermsScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: "4. ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: "**Security**: We take the security of your data seriously. You must take all necessary precautions to protect your account information and passwords. If you suspect any unauthorized use of your account, you must notify us immediately.",
+                      text: l10n.termsOfUseSecurity,
                     ),
                   ],
                 ),
@@ -128,12 +130,12 @@ class TermsScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: "5. ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: "**Changes to Terms**: We reserve the right to modify the terms of use at any time. You will be notified of any significant changes, and your continued use of the app after such changes will",
+                      text: l10n.termsOfUseChanges,
                     ),
                   ],
                 ),

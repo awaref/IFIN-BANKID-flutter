@@ -17,6 +17,7 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -36,8 +37,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Start with your National ID number.',
+            Text(
+              l10n.nationalIdScreenTitle,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 62),
@@ -45,8 +46,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'National ID number',
+                  Text(
+                    l10n.nationalIdNumberLabel,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -56,8 +57,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _idController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter 9-digits number',
+                    decoration: InputDecoration(
+                      hintText: l10n.nationalIdNumberHint,
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
@@ -80,8 +81,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Continue',
+                child: Text(
+                  l10n.continueButton,
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
@@ -94,6 +95,7 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
   }
 
   void _showPhoneNumberBottomSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -131,8 +133,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Your Phone numbers',
+                              Text(
+                                l10n.yourPhoneNumbersTitle,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
@@ -140,8 +142,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              const Text(
-                                'We found these numbers on your National ID. Pick one to start with it.',
+                              Text(
+                                l10n.yourPhoneNumbersDescription,
                                 style: TextStyle(fontSize: 14, color: Color(0xFF919EAB), fontWeight: FontWeight.w400),
                               ),
                               const SizedBox(height: 24),
@@ -172,8 +174,8 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                  child: const Text(
-                                    'Pick number',
+                                  child: Text(
+                                    l10n.pickNumberButton,
                                     style: TextStyle(fontSize: 16, color: Colors.white),
                                   ),
                                 ),

@@ -2,6 +2,7 @@ import 'package:bankid_app/screens/id_card_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/screens/edit_phone_number_screen.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool isVerified;
@@ -9,6 +10,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4FA),
       body: SingleChildScrollView(
@@ -51,18 +53,18 @@ class ProfileScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Ayham Mahmoud Azeemah',
-                            style: TextStyle(
+                          Text(
+                            l10n.accountFullName,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            '711025–1357',
-                            style: TextStyle(
+                          Text(
+                            l10n.accountPersonalId,
+                            style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF6B7280),
                             ),
@@ -82,8 +84,8 @@ class ProfileScreen extends StatelessWidget {
                               const SizedBox(width: 6),
                               Text(
                                 isVerified
-                                    ? 'Verified Account'
-                                    : 'Not Verified',
+                                    ? l10n.accountVerifiedAccount
+                                    : l10n.accountNotVerified,
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
@@ -127,8 +129,8 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     _infoField(
                       context,
-                      'Phone Number',
-                      '+999 999 999 999',
+                      l10n.accountPhoneNumber,
+                      l10n.accountPhoneNumberActual,
                       editable: true,
                       onTap: () => Navigator.push(
                         context,
@@ -138,17 +140,17 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _infoField(context, 'Gender', 'Male'),
+                    _infoField(context, l10n.accountGender, l10n.accountGenderActual),
                     const SizedBox(height: 12),
-                    _infoField(context, 'Date of Birth', '10/25/1971'),
+                    _infoField(context, l10n.accountDateOfBirth, l10n.accountDateOfBirthActual),
                     const SizedBox(height: 12),
-                    _infoField(context, 'Nationality', 'British'),
+                    _infoField(context, l10n.accountNationality, l10n.accountNationalityActual),
                     const SizedBox(height: 12),
-                    _infoField(context, 'National ID Number', '71105350328'),
+                    _infoField(context, l10n.accountNationalIdNumber, l10n.accountNationalIdNumberActual),
                     const SizedBox(height: 12),
-                    _infoField(context, 'Date of Issue', '01/19/2022'),
+                    _infoField(context, l10n.accountDateOfIssue, l10n.accountDateOfIssueActual),
                     const SizedBox(height: 12),
-                    _infoField(context, 'Date of Expiration', '01/19/2027'),
+                    _infoField(context, l10n.accountDateOfExpiration, l10n.accountDateOfExpirationActual),
                     const SizedBox(height: 16),
 
                     // ID Card Image Section
@@ -173,21 +175,21 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'ID Card Image',
-                                  style: TextStyle(
+                                  l10n.accountIDCardImageTitle,
+                                  style: const TextStyle(
                                     fontSize: 13,
                                     color: Color(0xFF6B7280),
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
-                                  'Image389074292303.JPEG',
-                                  style: TextStyle(
+                                  l10n.accountIDCardImageDescription,
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Color(0xFF111827),
                                     fontWeight: FontWeight.w500,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bankid_app/screens/id_app_identity_screen.dart';
 import 'package:hugeicons/hugeicons.dart' show HugeIcons, HugeIcon;
 import 'package:pinput/pinput.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class VerificationCodeScreen extends StatefulWidget {
   const VerificationCodeScreen({super.key});
@@ -89,7 +90,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Enter Verification code.',
+              AppLocalizations.of(context)!.enterVerificationCode,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: const Color(0xFF212B36),
                     fontSize: 24,
@@ -101,7 +102,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: 'Verification code has been sent to ',
+                    text: AppLocalizations.of(context)!.verificationCodeSentTo,
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 14,
@@ -120,7 +121,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             ),
             const SizedBox(height: 70),
             Text(
-              'Verification code',
+              AppLocalizations.of(context)!.verificationCode,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: const Color(0xFF212B36),
                     fontSize: 14,
@@ -203,7 +204,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             Row(
               children: [
                 Text(
-                  'You can resend the SMS within',
+                  AppLocalizations.of(context)!.resendSmsWithin,
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -233,7 +234,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                   ),
                 ),
                 child: Text(
-                  'Retry Verification',
+                  AppLocalizations.of(context)!.retryVerification,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,

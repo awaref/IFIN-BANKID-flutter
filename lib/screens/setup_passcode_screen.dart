@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/national_id_screen.dart';
 import 'package:hugeicons/hugeicons.dart' show HugeIcon, HugeIcons;
@@ -15,6 +16,7 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
      return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -34,18 +36,18 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, // Align text to start
           children: [
-            const Text(
-              'Setup the passcode',
+            Text(
+              l10n.setupPasscode,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold , height: 1.6 ,color: Color(0xFF172A47) ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Create your 6-digit PIN to protect your personal data',
+            Text(
+              l10n.createPinDescription,
               style: TextStyle(fontSize: 16, color: Color(0xFF919EAB)),
             ),
             const SizedBox(height: 48),
-            const Text(
-              'Passcode',
+            Text(
+              l10n.passcode,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -147,9 +149,9 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Set passcode',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                child: Text(
+                  l10n.setPasscode,
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),

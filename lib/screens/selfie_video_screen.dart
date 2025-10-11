@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/national_id_card_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class SelfieVideoScreen extends StatelessWidget {
   const SelfieVideoScreen({super.key});
@@ -26,17 +27,17 @@ class SelfieVideoScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Take a selfie video.',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.takeASelfieVideo,
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 24,
                 height: 1.6,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'On the next screen, follow the instructions to record a selfie.',
+           Text(
+              AppLocalizations.of(context)!.onTheNextScreenFollowInstructions,
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -51,11 +52,11 @@ class SelfieVideoScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _buildInstructionPoint(
-              'Please note that your surroundings will be visible while taking the selfie',
+              AppLocalizations.of(context)!.pleaseNoteSurroundingsVisible,
             ),
             const SizedBox(height: 16),
             _buildInstructionPoint(
-              'Try moving to an area with better lighting and remove your glasses or anything else covering your face',
+              AppLocalizations.of(context)!.tryMovingToBetterLighting,
             ),
             const Spacer(),
             SizedBox(
@@ -75,8 +76,8 @@ class SelfieVideoScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Take a selfie',
+                child: Text(
+                  AppLocalizations.of(context)!.takeASelfie,
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),

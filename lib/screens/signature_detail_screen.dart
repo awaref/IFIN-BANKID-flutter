@@ -85,7 +85,7 @@ class SignatureDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Digital Signature Number $signatureNumber',
+                      loc?.digitalSignatureNumber(signatureNumber) ?? 'Digital Signature Number $signatureNumber',
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -93,9 +93,9 @@ class SignatureDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'File added on March 25, 2025',
-                      style: TextStyle(
+                    Text(
+                      loc?.fileAddedOn ?? 'File added on March 25, 2025',
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Color(0xFF6B7280),
                       ),

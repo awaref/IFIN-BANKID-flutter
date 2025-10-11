@@ -1,3 +1,4 @@
+import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:bankid_app/screens/setup_passcode_screen.dart';
@@ -41,7 +42,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
     bool authenticated = false;
     try {
       authenticated = await auth.authenticate(
-        localizedReason: 'Scan your fingerprint to authenticate',
+        localizedReason: AppLocalizations.of(context)!.appProtectionScanFingerprint,
         options: const AuthenticationOptions(stickyAuth: true),
       );
     } catch (e) {
@@ -62,6 +63,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -81,9 +83,9 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Activate app protection',
-              style: TextStyle(
+            Text(
+              l10n.appProtectionActivateProtection,
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -91,9 +93,9 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Choose the option to secure your login using the app ID',
-              style: TextStyle(
+            Text(
+              l10n.appProtectionChooseOption,
+              style: const TextStyle(
                 fontSize: 14,
                 color: Color(0xFF9E9E9E),
                 height: 1.6,
@@ -103,8 +105,8 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
             _buildProtectionOption(
               context,
               icon: HugeIcons.strokeRoundedFingerPrint,
-              title: 'Use biometrics',
-              subtitle: 'Use the ID APP in the most secure way',
+              title: l10n.appProtectionUseBiometrics,
+              subtitle: l10n.appProtectionUseSecureWay,
               isRecommended: true,
               onTap: _canCheckBiometrics ? _authenticate : null,
             ),
@@ -112,8 +114,8 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
             _buildProtectionOption(
               context,
               icon: HugeIcons.strokeRoundedLock,
-              title: 'Set up a passcode',
-              subtitle: 'Create your 6-digit PIN to protect your personal data',
+              title: l10n.appProtectionSetUpPasscode,
+              subtitle: l10n.appProtectionCreatePin,
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -138,9 +140,9 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(
+                child: Text(
+                  l10n.appProtectionContinue,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -162,6 +164,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
     bool isRecommended = false,
     VoidCallback? onTap,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -214,9 +217,9 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
                         color: const Color(0xFFD01F39).withOpacity(0.12),
                         borderRadius: BorderRadius.circular(28),
                       ),
-                      child: const Text(
-                        'RECOMMENDED',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.appProtectionRecommended,
+                        style: const TextStyle(
                           color: Color(0xFFD01F39),
                           fontSize: 10,
                           fontWeight: FontWeight.w400,

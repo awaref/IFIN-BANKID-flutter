@@ -23,15 +23,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final LocalAuthentication auth = LocalAuthentication();
   bool _canCheckBiometrics = false;
   List<BiometricType> _availableBiometrics = [];
-  String _authorized = 'Not Authorized';
+  late String _authorized;
   bool _isAuthenticating = false;
 
-  String _selectedLanguage = "English"; // Default language
+  late String _selectedLanguage; // Default language
 
   @override
   void initState() {
     super.initState();
     _checkBiometrics();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _authorized = AppLocalizations.of(context)!.notAuthorizedStatus;
+    _selectedLanguage = Provider.of<LanguageProvider>(context, listen: false).currentLocale.languageCode == 'en' ? AppLocalizations.of(context)!.languageEnglish : AppLocalizations.of(context)!.languageArabic;
   }
 
   Future<void> _checkBiometrics() async {
@@ -57,8 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-        localizedReason:
-            'Scan your fingerprint (or face or other biometric) to authenticate',
+        localizedReason: AppLocalizations.of(context)!.authenticateReason,
         options: const AuthenticationOptions(stickyAuth: true),
       );
       setState(() {
@@ -68,14 +74,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       print(e);
       setState(() {
         _isAuthenticating = false;
-        _authorized = 'Error - ${e.message}';
+        _authorized = AppLocalizations.of(context)!.authenticationError + (e.message ?? '');
       });
       return;
     }
     if (!mounted) return;
 
     setState(() =>
-        _authorized = authenticated ? 'Authorized' : 'Not Authorized');
+        _authorized = authenticated ? AppLocalizations.of(context)!.authorizedStatus : AppLocalizations.of(context)!.notAuthorizedStatus);
   }
 
   Future<void> _cancelAuthentication() async {
@@ -124,7 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)?.languageSelectionTitle ?? 'Choose your language',
+                    AppLocalizations.of(context)!.languageSelectionTitle,
                     style: _rubikAppBarTextStyle,
                   ),
                   const SizedBox(height: 20),
@@ -132,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Language options using the same style as language_selection_screen
                   _buildLanguageOption(
                     context,
-                    AppLocalizations.of(context)?.languageEnglish ?? 'English',
+                    AppLocalizations.of(context)!.languageEnglish,
                     'en',
                     primaryColor,
                     tempSelectedLanguageCode,
@@ -144,7 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   _buildLanguageOption(
                     context,
-                    AppLocalizations.of(context)?.languageArabic ?? 'Arabic',
+                    AppLocalizations.of(context)!.languageArabic,
                     'ar',
                     primaryColor,
                     tempSelectedLanguageCode,
@@ -171,14 +177,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: Text(
-                            AppLocalizations.of(context)?.cancel ?? 'Cancel',
-                            style: GoogleFonts.rubik(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
+                          child: Text(AppLocalizations.of(context)!.cancel),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -193,7 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               
                               // Update the UI state
                               setState(() {
-                                _selectedLanguage = tempSelectedLanguageCode == 'en' ? 'English' : 'Arabic';
+                                _selectedLanguage = tempSelectedLanguageCode == 'en' ? AppLocalizations.of(context)!.languageEnglish : AppLocalizations.of(context)!.languageArabic;
                               });
                             }
                             Navigator.pop(context);
@@ -208,7 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             elevation: 0,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)?.saveChanges ?? 'Save changes',
+                            AppLocalizations.of(context)!.saveChanges,
                             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                           ),
                         ),
@@ -282,7 +281,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: Text('Settings', style: _rubikAppBarTextStyle),
+        title: Text(AppLocalizations.of(context)!.settingsTitle, style: _rubikAppBarTextStyle),
       ),
       body: ListView(
         children: [
@@ -290,13 +289,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'General Settings',
+              AppLocalizations.of(context)!.generalSettingsTitle,
               style: Theme.of(context).textTheme.titleLarge?.merge(_rubikTextStyle),
             ),
           ),
           ListTile(
             leading: const HugeIcon(icon: HugeIcons.strokeRoundedFingerPrint),
-            title: Text('App Fingerprint', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.appFingerprintTitle, style: _rubikTextStyle),
             trailing: TextButton(
               onPressed: () {
                 if (_authorized == 'Authorized') {
@@ -306,7 +305,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 }
               },
               child: Text(
-                _authorized == 'Authorized' ? 'Turn Off' : 'Turn On',
+                _authorized == AppLocalizations.of(context)!.authorizedStatus ? AppLocalizations.of(context)!.turnOff : AppLocalizations.of(context)!.turnOn,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -320,7 +319,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: HugeIcons.strokeRoundedLanguageSkill,
               size: 20.0,
             ),
-            title: Text('App Language', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.appLanguageTitle, style: _rubikTextStyle),
             onTap: _showLanguagePopup,
           ),
           ListTile(
@@ -328,14 +327,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: HugeIcons.strokeRoundedHeadset,
               size: 20.0,
             ),
-            title: Text('Help and Support', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.helpAndSupportTitle, style: _rubikTextStyle),
           ),
           ListTile(
             leading: HugeIcon(
               icon: HugeIcons.strokeRoundedInformationCircle,
               size: 20.0,
             ),
-            title: Text('About the App', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.aboutTheAppTitle, style: _rubikTextStyle),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen())),
 
           ),
@@ -344,7 +343,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: HugeIcons.strokeRoundedInformationCircle,
               size: 20.0,
             ),
-            title: Text('Terms of Use', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.termsOfUseTitle, style: _rubikTextStyle),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsScreen())),
           ),
           ListTile(
@@ -352,7 +351,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: HugeIcons.strokeRoundedInformationCircle,
               size: 20.0,
             ),
-            title: Text('Privacy Policy', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.privacyPolicyTitle, style: _rubikTextStyle),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PrivacyScreen())),
           ),
 
@@ -360,7 +359,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Account Settings',
+              AppLocalizations.of(context)!.accountSettingsTitle,
               style: Theme.of(context).textTheme.titleLarge?.merge(_rubikTextStyle),
             ),
           ),
@@ -369,7 +368,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: HugeIcons.strokeRoundedTwoFactorAccess,
               size: 20.0,
             ),
-            title: Text('Two Factor Authentication', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.twoFactorAuthenticationTitle, style: _rubikTextStyle),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TwoFactorAuthScreen())),
           ),
           ListTile(
@@ -377,23 +376,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: HugeIcons.strokeRoundedLock,
               size: 20.0,
             ),
-            title: Text('Change Password', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.changePasswordTitle, style: _rubikTextStyle),
           ),
           ListTile(
             leading: const HugeIcon(
               icon: HugeIcons.strokeRoundedClock04,
               size: 20.0,
             ),
-            title: Text('Transaction History', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.transactionHistoryTitle, style: _rubikTextStyle),
           ),
           ListTile(
             leading: const HugeIcon(
               icon: HugeIcons.strokeRoundedPassport,
               size: 20.0,
             ),
-            title: Text('ID Card', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.idCardTitle, style: _rubikTextStyle),
             subtitle: Text(
-              'Manage your personal identity. Learn more about how to do it.',
+              AppLocalizations.of(context)!.idCardSubtitle,
               style: _rubikTextStyle.copyWith(
                 fontSize: 12,
                 color: const Color(0xFF919EAB),
@@ -407,7 +406,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               size: 20.0,
             ),
             title: Text(
-              'Delete Account',
+              AppLocalizations.of(context)!.deleteAccountTitle,
               style: _rubikTextStyle.copyWith(color: Colors.red),
             ),
             onTap: () {
@@ -422,7 +421,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'New',
+              AppLocalizations.of(context)!.newAccountSectionTitle,
               style: Theme.of(context).textTheme.titleLarge?.merge(_rubikTextStyle),
             ),
           ),
@@ -431,7 +430,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: HugeIcons.strokeRoundedAdd01,
               size: 20.0,
             ),
-            title: Text('Add New Account', style: _rubikTextStyle),
+            title: Text(AppLocalizations.of(context)!.addNewAccountTitle, style: _rubikTextStyle),
           ),
         ],
       ),

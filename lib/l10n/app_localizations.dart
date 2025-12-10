@@ -200,6 +200,36 @@ abstract class AppLocalizations {
   /// **'Upload Signature File'**
   String get uploadSignatureFile;
 
+  /// No description provided for @reportProblemButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Problem'**
+  String get reportProblemButton;
+
+  /// No description provided for @reportProblemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Problem'**
+  String get reportProblemTitle;
+
+  /// No description provided for @supportPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'123-456-7890'**
+  String get supportPhoneNumber;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButton;
+
+  /// No description provided for @callButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callButton;
+
   /// No description provided for @uploadImages.
   ///
   /// In en, this message translates to:

@@ -12,7 +12,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'تطبيق BankID';
 
   @override
-  String get splashScreenLogo => 'الشعار';
+  String get splashScreenLogo => 'اللوجو';
 
   @override
   String get languageSelectionTitle => 'اختر لغتك';
@@ -61,6 +61,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uploadSignatureFile => 'تحميل ملف التوقيع';
+
+  @override
+  String get reportProblemButton => 'الإبلاغ عن مشكلة';
+
+  @override
+  String get reportProblemTitle => 'الإبلاغ عن مشكلة';
+
+  @override
+  String get supportPhoneNumber => '000-000-0000';
+
+  @override
+  String get closeButton => 'إغلاق';
+
+  @override
+  String get callButton => 'اتصال';
 
   @override
   String get uploadImages => 'تحميل الصور';
@@ -631,10 +646,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get editPhoneNumberHint => '+999 999 999 999';
 
   @override
-  String get cancelButton => 'ًإلغاء';
+  String get cancelButton => 'إلغاء';
 
   @override
-  String get twoFactorAuthTitle => 'Two-Factor Authentication';
+  String get twoFactorAuthTitle => 'المصادقة الثنائية';
 
   @override
   String get authenticatorAppTitle => 'تطبيق المصادقة';
@@ -733,8 +748,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retryVerification => 'إعادة محاولة التحقق';
 
   @override
-  String get letsCreateYourIdAppIdentity =>
-      'لنقم بإنشاء هوية تطبيق الهوية الخاص بك.';
+  String get letsCreateYourIdAppIdentity => 'لنقم بإنشاء هوية خاص بك.';
 
   @override
   String get performingThisProcess => 'إجراء هذه العملية ';

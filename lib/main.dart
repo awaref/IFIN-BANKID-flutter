@@ -5,12 +5,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:bankid_app/providers/signature_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => LanguageProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => SignatureProvider()..load()),
+      ],
       child: const MyApp(),
     ),
   );

@@ -63,6 +63,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploadSignatureFile => 'Upload Signature File';
 
   @override
+  String get reportProblemButton => 'Report a Problem';
+
+  @override
+  String get reportProblemTitle => 'Report a Problem';
+
+  @override
+  String get supportPhoneNumber => '123-456-7890';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get callButton => 'Call';
+
+  @override
   String get uploadImages => 'Upload Images';
 
   @override

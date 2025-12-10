@@ -6,7 +6,8 @@ import 'package:pinput/pinput.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 
 class VerificationCodeScreen extends StatefulWidget {
-  const VerificationCodeScreen({super.key});
+  final String phoneNumber;
+  const VerificationCodeScreen({super.key, required this.phoneNumber});
 
   @override
   State<VerificationCodeScreen> createState() => _VerificationCodeScreenState();
@@ -68,6 +69,16 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     super.dispose();
   }
 
+  String _formatPhoneNumber(String phoneNumber) {
+    if (phoneNumber.length < 4) {
+      return phoneNumber; // Not enough digits to mask
+    }
+    final firstDigit = phoneNumber[0];
+    final lastThreeDigits = phoneNumber.substring(phoneNumber.length - 3);
+    final maskedMiddle = '*' * (phoneNumber.length - 4);
+    return '$firstDigit$maskedMiddle$lastThreeDigits';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,7 +120,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                         ),
                   ),
                   TextSpan(
-                    text: '+9** *** *** 999',
+                    text: _formatPhoneNumber(widget.phoneNumber),
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: const Color(0xFF212B36),
                           fontSize: 14,

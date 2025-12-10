@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/setup_passcode_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:bankid_app/services/malaa_api_client.dart';
 
 class NationalIdScreen extends StatefulWidget {
-  const NationalIdScreen({super.key});
+  final MalaaApiClient? malaaClient;
+  const NationalIdScreen({super.key, this.malaaClient});
 
   @override
   State<NationalIdScreen> createState() => _NationalIdScreenState();
@@ -14,6 +16,7 @@ class NationalIdScreen extends StatefulWidget {
 class _NationalIdScreenState extends State<NationalIdScreen> {
   final TextEditingController _idController = TextEditingController();
   String? _selectedPhoneNumber;
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +74,39 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  _showPhoneNumberBottomSheet(context);
-                },
+                onPressed: _loading
+                    ? null
+                    : () async {
+                        final civil = _idController.text.trim();
+                        if (!_isValidCivil(civil)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Invalid national ID')),
+                          );
+                          return;
+                        }
+                        setState(() => _loading = true);
+                        final client = widget.malaaClient ?? MalaaApiClient();
+                        final res = await client.fetchPhoneNumbers(civilNumber: civil);
+                        setState(() => _loading = false);
+                        if (res.error != null) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(res.error!)),
+                          );
+                          return;
+                        }
+                        if (!mounted) return;
+                        await _showPhoneNumberBottomSheet(context, res.numbers);
+                        if (_selectedPhoneNumber != null) {
+                          if (!mounted) return;
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VerificationCodeScreen(phoneNumber: _selectedPhoneNumber!),
+                            ),
+                          );
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF37C293),
                   padding: const EdgeInsets.symmetric(vertical: 9),
@@ -87,6 +120,10 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                 ),
               ),
             ),
+            if (_loading) ...[
+              const SizedBox(height: 16),
+              const Center(child: CircularProgressIndicator()),
+            ],
             const SizedBox(height: 64),
           ],
         ),
@@ -94,13 +131,14 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
     );
   }
 
-  void _showPhoneNumberBottomSheet(BuildContext context) {
+  Future<void> _showPhoneNumberBottomSheet(BuildContext context, List<String> numbers) async {
     final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
+    final String? selectedNumberFromModal = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       builder: (BuildContext context) {
+        String? modalSelectedPhoneNumber = _selectedPhoneNumber; // Local state for the modal
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return DraggableScrollableSheet(
@@ -147,24 +185,28 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                                 style: TextStyle(fontSize: 14, color: Color(0xFF919EAB), fontWeight: FontWeight.w400),
                               ),
                               const SizedBox(height: 24),
-                              _buildPhoneNumberOption(setModalState, '+9** *** *** 999'),
-                              const SizedBox(height: 8),
-                              _buildPhoneNumberOption(setModalState, '+9** *** *** 888'),
-                              const SizedBox(height: 8),
-                              _buildPhoneNumberOption(setModalState, '+9** *** *** 777'),
-                              const SizedBox(height: 8),
-                              _buildPhoneNumberOption(setModalState, '+9** *** *** 666'),
+                              RadioGroup<String>(
+                                groupValue: modalSelectedPhoneNumber,
+                                onChanged: (value) {
+                                  setModalState(() {
+                                    modalSelectedPhoneNumber = value;
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    for (final n in numbers) ...[
+                                      _buildPhoneNumberOption(setModalState, n),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ],
+                                ),
+                              ),
                               const SizedBox(height: 60),
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: _selectedPhoneNumber != null ? () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const VerificationCodeScreen(),
-                                      ),
-                                    );
+                                  onPressed: modalSelectedPhoneNumber != null ? () {
+                                    Navigator.of(context).pop(modalSelectedPhoneNumber); // Pop with the selected number
                                   } : null,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF37C293),
@@ -195,6 +237,12 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
         );
       },
     );
+
+    if (selectedNumberFromModal != null) {
+      setState(() {
+        _selectedPhoneNumber = selectedNumberFromModal;
+      });
+    }
   }
 
   Widget _buildPhoneNumberOption(
@@ -202,11 +250,6 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
     String phoneNumber,
   ) {
     return GestureDetector(
-      onTap: () {
-        setModalState(() {
-          _selectedPhoneNumber = phoneNumber;
-        });
-      },
       child: Container(
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
@@ -216,12 +259,6 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
           children: [
             Radio<String>(
               value: phoneNumber,
-              groupValue: _selectedPhoneNumber,
-              onChanged: (String? value) {
-                setModalState(() {
-                  _selectedPhoneNumber = value;
-                });
-              },
               activeColor: Color(0xFF37C293),
             ),
             Text(
@@ -232,5 +269,10 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
         ),
       ),
     );
+  }
+
+  bool _isValidCivil(String civil) {
+    final d = civil.replaceAll(RegExp(r'\D'), '');
+    return d.length >= 6;
   }
 }

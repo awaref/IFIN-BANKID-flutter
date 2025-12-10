@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/add_new_signature_screen.dart';
 import 'package:bankid_app/screens/signature_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:bankid_app/providers/signature_provider.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class DigitalSignaturesListScreen extends StatefulWidget {
@@ -17,17 +19,12 @@ class DigitalSignaturesListScreen extends StatefulWidget {
 
 class _DigitalSignaturesListScreenState
     extends State<DigitalSignaturesListScreen> {
-  final List<Map<String, dynamic>> signatures = [
-    {"title": "Digital Signature Number 1", "date": "March 25, 2025", "svg": _signature1SVG()},
-    {"title": "Digital Signature Number 2", "date": "March 25, 2025", "svg": _signature2SVG()},
-    {"title": "Digital Signature Number 3", "date": "March 25, 2025", "svg": _signature3SVG()},
-    {"title": "Digital Signature Number 4", "date": "March 25, 2025", "svg": _signature1SVG()},
-  ];
 
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
     final l10n = AppLocalizations.of(context)!;
+    final signatures = Provider.of<SignatureProvider>(context).items;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
@@ -53,15 +50,14 @@ class _DigitalSignaturesListScreenState
         child: ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           itemCount: signatures.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final sig = signatures[index];
             return _buildSignatureCard(
               context,
-              l10n.digitalSignatureNumber(index + 1),
-              sig["date"],
-              sig["svg"],
-              index + 1,
+              sig.title,
+              sig.createdAt,
+              sig.filePath,
               languageProvider.isRTL,
             );
           },
@@ -111,17 +107,18 @@ class _DigitalSignaturesListScreenState
   Widget _buildSignatureCard(
     BuildContext context,
     String title,
-    String date,
-    String svgString,
-    int signatureNumber,
+    DateTime date,
+    String path,
     bool isRTL,
   ) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) =>
-                SignatureDetailScreen(signatureNumber: signatureNumber),
+            builder: (context) => SignatureDetailScreen(
+              signatureNumber: 0,
+              signatureImagePath: path,
+            ),
           ),
         );
       },
@@ -133,7 +130,7 @@ class _DigitalSignaturesListScreenState
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: const Color(0xFF000000).withValues(alpha: 0.05),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -152,10 +149,7 @@ class _DigitalSignaturesListScreenState
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Center(
-                child: SvgPicture.string(
-                  svgString,
-                  fit: BoxFit.contain,
-                ),
+                child: _SignaturePreview(path: path),
               ),
             ),
             const SizedBox(height: 8),
@@ -190,7 +184,7 @@ class _DigitalSignaturesListScreenState
             Align(
               alignment: isRTL ? Alignment.centerRight : Alignment.centerLeft,
               child: Text(
-                '${AppLocalizations.of(context)?.fileAddedOnLabel ?? 'File added on'} $date',
+                '${AppLocalizations.of(context)?.fileAddedOnLabel ?? 'File added on'} ${_formatDate(date)}',
                 style: const TextStyle(
                   fontSize: 12,
                   color: Color(0xFF8E8E93),
@@ -204,25 +198,40 @@ class _DigitalSignaturesListScreenState
     );
   }
 
-  /// SVG Signatures
-  static String _signature1SVG() => '''
-    <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-      <path d="M15 45 C25 25, 45 35, 75 30 C95 27, 115 40, 135 35 C155 30, 175 45, 185 40" 
-            stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    </svg>
-  ''';
+  String _formatDate(DateTime d) {
+    return '${_monthName(d.month)} ${d.day}, ${d.year}';
+  }
 
-  static String _signature2SVG() => '''
-    <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-      <path d="M25 55 C35 35, 55 45, 85 40 C105 35, 125 50, 145 45" 
-            stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    </svg>
-  ''';
+  String _monthName(int m) {
+    const names = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    return names[m - 1];
+  }
 
-  static String _signature3SVG() => '''
-    <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-      <path d="M35 65 C45 50, 55 60, 65 55 C70 53, 75 57, 80 55" 
-            stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    </svg>
-  ''';
+}
+
+class _SignaturePreview extends StatelessWidget {
+  final String path;
+  const _SignaturePreview({required this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    final lower = path.toLowerCase();
+    if (lower.endsWith('.svg')) {
+      return SvgPicture.file(File(path), fit: BoxFit.contain);
+    }
+    return Image.file(File(path), fit: BoxFit.contain);
+  }
 }

@@ -11,6 +11,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:bankid_app/screens/digital_signatures_list_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -22,16 +23,20 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final LocalAuthentication auth = LocalAuthentication();
   bool _canCheckBiometrics = false;
-  List<BiometricType> _availableBiometrics = [];
-  late String _authorized;
+  final List<BiometricType> _availableBiometrics = [];
   bool _isAuthenticating = false;
 
+  late String _authorized;
   late String _selectedLanguage; // Default language
 
   @override
   void initState() {
     super.initState();
     _checkBiometrics();
+    // Trigger fingerprint authentication once after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _authenticate();
+    });
   }
 
   @override
@@ -47,7 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       canCheckBiometrics = await auth.canCheckBiometrics;
     } on PlatformException catch (e) {
       canCheckBiometrics = false;
-      print(e);
+      // print(e);
     }
     if (!mounted) return;
 
@@ -71,7 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _isAuthenticating = false;
       });
     } on PlatformException catch (e) {
-      print(e);
+      // print(e);
       setState(() {
         _isAuthenticating = false;
         _authorized = AppLocalizations.of(context)!.authenticationError + (e.message ?? '');
@@ -370,6 +375,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             title: Text(AppLocalizations.of(context)!.twoFactorAuthenticationTitle, style: _rubikTextStyle),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TwoFactorAuthScreen())),
+          ),
+          ListTile(
+            leading: const HugeIcon(
+              icon: HugeIcons.strokeRoundedSignature,
+              size: 20.0,
+            ),
+            title: Text(AppLocalizations.of(context)!.digitalSignaturesListTitle, style: _rubikTextStyle),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DigitalSignaturesListScreen())),
           ),
           ListTile(
             leading: const HugeIcon(

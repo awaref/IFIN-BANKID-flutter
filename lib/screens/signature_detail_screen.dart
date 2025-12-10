@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -55,12 +56,7 @@ class SignatureDetailScreen extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image(
-                    image: _resolveImage(),
-                    height: 250,
-                    width: double.infinity,
-                    fit: BoxFit.contain,
-                  ),
+                  child: _buildImageWidget(),
                 ),
               ),
               const SizedBox(height: 12),
@@ -75,7 +71,7 @@ class SignatureDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: const Color(0xFF000000).withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -160,15 +156,15 @@ class SignatureDetailScreen extends StatelessWidget {
   }
 
   /// Decide image source or fallback
-  ImageProvider _resolveImage() {
+  Widget _buildImageWidget() {
     if (signatureImagePath == null) {
-      return const AssetImage('assets/images/placeholder_signature.png');
+      return const SizedBox(height: 250);
     }
-    if (signatureImagePath!.startsWith('assets/')) {
-      return AssetImage(signatureImagePath!);
-    } else {
-      return FileImage(File(signatureImagePath!));
+    final lower = signatureImagePath!.toLowerCase();
+    if (lower.endsWith('.svg')) {
+      return SvgPicture.file(File(signatureImagePath!), height: 250, width: double.infinity, fit: BoxFit.contain);
     }
+    return Image.file(File(signatureImagePath!), height: 250, width: double.infinity, fit: BoxFit.contain);
   }
 
   /// Updated delete dialog (matches design)

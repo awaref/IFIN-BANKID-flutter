@@ -4,7 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/screens/verification_code_screen.dart';
 
 class EditPhoneNumberScreen extends StatefulWidget {
-  const EditPhoneNumberScreen({Key? key}) : super(key: key);
+  const EditPhoneNumberScreen({super.key});
 
   @override
   State<EditPhoneNumberScreen> createState() => _EditPhoneNumberScreenState();
@@ -136,7 +136,7 @@ class _EditPhoneNumberScreenState extends State<EditPhoneNumberScreen> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationCodeScreen()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationCodeScreen(phoneNumber: _phoneController.text)));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF212B36),

@@ -13,8 +13,8 @@ class AppProtectionScreen extends StatefulWidget {
 
 class _AppProtectionScreenState extends State<AppProtectionScreen> {
   final LocalAuthentication auth = LocalAuthentication();
-  String _authorized = 'Not Authorized';
-  bool _isBiometricSupported = false;
+  // String _authorized = 'Not Authorized'; // Unused field
+  // final bool _isBiometricSupported = false; // Unused field
   bool _canCheckBiometrics = false;
 
   @override
@@ -29,7 +29,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
       canCheckBiometrics = await auth.canCheckBiometrics;
     } catch (e) {
       canCheckBiometrics = false;
-      print("Error checking biometrics: $e");
+      // print("Error checking biometrics: $e"); // Avoid print in production code
     }
     if (!mounted) return;
 
@@ -46,12 +46,12 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
         options: const AuthenticationOptions(stickyAuth: true),
       );
     } catch (e) {
-      print("Error authenticating: $e");
+      // print("Error authenticating: $e"); // Avoid print in production code
     }
     if (!mounted) return;
 
     setState(() {
-      _authorized = authenticated ? 'Authorized' : 'Not Authorized';
+      // _authorized = authenticated ? 'Authorized' : 'Not Authorized'; // Unused field
     });
 
     if (authenticated) {
@@ -180,7 +180,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFF37C293).withOpacity(0.1),
+                color: const Color(0xFF37C293).withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: HugeIcon(
@@ -214,7 +214,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD01F39).withOpacity(0.12),
+                        color: const Color(0xFFD01F39).withAlpha((0.12 * 255).round()),
                         borderRadius: BorderRadius.circular(28),
                       ),
                       child: Text(

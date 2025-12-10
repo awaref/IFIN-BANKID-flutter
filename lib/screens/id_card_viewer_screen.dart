@@ -43,7 +43,7 @@ class IDCardViewerScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6)],
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha((0.15 * 255).round()), blurRadius: 6)],
         image: const DecorationImage(
           image: AssetImage('assets/images/selfie_placeholder.png'),
           fit: BoxFit.cover,

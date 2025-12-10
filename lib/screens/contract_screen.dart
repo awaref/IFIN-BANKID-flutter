@@ -7,7 +7,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class ContractScreen extends StatelessWidget {
-  const ContractScreen({Key? key}) : super(key: key);
+  const ContractScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +266,7 @@ class ContractScreen extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withAlpha((0.05 * 255).round()),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),

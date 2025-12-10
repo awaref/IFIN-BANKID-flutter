@@ -1,6 +1,8 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:flutter/services.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -10,9 +12,12 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  final LocalAuthentication auth = LocalAuthentication();
   final TextEditingController _searchController = TextEditingController();
 
   bool noInternet = false;
+  bool _isAuthenticating = false;
+  late String _authorized;
   List<Map<String, String>> _filteredHistoryItems = [];
   late List<Map<String, String>> _historyItems;
 
@@ -27,6 +32,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final l10n = AppLocalizations.of(context)!;
+    _authorized = l10n.notAuthorizedStatus;
     _historyItems = [
       {"title": "SEB", "subtitle": l10n.identity, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "identity"},
       {"title": "Swish at SEB", "subtitle": l10n.signature, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "signature"},
@@ -36,6 +42,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
       {"title": "SEB", "subtitle": l10n.identity, "date": "March 24, 2025 - 1:50 PM (UTC+02)", "type": "identity"},
     ];
     _filteredHistoryItems = _historyItems;
+
+    // Trigger fingerprint authentication once after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _authenticate();
+    });
   }
 
   @override
@@ -65,6 +76,36 @@ class _HistoryScreenState extends State<HistoryScreen> {
               dateLower.contains(searchLower);
         }).toList();
       }
+    });
+  }
+
+  Future<void> _authenticate() async {
+    bool authenticated = false;
+    try {
+      setState(() {
+        _isAuthenticating = true;
+        _authorized = 'Authenticating';
+      });
+      authenticated = await auth.authenticate(
+        localizedReason: AppLocalizations.of(context)!.authenticateReason,
+        options: const AuthenticationOptions(stickyAuth: true),
+      );
+      setState(() {
+        _isAuthenticating = false;
+      });
+    } on PlatformException catch (e) {
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = AppLocalizations.of(context)!.authenticationError + (e.message ?? '');
+      });
+      return;
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _authorized = authenticated
+          ? AppLocalizations.of(context)!.authorizedStatus
+          : AppLocalizations.of(context)!.notAuthorizedStatus;
     });
   }
 

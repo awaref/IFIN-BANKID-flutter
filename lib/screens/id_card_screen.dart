@@ -45,7 +45,7 @@ class IDCardScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withAlpha((0.05 * 255).round()),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -139,7 +139,7 @@ class IDCardScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withAlpha((0.05 * 255).round()),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -168,7 +168,7 @@ class IDCardScreen extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD01F39).withOpacity(0.12),
+                        color: const Color(0xFFD01F39).withAlpha((0.12 * 255).round()),
                         borderRadius: BorderRadius.circular(28),
                       ),
                       child: Text(

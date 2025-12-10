@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 
 class OneTimeRecoveryCodeScreen extends StatelessWidget {
-  const OneTimeRecoveryCodeScreen({Key? key}) : super(key: key);
+  const OneTimeRecoveryCodeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

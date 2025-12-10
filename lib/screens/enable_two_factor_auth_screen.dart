@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class EnableTwoFactorAuthScreen extends StatefulWidget {
-  const EnableTwoFactorAuthScreen({Key? key}) : super(key: key);
+  const EnableTwoFactorAuthScreen({super.key});
 
   @override
   State<EnableTwoFactorAuthScreen> createState() => _EnableTwoFactorAuthScreenState();

@@ -2,6 +2,7 @@ import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/home_screen.dart'; // Import home_screen.dart
 import 'package:hugeicons/hugeicons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CheckInformationScreen extends StatelessWidget {
   const CheckInformationScreen({super.key});
@@ -98,6 +99,68 @@ class CheckInformationScreen extends StatelessWidget {
                 ),
               ),
 
+              const SizedBox(height: 16), // Added SizedBox for spacing
+
+              /// Report a Problem Button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(l10n.reportProblemTitle),
+                          content: Text(l10n.supportPhoneNumber),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text(l10n.closeButton),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text(l10n.callButton),
+                              onPressed: () async {
+                                final Uri launchUri = Uri(
+                                  scheme: 'tel',
+                                  path: l10n.supportPhoneNumber,
+                                );
+                                if (await canLaunchUrl(launchUri)) {
+                                  await launchUrl(launchUri);
+                                } else {
+                                  // Consider using a more robust logging solution or showing a user-friendly message
+                                  // instead of print in production code.
+                                  // For now, we'll keep it as is to avoid changing the original behavior too much.
+                                }
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: const BorderSide(color: Color(0xFF37C293)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.reportProblemButton,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF37C293),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 32),
             ],
           ),
@@ -149,7 +212,7 @@ class CheckInformationScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Divider(
-        color: const Color(0xFF919EAB).withOpacity(0.2),
+        color: const Color(0xFF919EAB).withAlpha((0.2 * 255).round()),
         thickness: 1.0,
         height: 0.0,
       ),

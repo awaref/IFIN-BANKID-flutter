@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     late bool canCheckBiometrics;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics;
-    } on PlatformException catch (e) {
+    } on PlatformException {
       canCheckBiometrics = false;
       // print(e);
     }

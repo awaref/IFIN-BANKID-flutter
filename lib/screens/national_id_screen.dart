@@ -1,9 +1,11 @@
 import 'package:bankid_app/screens/verification_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
-import 'package:bankid_app/screens/setup_passcode_screen.dart';
+ 
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/services/malaa_api_client.dart';
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
 
 class NationalIdScreen extends StatefulWidget {
   final MalaaApiClient? malaaClient;
@@ -86,20 +88,35 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                         }
                         setState(() => _loading = true);
                         final client = widget.malaaClient ?? MalaaApiClient();
+                        final navigator = Navigator.of(context);
+                        final messenger = ScaffoldMessenger.of(context);
+                        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                        authProvider.setNationalId(civil);
                         final res = await client.fetchPhoneNumbers(civilNumber: civil);
                         setState(() => _loading = false);
                         if (res.error != null) {
-                          if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          if (!context.mounted) return;
+                          messenger.showSnackBar(
                             SnackBar(content: Text(res.error!)),
                           );
                           return;
                         }
-                        if (!mounted) return;
+                        authProvider.setIdentityData(
+                          firstName: res.firstName,
+                          lastName: res.lastName,
+                          gender: res.gender,
+                          dateOfBirth: res.dateOfBirth,
+                          nationality: res.nationality,
+                          dateOfIssue: res.dateOfIssue,
+                          dateOfExpiry: res.dateOfExpiry,
+                          email: res.email,
+                        );
+                        if (!context.mounted) return;
                         await _showPhoneNumberBottomSheet(context, res.numbers);
                         if (_selectedPhoneNumber != null) {
-                          if (!mounted) return;
-                          Navigator.of(context).push(
+                          if (!context.mounted) return;
+                          authProvider.setSelectedPhoneNumber(_selectedPhoneNumber);
+                          navigator.push(
                             MaterialPageRoute(
                               builder: (context) =>
                                   VerificationCodeScreen(phoneNumber: _selectedPhoneNumber!),

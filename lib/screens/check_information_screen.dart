@@ -1,15 +1,44 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:bankid_app/screens/home_screen.dart'; // Import home_screen.dart
+import 'dart:io';
+import 'package:bankid_app/screens/home_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
 
-class CheckInformationScreen extends StatelessWidget {
-  const CheckInformationScreen({super.key});
+class CheckInformationScreen extends StatefulWidget {
+  final String? selfiePath;
+  final String? idDocumentPath;
+
+  const CheckInformationScreen({
+    super.key,
+    this.selfiePath,
+    this.idDocumentPath,
+  });
+
+  @override
+  State<CheckInformationScreen> createState() => _CheckInformationScreenState();
+}
+
+class _CheckInformationScreenState extends State<CheckInformationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      if (auth.kycRequestId != null) {
+        auth.fetchKycRequest(auth.kycRequestId!);
+      } else if (!auth.profileLoaded) {
+        auth.loadCurrentUser();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -44,32 +73,37 @@ class CheckInformationScreen extends StatelessWidget {
               /// ✅ Row with flexible images
               Row(
                 children: [
-                  Expanded(child: _buildImagePlaceholder()),
+                  Expanded(child: _buildImage(widget.selfiePath)),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildImagePlaceholder()),
+                  Expanded(child: _buildImage(widget.idDocumentPath)),
                 ],
               ),
               const SizedBox(height: 16),
 
-              _buildInfoRow(l10n.checkInformationFirstName, l10n.checkInformationFirstNameValue),
-              _buildDivider(),
-              _buildInfoRow(l10n.checkInformationLastName, l10n.checkInformationLastNameValue),
-              _buildDivider(),
-              _buildInfoRow(l10n.checkInformationGender, l10n.checkInformationGenderValue),
-              _buildDivider(),
-              _buildInfoRow(l10n.checkInformationDateOfBirth, l10n.checkInformationDateOfBirthValue),
-              _buildDivider(),
-              _buildInfoRow(l10n.checkInformationNationality, l10n.checkInformationNationalityValue),
-              _buildDivider(),
-              _buildInfoRow(l10n.checkInformationNationalIdNumber, l10n.checkInformationNationalIdNumberValue),
-              _buildDivider(),
-              _buildInfoRow(l10n.checkInformationDateOfIssue, l10n.checkInformationDateOfIssueValue),
-              _buildDivider(),
-              _buildInfoRow(l10n.checkInformationDateOfExpiry, l10n.checkInformationDateOfExpiryValue),
-
+              if (authProvider.status == AuthStatus.loading && !authProvider.profileLoaded)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Center(
+                    child: SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                )
+              else ...[
+                _buildInfoRow(l10n.checkInformationFirstName, authProvider.firstName ?? '-'),
+                _buildInfoRow(l10n.checkInformationLastName, authProvider.lastName ?? '-'),
+                _buildInfoRow(l10n.checkInformationGender, authProvider.gender ?? '-'),
+                _buildInfoRow(l10n.checkInformationDateOfBirth, authProvider.dateOfBirth ?? '-'),
+                _buildInfoRow(l10n.checkInformationNationality, authProvider.nationality ?? '-'),
+                _buildInfoRow(l10n.checkInformationNationalIdNumber, authProvider.nationalId ?? '-'),
+                _buildInfoRow(l10n.checkInformationDateOfIssue, authProvider.dateOfIssue ?? '-'),
+                _buildInfoRow(l10n.checkInformationDateOfExpiry, authProvider.dateOfExpiry ?? '-'),
+              ],
               const SizedBox(height: 32),
 
-              /// Confirm Button
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -169,13 +203,15 @@ class CheckInformationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildImagePlaceholder() {
+  Widget _buildImage(String? path) {
     return AspectRatio(
       aspectRatio: 16 / 9, // ✅ keeps images proportional
       child: Container(
         decoration: BoxDecoration(
-          image: const DecorationImage(
-            image: AssetImage('assets/images/selfie_placeholder.png'),
+          image: DecorationImage(
+            image: path != null
+                ? FileImage(File(path)) as ImageProvider
+                : const AssetImage('assets/images/selfie_placeholder.png'),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(8),

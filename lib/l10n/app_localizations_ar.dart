@@ -348,6 +348,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appProtectionRecommended => 'موصى به';
 
   @override
+  String get verifyIdentityTitle => 'تحقق من الهوية';
+
+  @override
+  String get verifyIdentitySubtitle => 'اختر كيفية التحقق من هويتك';
+
+  @override
   String get checkInformationTitle => 'تحقق من معلوماتك.';
 
   @override

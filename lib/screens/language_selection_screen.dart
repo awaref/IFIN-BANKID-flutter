@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bankid_app/screens/onboarding_screens.dart';
+import 'package:bankid_app/screens/national_id_verification_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
@@ -76,7 +76,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const OnboardingFlow()),
+                        MaterialPageRoute(builder: (_) => const NationalIdVerificationScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

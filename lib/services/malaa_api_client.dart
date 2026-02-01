@@ -8,6 +8,14 @@ class MalaaPhoneNumbersResult {
   final List<String> numbers;
   final String? error;
   final int? statusCode;
+  final String? firstName;
+  final String? lastName;
+  final String? gender;
+  final String? dateOfBirth;
+  final String? nationality;
+  final String? dateOfIssue;
+  final String? dateOfExpiry;
+  final String? email;
 
   bool get isSuccess => error == null;
 
@@ -15,6 +23,14 @@ class MalaaPhoneNumbersResult {
     required this.numbers,
     this.error,
     this.statusCode,
+    this.firstName,
+    this.lastName,
+    this.gender,
+    this.dateOfBirth,
+    this.nationality,
+    this.dateOfIssue,
+    this.dateOfExpiry,
+    this.email,
   });
 }
 
@@ -182,16 +198,34 @@ class MalaaApiClient {
       debugPrint('🟢 Found ${numbers.length} mobile numbers: $numbers');
 
       if (numbers.isEmpty) {
+        final id = _extractIdentityFields(decoded);
         return MalaaPhoneNumbersResult(
           numbers: [],
           error: 'No numbers found',
           statusCode: response.statusCode,
+          firstName: id['first_name'],
+          lastName: id['last_name'],
+          gender: id['gender'],
+          dateOfBirth: id['date_of_birth'],
+          nationality: id['nationality'],
+          dateOfIssue: id['date_of_issue'],
+          dateOfExpiry: id['date_of_expiry'],
+          email: id['email'],
         );
       }
 
+      final id = _extractIdentityFields(decoded);
       return MalaaPhoneNumbersResult(
         numbers: numbers,
         statusCode: response.statusCode,
+        firstName: id['first_name'],
+        lastName: id['last_name'],
+        gender: id['gender'],
+        dateOfBirth: id['date_of_birth'],
+        nationality: id['nationality'],
+        dateOfIssue: id['date_of_issue'],
+        dateOfExpiry: id['date_of_expiry'],
+        email: id['email'],
       );
     } on TimeoutException {
       return const MalaaPhoneNumbersResult(
@@ -267,5 +301,83 @@ class MalaaApiClient {
 
     walk(json);
     return result.toList();
+  }
+
+  Map<String, String?> _extractIdentityFields(dynamic json) {
+    String? firstName;
+    String? lastName;
+    String? gender;
+    String? dateOfBirth;
+    String? nationality;
+    String? dateOfIssue;
+    String? dateOfExpiry;
+    String? latinName;
+    String? email;
+
+    void consider(String key, dynamic value) {
+      final k = key.toLowerCase();
+      if (value == null) return;
+      final v = value is String ? value.trim() : value.toString().trim();
+      if (v.isEmpty) return;
+      // Names: prefer explicit first/last; then Name_1_En/Name_2_En; capture latinName for fallback
+      if ((k.contains('firstname') || k == 'first_name') && (firstName == null)) firstName = v;
+      if ((k.contains('lastname') || k == 'last_name') && (lastName == null)) lastName = v;
+      if (k == 'name_1_en' && (firstName == null)) firstName = v;
+      if (k == 'name_2_en' && (lastName == null)) lastName = v;
+      if (k == 'latinname' && latinName == null) latinName = v;
+      // Gender: prefer English description, then Arabic description, then code/value
+      if (k.contains('gender_desc_en')) {
+        gender = v;
+      } else if (k.contains('gender_desc_ar') && gender == null) {
+        gender = v;
+      } else if (k == 'gender' && gender == null) {
+        gender = v;
+      }
+      if (dateOfBirth == null && (k.contains('dateofbirth') || k == 'dob' || k == 'date_of_birth')) dateOfBirth = v;
+      // Nationality: prefer English description, then Arabic description, then code/value
+      if (k.contains('nationality_desc_en')) {
+        nationality = v;
+      } else if (k.contains('nationality_desc_ar') && nationality == null) {
+        nationality = v;
+      } else if (k == 'nationality' && nationality == null) {
+        nationality = v;
+      } else if (k.contains('nationality_code') && nationality == null) {
+        nationality = v;
+      }
+      if (dateOfIssue == null && (k.contains('issuedate') || k == 'date_of_issue')) dateOfIssue = v;
+      if (dateOfExpiry == null && (k.contains('expirydate') || k == 'date_of_expiry')) dateOfExpiry = v;
+      if (email == null && (k == 'email' || k.contains('emailaddress'))) email = v;
+    }
+
+    void walk(dynamic node) {
+      if (node is Map) {
+        node.forEach((key, value) {
+          consider(key.toString(), value);
+          walk(value);
+        });
+      } else if (node is List) {
+        for (final item in node) {
+          walk(item);
+        }
+      }
+    }
+
+    walk(json);
+    // Fallback: split latinName into first/last if needed
+    if ((firstName == null || lastName == null) && latinName != null) {
+      final parts = latinName!.split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+      if (parts.isNotEmpty && firstName == null) firstName = parts.first;
+      if (parts.length > 1 && lastName == null) lastName = parts.sublist(1).join(' ');
+    }
+    return {
+      'first_name': firstName,
+      'last_name': lastName,
+      'gender': gender,
+      'date_of_birth': dateOfBirth,
+      'nationality': nationality,
+      'date_of_issue': dateOfIssue,
+      'date_of_expiry': dateOfExpiry,
+      'email': email,
+    };
   }
 }

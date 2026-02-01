@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
-
+import 'package:image_picker/image_picker.dart';
 import 'package:bankid_app/screens/check_information_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:bankid_app/services/api_service.dart';
+import 'dart:io';
 
-class NationalIdCardScreen extends StatelessWidget {
-  const NationalIdCardScreen({super.key});
+class NationalIdCardScreen extends StatefulWidget {
+  final String selfiePath;
+  final String? kycRequestId;
+  const NationalIdCardScreen({super.key, required this.selfiePath, this.kycRequestId});
+
+  @override
+  State<NationalIdCardScreen> createState() => _NationalIdCardScreenState();
+}
+
+class _NationalIdCardScreenState extends State<NationalIdCardScreen> {
+  String _idDocumentType = 'id_card';
+  String? _idDocumentPath;
+  bool _uploading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +50,48 @@ class NationalIdCardScreen extends StatelessWidget {
                 height: 1.6,
               ),
             ),
-            const SizedBox(height: 38),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: RadioListTile<String>(
+                    value: 'id_card',
+                    groupValue: _idDocumentType,
+                    onChanged: (v) => setState(() => _idDocumentType = v!),
+                    title: const Text('ID Card'),
+                  ),
+                ),
+                Expanded(
+                  child: RadioListTile<String>(
+                    value: 'passport',
+                    groupValue: _idDocumentType,
+                    onChanged: (v) => setState(() => _idDocumentType = v!),
+                    title: const Text('Passport'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             ClipRRect(
-              borderRadius: BorderRadius.circular(
-                8.0,
-              ), // Adjust the radius as needed
-              child: Image.asset(
-                'assets/images/selfie_placeholder.png',
-                height: 124,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              borderRadius: BorderRadius.circular(8.0),
+              child: _idDocumentPath == null
+                  ? Image.asset(
+                      'assets/images/selfie_placeholder.png',
+                      height: 124,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.file(
+                      File(_idDocumentPath!),
+                      height: 124,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(height: 24),
             Text(
               AppLocalizations.of(context)!.pleaseEnsure,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -61,43 +100,29 @@ class NationalIdCardScreen extends StatelessWidget {
               textAlign: TextAlign.start,
             ),
             const SizedBox(height: 16),
-            _buildInstructionPoint(
-              AppLocalizations.of(context)!.usingCorrectNationalIdCard,
-            ),
-            _buildInstructionPoint(
-              AppLocalizations.of(context)!.nationalIdCardWithinScanningFrame,
-            ),
-            _buildInstructionPoint(
-              AppLocalizations.of(context)!.fingersDontCoverNationalId,
-            ),
-            _buildInstructionPoint(
-              AppLocalizations.of(context)!.imageClearWithoutGlare,
-            ),
+            _buildInstructionPoint(AppLocalizations.of(context)!.usingCorrectNationalIdCard),
+            _buildInstructionPoint(AppLocalizations.of(context)!.nationalIdCardWithinScanningFrame),
+            _buildInstructionPoint(AppLocalizations.of(context)!.fingersDontCoverNationalId),
+            _buildInstructionPoint(AppLocalizations.of(context)!.imageClearWithoutGlare),
             const Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const CheckInformationScreen(),
-                    ),
-                  );
-                },
+                onPressed: _uploading ? null : _onTakeAndUpload,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF37C293),
+                  backgroundColor: const Color(0xFF37C293),
                   padding: const EdgeInsets.symmetric(vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.takeAPicture,
-                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w700),
+                  _uploading ? 'Uploading...' : AppLocalizations.of(context)!.takeAPicture,
+                  style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
-            SizedBox(height: 64),
+            const SizedBox(height: 64),
           ],
         ),
       ),
@@ -116,5 +141,49 @@ class NationalIdCardScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onTakeAndUpload() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.camera);
+    if (image == null) return;
+    setState(() {
+      _idDocumentPath = image.path;
+    });
+    // if (widget.kycRequestId == null) {
+    //   final messenger = ScaffoldMessenger.of(context);
+    //   messenger.showSnackBar(const SnackBar(content: Text('Missing KYC Request ID')));
+    //   return;
+    // }
+    setState(() {
+      _uploading = true;
+    });
+    try {
+      final api = ApiService(baseUrl: 'http://10.0.2.2/api/v1');
+      await api.uploadKycDocuments(
+        requestId: widget.kycRequestId!,
+        selfiePath: widget.selfiePath,
+        idDocumentPath: _idDocumentPath!,
+        idDocumentType: _idDocumentType,
+      );
+      if (!context.mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => CheckInformationScreen(
+            selfiePath: widget.selfiePath,
+            idDocumentPath: _idDocumentPath,
+          ),
+        ),
+      );
+    } catch (e) {
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _uploading = false;
+        });
+      }
+    }
   }
 }

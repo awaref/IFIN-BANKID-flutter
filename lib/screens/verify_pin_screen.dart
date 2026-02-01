@@ -2,6 +2,8 @@ import 'package:bankid_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,17 +22,23 @@ class MyApp extends StatelessWidget {
 }
 
 class VerifyPinScreen extends StatefulWidget {
-  const VerifyPinScreen({super.key});
+  final bool fromPinBiometrics;
+
+  const VerifyPinScreen({
+    super.key,
+    this.fromPinBiometrics = false,
+  });
 
   @override
   State<VerifyPinScreen> createState() => _VerifyPinScreenState();
 }
 
 class _VerifyPinScreenState extends State<VerifyPinScreen> {
-  final String correctPin = '254868'; // The correct PIN
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool isError = false;
+  bool _isSubmitting = false;
+  bool _autoLoginTriggered = false;
 
   @override
   void initState() {
@@ -44,6 +52,14 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
       setState(() {
         isError = false;
       });
+
+      if (widget.fromPinBiometrics &&
+          _controller.text.length == 6 &&
+          !_autoLoginTriggered &&
+          !_isSubmitting) {
+        _autoLoginTriggered = true;
+        _submitPin(auto: true);
+      }
     });
   }
 
@@ -137,16 +153,11 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                  
-                      // Navigate to the next screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        ),
-                      );
-                    },
+                  onPressed: _isSubmitting
+                      ? null
+                      : () {
+                          _submitPin(auto: false);
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF37C293),
                     shape: RoundedRectangleBorder(
@@ -154,14 +165,25 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: Text(
-                    l10n.verify,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          l10n.verify,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 64),
@@ -201,5 +223,69 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _submitPin({required bool auto}) async {
+    final pin = _controller.text;
+
+    if (pin.length != 6) {
+      setState(() {
+        isError = true;
+      });
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    setState(() {
+      _isSubmitting = true;
+      isError = false;
+    });
+
+    debugPrint(
+      'VerifyPinScreen: ${auto ? 'Automatic' : 'Manual'} login '
+      '${widget.fromPinBiometrics ? 'from PinBiometricsScreen' : 'standard flow'}.',
+    );
+
+    try {
+      final bool success;
+      if (widget.fromPinBiometrics && authProvider.nationalId != null) {
+        success = await authProvider.loginWithNationalId(authProvider.nationalId!, pin);
+      } else {
+        success = await authProvider.loginWithPassword(pin);
+      }
+
+      if (!mounted) return;
+
+      if (success) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+          (route) => false,
+        );
+      } else {
+        setState(() {
+          isError = true;
+        });
+        debugPrint(
+          'VerifyPinScreen: login failed. Status: ${authProvider.status}, '
+          'Error: ${authProvider.errorMessage}',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isError = true;
+        });
+      }
+      debugPrint('VerifyPinScreen: unexpected login error: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 }

@@ -737,6 +737,18 @@ abstract class AppLocalizations {
   /// **'RECOMMENDED'**
   String get appProtectionRecommended;
 
+  /// No description provided for @verifyIdentityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Identity'**
+  String get verifyIdentityTitle;
+
+  /// No description provided for @verifyIdentitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you want to verify your identity'**
+  String get verifyIdentitySubtitle;
+
   /// No description provided for @checkInformationTitle.
   ///
   /// In en, this message translates to:

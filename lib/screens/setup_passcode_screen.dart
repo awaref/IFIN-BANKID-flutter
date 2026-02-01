@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/national_id_screen.dart';
 import 'package:hugeicons/hugeicons.dart' show HugeIcon, HugeIcons;
 import 'package:pinput/pinput.dart'; // Import pinput package
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
 
 class SetupPasscodeScreen extends StatefulWidget {
   const SetupPasscodeScreen({super.key});
@@ -86,7 +88,8 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
                   });
                 },
                 onCompleted: (pin) {
-                  // Optionally handle completion here, though the button handles navigation
+                  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                  authProvider.setPin(pin);
                 },
                 defaultPinTheme: PinTheme(
                   width: 48,
@@ -137,6 +140,8 @@ class _SetupPasscodeScreenState extends State<SetupPasscodeScreen> {
               child: ElevatedButton(
                 onPressed: _passcode.length == 6
                     ? () {
+                        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                        authProvider.setPin(_passcode);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => const NationalIdScreen()),
                         );

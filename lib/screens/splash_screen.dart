@@ -5,6 +5,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:bankid_app/screens/language_selection_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bankid_app/providers/language_provider.dart';
+import 'package:bankid_app/screens/national_id_verification_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -63,6 +67,30 @@ class _SplashScreenState extends State<SplashScreen> {
       MaterialPageRoute(builder: (_) => const LanguageSelectionScreen()),
     );
   }
+  
+  void _navigateToVerification() {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+    
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const NationalIdVerificationScreen()),
+    );
+  }
+  
+  Future<void> _determineStartScreen() async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
+    final savedCode = prefs.getString('language_code');
+    const supported = ['en', 'ar'];
+    
+    if (savedCode != null && supported.contains(savedCode)) {
+      await languageProvider.changeLanguage(Locale(savedCode));
+      _navigateToVerification();
+    } else {
+      await languageProvider.changeLanguage(const Locale('en'));
+      _navigateToLanguageScreen();
+    }
+  }
 
   /// 🔹 Request system notification permission (Android 13+, iOS 12+)
   Future<void> _requestNotificationPermission() async {
@@ -81,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     }
 
-    // 👉 Navigate to language screen after permission request
-    _navigateToLanguageScreen();
+    // 👉 Determine start based on stored language after permission request
+    await _determineStartScreen();
   }
 }

@@ -347,6 +347,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appProtectionRecommended => 'RECOMMENDED';
 
   @override
+  String get verifyIdentityTitle => 'Verify Identity';
+
+  @override
+  String get verifyIdentitySubtitle =>
+      'Choose how you want to verify your identity';
+
+  @override
   String get checkInformationTitle => 'Check your information.';
 
   @override

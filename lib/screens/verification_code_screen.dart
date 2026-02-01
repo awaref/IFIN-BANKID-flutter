@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:bankid_app/screens/id_app_identity_screen.dart';
 import 'package:hugeicons/hugeicons.dart' show HugeIcons, HugeIcon;
 import 'package:pinput/pinput.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
+import 'package:bankid_app/screens/id_app_identity_screen.dart';
+import 'dart:math' as math;
 
 class VerificationCodeScreen extends StatefulWidget {
   final String phoneNumber;
@@ -79,6 +82,52 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     return '$firstDigit$maskedMiddle$lastThreeDigits';
   }
 
+  Future<bool> _registerAfterOtp(String pin) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final messenger = ScaffoldMessenger.of(context);
+    final nationalId = authProvider.nationalId;
+    final phone = authProvider.selectedPhoneNumber;
+    final registrationPin = authProvider.pin;
+    if (nationalId == null || phone == null || registrationPin == null) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Missing required registration data')),
+      );
+      return false;
+    }
+    final fn = authProvider.firstName ?? '';
+    final ln = authProvider.lastName ?? '';
+    final base = (fn + ln).trim();
+    var prefix = base.isNotEmpty ? base : 'user';
+    prefix = prefix.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    final suffix = math.Random().nextInt(10000).toString().padLeft(4, '0');
+    final username = '$prefix$suffix';
+    authProvider.setUsername(username);
+    final payload = {
+      'national_id': nationalId,
+      'phone': phone,
+      'password': registrationPin,
+      'password_confirmation': registrationPin,
+      'username': username,
+      if (authProvider.email != null) 'email': authProvider.email,
+      if (authProvider.firstName != null) 'first_name': authProvider.firstName,
+      if (authProvider.lastName != null) 'last_name': authProvider.lastName,
+      if (authProvider.gender != null) 'gender': authProvider.gender,
+      if (authProvider.dateOfBirth != null) 'date_of_birth': authProvider.dateOfBirth,
+      if (authProvider.nationality != null) 'nationality': authProvider.nationality,
+      if (authProvider.dateOfIssue != null) 'date_of_issue': authProvider.dateOfIssue,
+      if (authProvider.dateOfExpiry != null) 'date_of_expiry': authProvider.dateOfExpiry,
+    };
+    final success = await authProvider.registerUser(payload);
+    if (!mounted) return false;
+    if (!success) {
+      final msg = authProvider.errorMessage ?? 'Registration failed';
+      messenger.showSnackBar(
+        SnackBar(content: Text(msg)),
+      );
+    }
+    return success;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,11 +196,18 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                 onCompleted: (pin) async {
                   final isValid = await _verifyCode(pin);
                   if (isValid && context.mounted) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const IdAppIdentityScreen(),
-                      ),
-                    );
+                    final registered = await _registerAfterOtp(pin);
+                    if (registered && context.mounted) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const IdAppIdentityScreen(),
+                        ),
+                      );
+                    } else {
+                      setState(() {
+                        _codeController.clear();
+                      });
+                    }
                   } else {
                     setState(() {
                       _codeController.clear();

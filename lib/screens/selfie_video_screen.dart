@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/national_id_card_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SelfieVideoScreen extends StatelessWidget {
-  const SelfieVideoScreen({super.key});
+  final String? kycRequestId;
+  const SelfieVideoScreen({super.key, this.kycRequestId});
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +64,17 @@ class SelfieVideoScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  final picker = ImagePicker();
+                  final image = await picker.pickImage(source: ImageSource.camera);
+                  if (image == null) return;
+                  if (!context.mounted) return;
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const NationalIdCardScreen(),
+                      builder: (context) => NationalIdCardScreen(
+                        selfiePath: image.path,
+                        kycRequestId: kycRequestId,
+                      ),
                     ),
                   );
                 },

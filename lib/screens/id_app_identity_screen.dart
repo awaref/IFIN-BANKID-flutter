@@ -2,6 +2,8 @@ import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/selfie_video_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
 
 class IdAppIdentityScreen extends StatelessWidget {
   const IdAppIdentityScreen({super.key});
@@ -120,10 +122,19 @@ class IdAppIdentityScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  final id = await auth.initiateKyc();
+                  if (id == null) {
+                    final msg = auth.errorMessage ?? 'Failed to initiate KYC';
+                    messenger.showSnackBar(SnackBar(content: Text(msg)));
+                    return;
+                  }
+                  if (!context.mounted) return;
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const SelfieVideoScreen(),
+                      builder: (context) => SelfieVideoScreen(kycRequestId: id),
                     ),
                   );
                 },

@@ -196,9 +196,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get delete => 'حذف';
 
   @override
-  String get editSignature => 'تعديل التوقيع';
-
-  @override
   String get deleteSignature => 'حذف التوقيع';
 
   @override
@@ -688,6 +685,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get secretKeyLabel => 'المفتاح السري: ';
 
   @override
+  String get errorFetchingDataTitle => 'خطأ في جلب البيانات';
+
+  @override
+  String get errorFetchingDataDescription =>
+      'حدث خطأ أثناء جلب العقود الخاصة بك. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get noContractsFoundTitle => 'لم يتم العثور على عقود';
+
+  @override
+  String get noContractsFoundDescription =>
+      'يبدو أنه لا توجد لديك أي عقود حتى الآن.';
+
+  @override
   String get noInternetConnectionTitle => 'لا يوجد اتصال بالإنترنت';
 
   @override
@@ -998,6 +1009,9 @@ class AppLocalizationsAr extends AppLocalizations {
       'الرجاء إدخال رمز PIN المكون من 6 أرقام للمتابعة.';
 
   @override
+  String get noSignaturesFound => 'لم يتم العثور على توقيعات';
+
+  @override
   String get incorrectPin => 'رمز PIN غير صحيح. الرجاء المحاولة مرة أخرى.';
 
   @override
@@ -1005,4 +1019,84 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get issuer => 'التدفق الاجتماعي';
+
+  @override
+  String get biometricsNotSupported =>
+      'المقاييس الحيوية غير مدعومة على هذا الجهاز';
+
+  @override
+  String get biometricsNotEnrolled =>
+      'المقاييس الحيوية غير معدة على هذا الجهاز. يرجى الذهاب إلى الإعدادات للتسجيل.';
+
+  @override
+  String get loading => 'جار التحميل...';
+
+  @override
+  String get noPendingContracts => 'لا توجد عقود معلقة';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get failedToLoadNotifications => 'فشل في تحميل الإشعارات.';
+
+  @override
+  String get biometricsLockedOut =>
+      'المقاييس الحيوية مقفلة بسبب محاولات كثيرة. يرجى استخدام رمز PIN الخاص بك أو الانتظار بضع دقائق.';
+
+  @override
+  String get appProtectionScanFace => 'امسح وجهك للمصادقة';
+
+  @override
+  String get usePinInstead => 'استخدم رمز PIN بدلاً من ذلك';
+
+  @override
+  String get biometricsChanged =>
+      'لقد تغيرت المقاييس الحيوية على هذا الجهاز. يرجى إعادة المصادقة.';
+
+  @override
+  String get qrScanTitle => 'مسح رمز الاستجابة السريعة';
+
+  @override
+  String get qrScanInstructions =>
+      'قم بمحاذاة رمز الاستجابة السريعة داخل الإطار للمسح';
+
+  @override
+  String get qrAuthTitle => 'طلب مصادقة';
+
+  @override
+  String get qrAuthRequestFrom => 'طلب مصادقة من';
+
+  @override
+  String get qrAuthRequiresApproval => 'يتطلب هذا الطلب موافقتك للمتابعة.';
+
+  @override
+  String get qrAuthApprove => 'موافقة';
+
+  @override
+  String get qrAuthReject => 'رفض';
+
+  @override
+  String get qrAuthSuccess => 'تمت المصادقة بنجاح';
+
+  @override
+  String get qrAuthRejected => 'تم رفض المصادقة';
+
+  @override
+  String get qrAuthError => 'فشلت المصادقة';
+
+  @override
+  String get qrInvalidCode => 'رمز الاستجابة السريعة غير صالح';
+
+  @override
+  String get qrSessionExpired => 'انتهت صلاحية الجلسة أو غير موجودة';
+
+  @override
+  String get failedToLoadUserData => 'فشل تحميل بيانات المستخدم';
+
+  @override
+  String get noUserDataFound => 'لم يتم العثور على بيانات المستخدم';
+
+  @override
+  String get accountKycPending => 'في انتظار التحقق من الهوية';
 }

@@ -110,9 +110,13 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: List.generate(6, (index) {
-                  return Padding(
-                    padding: EdgeInsets.only(right: index < 5 ? 12 : 0),
-                    child: _buildPinBox(index),
+                  return Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: index == 0 || index == 5 ? 0 : 4,
+                      ),
+                      child: _buildPinBox(index),
+                    ),
                   );
                 }),
               ),
@@ -198,28 +202,30 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
     bool hasDigit = index < _controller.text.length;
     bool isSelected = index == _controller.text.length;
     
-    return Container(
-      width: 48,
-      height: 56,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isError
-              ? Colors.red
-              : isSelected
-                  ? const Color(0xFF4CD964)
-                  : const Color(0xFFE5E5E5),
-          width: isSelected || isError ? 2 : 1.5,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 48),
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isError
+                ? Colors.red
+                : isSelected
+                    ? const Color(0xFF4CD964)
+                    : const Color(0xFFE5E5E5),
+            width: isSelected || isError ? 2 : 1.5,
+          ),
         ),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        hasDigit ? _controller.text[index] : '',
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: Colors.black,
+        alignment: Alignment.center,
+        child: Text(
+          hasDigit ? _controller.text[index] : '',
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
         ),
       ),
     );
@@ -242,11 +248,6 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
       isError = false;
     });
 
-    debugPrint(
-      'VerifyPinScreen: ${auto ? 'Automatic' : 'Manual'} login '
-      '${widget.fromPinBiometrics ? 'from PinBiometricsScreen' : 'standard flow'}.',
-    );
-
     try {
       final bool success;
       if (widget.fromPinBiometrics && authProvider.nationalId != null) {
@@ -268,10 +269,6 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
         setState(() {
           isError = true;
         });
-        debugPrint(
-          'VerifyPinScreen: login failed. Status: ${authProvider.status}, '
-          'Error: ${authProvider.errorMessage}',
-        );
       }
     } catch (e) {
       if (mounted) {
@@ -279,7 +276,6 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
           isError = true;
         });
       }
-      debugPrint('VerifyPinScreen: unexpected login error: $e');
     } finally {
       if (mounted) {
         setState(() {

@@ -15,6 +15,18 @@
   "getStartedButton": "ابدأ الآن",
   "@getStartedButton": {
     "description": "Text for the 'Get started now' button"
+    },
+    "loading": "جار التحميل...",
+  "@loading": {
+    "description": "Text for loading state"
+  },
+  "noPendingContracts": "لا توجد عقود معلقة",
+  "@noPendingContracts": {
+    "description": "Text when there are no pending contracts"
+  },
+  "notifications": "الإشعارات",
+  "@notifications": {
+    "description": "نص تلميح لأيقونة الإشعارات"
   },
   "@onboardingTitle1": {
     "description": "Title for onboarding screen 1"
@@ -61,7 +73,6 @@
   "yourPhoneNumbersDescription": "وجدنا هذه الأرقام على هويتك الوطنية. اختر رقمًا لتبدأ به.",
   "pickNumberButton": "اختر رقمًا",
   "delete": "حذف",
-  "editSignature": "تعديل التوقيع",
   "deleteSignature": "حذف التوقيع",
   "areYouSureYouWantToDeleteSignature": "هل أنت متأكد أنك تريد حذف التوقيع رقم {signatureNumber}؟",
   "digitalSignatures": "التوقيعات الرقمية",
@@ -242,6 +253,10 @@
   "issuerLabel": "الناشر: ",
   "accountLabel": "الحساب: ",
   "secretKeyLabel": "المفتاح السري: ",
+  "errorFetchingDataTitle": "خطأ في جلب البيانات",
+  "errorFetchingDataDescription": "حدث خطأ أثناء جلب العقود الخاصة بك. يرجى المحاولة مرة أخرى.",
+  "noContractsFoundTitle": "لم يتم العثور على عقود",
+  "noContractsFoundDescription": "يبدو أنه لا توجد لديك أي عقود حتى الآن.",
   "noInternetConnectionTitle": "لا يوجد اتصال بالإنترنت",
   "noInternetConnectionDescription": "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
   "retryButton": "إعادة المحاولة",
@@ -279,6 +294,8 @@
   "pleaseEnsure": "يرجى التأكد:",
   "usingCorrectNationalIdCard": "أنت تستخدم بطاقة الهوية الوطنية الصحيحة",
   "nationalIdCardWithinScanningFrame": "بطاقة الهوية الوطنية ضمن إطار المسح ومرئية بالكامل",
+  "failedToLoadNotifications": "فشل في تحميل الإشعارات.",
+
   "fingersDontCoverNationalId": "لا تغطي أصابعك أي جزء من بطاقة الهوية الوطنية",
   "imageClearWithoutGlare": "الصورة واضحة بدون أي وهج أو ظلال",
   "takeAPicture": "التقط صورة",
@@ -338,10 +355,33 @@
   "dateOfExpiryLabel": "تاريخ الانتهاء",
   "enterPinCode": "أدخل رمز PIN",
   "pinCodeDescription": "الرجاء إدخال رمز PIN المكون من 6 أرقام للمتابعة.",
+  "noSignaturesFound": "لم يتم العثور على توقيعات",
   "incorrectPin": "رمز PIN غير صحيح. الرجاء المحاولة مرة أخرى.",
   "verify": "تحقق",
   "issuer": "التدفق الاجتماعي",
   "confirmCodeTitle": "تأكيد الرمز",
   "confirmCodeDescription": "يرجى إدخال الرمز المرسل إلى عنوان بريدك الإلكتروني.",
-  "confirmCodeError": "الرمز غير صحيح. يرجى المحاولة مرة أخرى."
+  "confirmCodeError": "الرمز غير صحيح. يرجى المحاولة مرة أخرى.",
+  "biometricsNotSupported": "المقاييس الحيوية غير مدعومة على هذا الجهاز",
+  "biometricsNotEnrolled": "المقاييس الحيوية غير معدة على هذا الجهاز. يرجى الذهاب إلى الإعدادات للتسجيل.",
+  
+  "biometricsLockedOut": "المقاييس الحيوية مقفلة بسبب محاولات كثيرة. يرجى استخدام رمز PIN الخاص بك أو الانتظار بضع دقائق.",
+  "appProtectionScanFace": "امسح وجهك للمصادقة",
+  "usePinInstead": "استخدم رمز PIN بدلاً من ذلك",
+  "biometricsChanged": "لقد تغيرت المقاييس الحيوية على هذا الجهاز. يرجى إعادة المصادقة.",
+  "qrScanTitle": "مسح رمز الاستجابة السريعة",
+  "qrScanInstructions": "قم بمحاذاة رمز الاستجابة السريعة داخل الإطار للمسح",
+  "qrAuthTitle": "طلب مصادقة",
+  "qrAuthRequestFrom": "طلب مصادقة من",
+  "qrAuthRequiresApproval": "يتطلب هذا الطلب موافقتك للمتابعة.",
+  "qrAuthApprove": "موافقة",
+  "qrAuthReject": "رفض",
+  "qrAuthSuccess": "تمت المصادقة بنجاح",
+  "qrAuthRejected": "تم رفض المصادقة",
+  "qrAuthError": "فشلت المصادقة",
+  "qrInvalidCode": "رمز الاستجابة السريعة غير صالح",
+  "qrSessionExpired": "انتهت صلاحية الجلسة أو غير موجودة",
+  "failedToLoadUserData": "فشل تحميل بيانات المستخدم",
+  "noUserDataFound": "لم يتم العثور على بيانات المستخدم",
+  "accountKycPending": "في انتظار التحقق من الهوية"
 }

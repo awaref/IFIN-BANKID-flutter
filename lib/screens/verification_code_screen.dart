@@ -270,11 +270,13 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Text(
-                  AppLocalizations.of(context)!.resendSmsWithin,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.resendSmsWithin,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
                 ),
                 const SizedBox(width: 6),
                 Text(

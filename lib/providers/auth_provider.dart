@@ -1,21 +1,31 @@
 import 'package:flutter/foundation.dart';
 import 'package:bankid_app/services/auth_repository.dart';
 import 'package:bankid_app/services/api_service.dart';
+import 'package:bankid_app/repositories/device_repository.dart';
+import 'package:bankid_app/services/device_api.dart';
+import 'package:bankid_app/config.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
 class AuthProvider with ChangeNotifier {
   final AuthRepository _authRepository;
+  AuthRepository get authRepository => _authRepository;
+  DeviceRepository _deviceRepository;
   
   AuthStatus _status = AuthStatus.initial;
   String? _errorMessage;
   bool _isNationalIdVerified = false;
 
-  AuthProvider({AuthRepository? authRepository})
-      : _authRepository = authRepository ?? 
+  AuthProvider(this._deviceRepository, {AuthRepository? authRepository, DeviceRepository? deviceRepository})
+      : _authRepository = authRepository ??
             AuthRepository(
-              apiService: ApiService(baseUrl: 'http://10.0.2.2/api/v1'),
-            );
+              apiService: ApiService(baseUrl: AppConfig.baseUrl),
+            ) {
+    _deviceRepository = deviceRepository ??
+        DeviceRepository(
+          deviceApi: DeviceApi(onUnauthorized: logout),
+        );
+  }
 
   AuthStatus get status => _status;
   String? get errorMessage => _errorMessage;
@@ -58,7 +68,7 @@ class AuthProvider with ChangeNotifier {
       final exists = await _authRepository.verifyNationalId(nationalId);
       _status = AuthStatus.initial;
       _isNationalIdVerified = exists;
-      _nationalId = exists ? nationalId : null;
+      _nationalId = nationalId; // Always set nationalId
       notifyListeners();
       return exists;
     } catch (e) {
@@ -76,6 +86,12 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final success = await _authRepository.loginWithPassword(password);
+      if (success) {
+        final authToken = await _authRepository.getToken();
+        if (authToken != null) {
+          await _deviceRepository.registerDevice(authToken: authToken, onUnauthorized: logout);
+        }
+      }
       _status = success ? AuthStatus.authenticated : AuthStatus.unauthenticated;
       notifyListeners();
       return success;
@@ -94,6 +110,12 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final success = await _authRepository.loginWithNationalId(nationalId, password);
+      if (success) {
+        final authToken = await _authRepository.getToken();
+        if (authToken != null) {
+          await _deviceRepository.registerDevice(authToken: authToken, onUnauthorized: logout);
+        }
+      }
       _status = success ? AuthStatus.authenticated : AuthStatus.unauthenticated;
       notifyListeners();
       return success;
@@ -138,6 +160,12 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final success = await _authRepository.registerUser(data);
+      if (success) {
+        final authToken = await _authRepository.getToken();
+        if (authToken != null) {
+          await _deviceRepository.registerDevice(authToken: authToken, onUnauthorized: logout);
+        }
+      }
       _status = success ? AuthStatus.authenticated : AuthStatus.unauthenticated;
       notifyListeners();
       return success;
@@ -185,10 +213,11 @@ class AuthProvider with ChangeNotifier {
   }
   
   Future<void> logout() async {
-     // Implement logout logic (clear token, etc.)
-     _status = AuthStatus.unauthenticated;
-     _isNationalIdVerified = false;
-     notifyListeners();
+    await _authRepository.deleteToken();
+    _deviceRepository.resetRegistrationStatus();
+    _status = AuthStatus.unauthenticated;
+    _isNationalIdVerified = false;
+    notifyListeners();
   }
 
   Future<String?> initiateKyc({String? token}) async {
@@ -215,12 +244,6 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
     try {
       final data = await _authRepository.fetchCurrentUser();
-      if (data == null) {
-        _status = AuthStatus.error;
-        _errorMessage = 'Failed to load user';
-        notifyListeners();
-        return false;
-      }
       _updateUserData(data);
       _profileLoaded = true;
       _status = AuthStatus.initial;
@@ -240,12 +263,6 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
     try {
       final data = await _authRepository.getKycRequest(id);
-      if (data == null) {
-        _status = AuthStatus.error;
-        _errorMessage = 'Failed to load KYC request';
-        notifyListeners();
-        return false;
-      }
       _updateUserData(data);
       _status = AuthStatus.initial;
       notifyListeners();

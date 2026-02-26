@@ -14,6 +14,15 @@ The application supports two authentication flows:
     -   If verified, proceeds to `PinBiometricsScreen` for authentication.
     -   If not verified, redirects to the **Existing Onboarding Flow**.
 
+3.  **QR Code Authentication Flow**:
+    -   **Scanning**: Uses `MobileScanner` in `QrScannerScreen` to capture QR codes.
+    -   **Validation**: Sends the scanned code to `/qr/scan`.
+    -   **Response**: Expects a `session_token` and optional `partner_website` info.
+    -   **Approval**: User approves/rejects on `QrAuthScreen` via `/qr/approve` or `/qr/reject`.
+    -   **Error Handling**:
+        -   Detailed error messages for Network, Session Expiration (404), and Server Errors (500).
+        -   Retry mechanisms and visual feedback.
+
 ### Key Components
 
 -   **Services**:
@@ -24,3 +33,5 @@ The application supports two authentication flows:
 -   **Screens**:
     -   `NationalIdVerificationScreen`: Input for National ID.
     -   `PinBiometricsScreen`: Biometric/PIN authentication.
+    -   `QrScannerScreen`: Scans and validates QR codes.
+    -   `QrAuthScreen`: Displays partner info and handles approval/rejection.

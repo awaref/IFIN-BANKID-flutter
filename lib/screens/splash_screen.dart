@@ -9,6 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bankid_app/providers/language_provider.dart';
 import 'package:bankid_app/screens/national_id_verification_screen.dart';
+import 'package:bankid_app/screens/home_screen.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,14 +22,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _navigated = false;
+  bool _isLoading = true; // Added for loading indicator
 
   @override
   void initState() {
     super.initState();
-    // ⏳ Show splash for 3 seconds, then check permission
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) _requestNotificationPermission();
-    });
+    _requestNotificationPermission();
   }
 
   @override
@@ -38,21 +39,23 @@ class _SplashScreenState extends State<SplashScreen> {
       child: Scaffold(
         backgroundColor: Colors.white, // 🔹 Brand/splash color
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                AppLocalizations.of(context)?.splashScreenLogo ?? "BankID",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.rubik(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                  height: 1.6,
+          child: _isLoading
+              ? const CircularProgressIndicator() // Show loading indicator
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)?.splashScreenLogo ?? "BankID",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.rubik(
+                        fontSize: 40.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                        height: 1.6,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -77,6 +80,15 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
   
+  void _navigateToHome() {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
+  }
+  
   Future<void> _determineStartScreen() async {
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
@@ -85,11 +97,10 @@ class _SplashScreenState extends State<SplashScreen> {
     
     if (savedCode != null && supported.contains(savedCode)) {
       await languageProvider.changeLanguage(Locale(savedCode));
-      _navigateToVerification();
     } else {
       await languageProvider.changeLanguage(const Locale('en'));
-      _navigateToLanguageScreen();
     }
+    await _checkAuthentication(); // Always check authentication after language is set
   }
 
   /// 🔹 Request system notification permission (Android 13+, iOS 12+)
@@ -99,17 +110,33 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (!mounted) return;
 
-      if (status.isGranted) {
-        debugPrint("✅ Notifications allowed");
-      } else if (status.isPermanentlyDenied) {
-        debugPrint("❌ Permanently denied → opening settings");
+      if (status.isPermanentlyDenied) {
         await openAppSettings();
-      } else {
-        debugPrint("⚠️ Notifications denied temporarily");
       }
     }
 
     // 👉 Determine start based on stored language after permission request
     await _determineStartScreen();
+  }
+
+  Future<void> _checkAuthentication() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final isAuthenticated = await authProvider.loadCurrentUser();
+      if (isAuthenticated) {
+        _navigateToHome();
+      } else {
+        _navigateToVerification();
+      }
+    } catch (e) {
+      _navigateToVerification();
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }

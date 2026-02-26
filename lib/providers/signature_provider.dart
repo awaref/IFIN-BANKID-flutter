@@ -1,157 +1,144 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image/image.dart' as img;
 
-enum SignatureType { text, image, handwriting, svg }
-
-class SignatureItem {
-  final String id;
-  final String title;
-  final SignatureType type;
-  final String filePath;
-  final DateTime createdAt;
-  final int width;
-  final int height;
-  final bool transparent;
-
-  SignatureItem({
-    required this.id,
-    required this.title,
-    required this.type,
-    required this.filePath,
-    required this.createdAt,
-    required this.width,
-    required this.height,
-    required this.transparent,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'type': type.name,
-        'filePath': filePath,
-        'createdAt': createdAt.toIso8601String(),
-        'width': width,
-        'height': height,
-        'transparent': transparent,
-      };
-
-  static SignatureItem fromJson(Map<String, dynamic> json) => SignatureItem(
-        id: json['id'] as String,
-        title: json['title'] as String,
-        type: SignatureType.values.firstWhere(
-          (e) => e.name == json['type'],
-          orElse: () => SignatureType.image,
-        ),
-        filePath: json['filePath'] as String,
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        width: json['width'] as int,
-        height: json['height'] as int,
-        transparent: (json['transparent'] as bool?) ?? true,
-      );
-}
+import 'package:bankid_app/services/signature_service.dart';
+import 'package:bankid_app/services/api_service.dart';
+import 'package:bankid_app/models/signature.dart';
+import 'package:bankid_app/config.dart';
 
 class SignatureProvider extends ChangeNotifier {
-  static const _prefsKey = 'signatures';
+  final SignatureService _signatureService;
+
   final List<SignatureItem> _items = [];
+  bool _isLoading = false;
+
+  SignatureProvider({SignatureService? signatureService})
+    : _signatureService =
+          signatureService ??
+          SignatureService(apiService: ApiService(baseUrl: AppConfig.baseUrl));
 
   List<SignatureItem> get items => List.unmodifiable(_items);
+  List<SignatureItem> get signatures => items;
+  bool get isLoading => _isLoading;
+
+  // ================================
+  // LOAD SIGNATURES
+  // ================================
 
   Future<void> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getStringList(_prefsKey) ?? [];
-    _items
-      ..clear()
-      ..addAll(raw.map((e) => SignatureItem.fromJson(jsonDecode(e))));
+    _isLoading = true;
     notifyListeners();
-  }
 
-  Future<void> _persist() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      _prefsKey,
-      _items.map((e) => jsonEncode(e.toJson())).toList(),
-    );
-  }
-
-  Future<Directory> _ensureSignaturesDir() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final signaturesDir = Directory('${dir.path}/signatures');
-    if (!await signaturesDir.exists()) {
-      await signaturesDir.create(recursive: true);
-    }
-    return signaturesDir;
-  }
-
-  Future<void> deleteById(String id) async {
-    final idx = _items.indexWhere((e) => e.id == id);
-    if (idx == -1) return;
-    final path = _items[idx].filePath;
-    _items.removeAt(idx);
-    await _persist();
     try {
-      final f = File(path);
-      if (await f.exists()) {
-        await f.delete();
-      }
-    } catch (_) {}
-    notifyListeners();
+      final remoteItems = await _signatureService.getSignatures();
+      _items
+        ..clear()
+        ..addAll(remoteItems);
+    } catch (e) {
+      debugPrint('Error loading signatures: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
+
+  // ================================
+  // FETCH SIGNATURE IMAGE (NEW API)
+  // ================================
+
+  Future<Uint8List> getSignatureImageBytes(String signatureId) async {
+    try {
+      final url = '${AppConfig.baseUrl}/signatures/$signatureId/image';
+
+      return await _signatureService.apiService.getBytes(url);
+    } catch (e) {
+      debugPrint('Error fetching signature image: $e');
+      rethrow;
+    }
+  }
+
+  Future<Uint8List> getImageBytes(SignatureItem item) async {
+    if (item.type == SignatureType.imageUpload ||
+        item.type == SignatureType.imageHandwriting) {
+      return getSignatureImageBytes(item.id);
+    }
+
+    if (item.type == SignatureType.svg && item.imageUrl != null) {
+      return await _signatureService.apiService.getBytes(item.imageUrl!);
+    }
+
+    throw Exception('Signature type does not support image retrieval');
+  }
+
+  // ================================
+  // DELETE
+  // ================================
+
+  Future<void> deleteSignature(String id) async {
+    try {
+      await _signatureService.deleteSignature(id);
+      _items.removeWhere((e) => e.id == id);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting signature: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteById(String id) => deleteSignature(id);
+
+  // ================================
+  // SET DEFAULT
+  // ================================
+
+  Future<void> setDefault(String id) async {
+    try {
+      final updated = await _signatureService.setDefaultSignature(id);
+
+      for (int i = 0; i < _items.length; i++) {
+        if (_items[i].id == id) {
+          _items[i] = updated;
+        } else if (_items[i].isDefault) {
+          _items[i] = _items[i].copyWith(isDefault: false);
+        }
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error setting default signature: $e');
+      rethrow;
+    }
+  }
+
+  // ================================
+  // ADD TEXT SIGNATURE
+  // ================================
 
   Future<SignatureItem> addTextSignature({
     required String title,
     required String text,
-    required Color color,
-    required double fontSize,
   }) async {
-    final recorder = ui.PictureRecorder();
-    final canvasSize = const Size(2400, 800);
-    final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, canvasSize.width, canvasSize.height));
-    final painter = TextPainter(
-      textDirection: TextDirection.ltr,
+    final item = await _signatureService.createSignature(
+      name: title,
+      type: 'text',
+      textValue: text,
     );
-    final textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        color: color,
-        fontSize: fontSize,
-        fontStyle: FontStyle.italic,
-        fontFamily: 'Rubik',
-      ),
-    );
-    painter.text = textSpan;
-    painter.layout(maxWidth: canvasSize.width);
-    final dx = (canvasSize.width - painter.width) / 2;
-    final dy = (canvasSize.height - painter.height) / 2;
-    painter.paint(canvas, Offset(dx, dy));
-    final picture = recorder.endRecording();
-    final image = await picture.toImage(canvasSize.width.toInt(), canvasSize.height.toInt());
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    final signaturesDir = await _ensureSignaturesDir();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final path = '${signaturesDir.path}/$id.png';
-    final file = File(path);
-    await file.writeAsBytes(bytes!.buffer.asUint8List());
-    final item = SignatureItem(
-      id: id,
-      title: title,
-      type: SignatureType.text,
-      filePath: path,
-      createdAt: DateTime.now(),
-      width: canvasSize.width.toInt(),
-      height: canvasSize.height.toInt(),
-      transparent: true,
-    );
+
     _items.add(item);
-    await _persist();
     notifyListeners();
+
     return item;
   }
+
+  // ================================
+  // ADD IMAGE SIGNATURE
+  // ================================
 
   Future<SignatureItem> addImageSignature({
     required String title,
@@ -162,116 +149,52 @@ class SignatureProvider extends ChangeNotifier {
   }) async {
     final rawBytes = await source.readAsBytes();
     final image = img.decodeImage(rawBytes);
+
     if (image == null) {
       throw Exception('Unsupported image');
     }
+
     img.Image processed = image;
+
     if (cropRect != null) {
-      final cx = cropRect.left.round();
-      final cy = cropRect.top.round();
-      final cw = cropRect.width.round();
-      final ch = cropRect.height.round();
-      processed = img.copyCrop(image, x: cx, y: cy, width: cw, height: ch);
+      processed = img.copyCrop(
+        image,
+        x: cropRect.left.round(),
+        y: cropRect.top.round(),
+        width: cropRect.width.round(),
+        height: cropRect.height.round(),
+      );
     }
+
     if (targetMaxWidth != null && processed.width > targetMaxWidth) {
       final ratio = targetMaxWidth / processed.width;
-      final nh = (processed.height * ratio).round();
-      processed = img.copyResize(processed, width: targetMaxWidth, height: nh, interpolation: img.Interpolation.cubic);
+      processed = img.copyResize(
+        processed,
+        width: targetMaxWidth,
+        height: (processed.height * ratio).round(),
+        interpolation: img.Interpolation.cubic,
+      );
     }
-    final signaturesDir = await _ensureSignaturesDir();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final outPath = '${signaturesDir.path}/$id.${forcePng ? 'png' : 'jpg'}';
-    List<int> outBytes;
-    if (forcePng) {
-      outBytes = img.encodePng(processed, level: 6);
-    } else {
-      outBytes = img.encodeJpg(processed, quality: 95);
-    }
-    final file = File(outPath);
-    await file.writeAsBytes(outBytes);
-    final item = SignatureItem(
-      id: id,
-      title: title,
-      type: SignatureType.image,
-      filePath: outPath,
-      createdAt: DateTime.now(),
-      width: processed.width,
-      height: processed.height,
-      transparent: forcePng,
+
+    final filePath = await _saveTempImage(processed, forcePng);
+
+    final item = await _signatureService.createSignature(
+      name: title,
+      type: 'image_upload',
+      filePath: filePath,
     );
+
     _items.add(item);
-    await _persist();
     notifyListeners();
+
+    await _cleanupTempFile(filePath);
+
     return item;
   }
 
-  Future<SignatureItem> addImageBytesSignature({
-    required String title,
-    required List<int> bytes,
-    int? targetMaxWidth,
-    bool forcePng = true,
-  }) async {
-    final image = img.decodeImage(Uint8List.fromList(bytes));
-    if (image == null) {
-      throw Exception('Unsupported image');
-    }
-    img.Image processed = image;
-    if (targetMaxWidth != null && processed.width > targetMaxWidth) {
-      final ratio = targetMaxWidth / processed.width;
-      final nh = (processed.height * ratio).round();
-      processed = img.copyResize(processed, width: targetMaxWidth, height: nh, interpolation: img.Interpolation.cubic);
-    }
-    final signaturesDir = await _ensureSignaturesDir();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final outPath = '${signaturesDir.path}/$id.${forcePng ? 'png' : 'jpg'}';
-    List<int> outBytes;
-    if (forcePng) {
-      outBytes = img.encodePng(processed, level: 6);
-    } else {
-      outBytes = img.encodeJpg(processed, quality: 95);
-    }
-    final file = File(outPath);
-    await file.writeAsBytes(outBytes);
-    final item = SignatureItem(
-      id: id,
-      title: title,
-      type: SignatureType.image,
-      filePath: outPath,
-      createdAt: DateTime.now(),
-      width: processed.width,
-      height: processed.height,
-      transparent: forcePng,
-    );
-    _items.add(item);
-    await _persist();
-    notifyListeners();
-    return item;
-  }
-
-  Future<SignatureItem> addSvgSignature({
-    required String title,
-    required String svgString,
-  }) async {
-    final signaturesDir = await _ensureSignaturesDir();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final path = '${signaturesDir.path}/$id.svg';
-    final file = File(path);
-    await file.writeAsString(svgString);
-    final item = SignatureItem(
-      id: id,
-      title: title,
-      type: SignatureType.svg,
-      filePath: path,
-      createdAt: DateTime.now(),
-      width: 0,
-      height: 0,
-      transparent: true,
-    );
-    _items.add(item);
-    await _persist();
-    notifyListeners();
-    return item;
-  }
+  // ================================
+  // ADD HANDWRITING SIGNATURE
+  // ================================
 
   Future<SignatureItem> addHandwritingSignature({
     required String title,
@@ -281,48 +204,112 @@ class SignatureProvider extends ChangeNotifier {
     Color background = const Color(0x00000000),
   }) async {
     final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, exportSize.width, exportSize.height));
-    final bgPaint = Paint()
-      ..color = background
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(Rect.fromLTWH(0, 0, exportSize.width, exportSize.height), bgPaint);
+    final canvas = Canvas(
+      recorder,
+      Rect.fromLTWH(0, 0, exportSize.width, exportSize.height),
+    );
+
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, exportSize.width, exportSize.height),
+      Paint()..color = background,
+    );
+
     final sx = exportSize.width / canvasSize.width;
     final sy = exportSize.height / canvasSize.height;
     canvas.scale(sx, sy);
+
     for (final s in strokes) {
       final paint = Paint()
         ..color = s.color
         ..strokeWidth = s.width
         ..strokeCap = StrokeCap.round
         ..style = PaintingStyle.stroke;
+
       for (int i = 1; i < s.points.length; i++) {
         canvas.drawLine(s.points[i - 1], s.points[i], paint);
       }
     }
+
     final picture = recorder.endRecording();
-    final image = await picture.toImage(exportSize.width.toInt(), exportSize.height.toInt());
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    final signaturesDir = await _ensureSignaturesDir();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final path = '${signaturesDir.path}/$id.png';
-    final file = File(path);
-    await file.writeAsBytes(bytes!.buffer.asUint8List());
-    final item = SignatureItem(
-      id: id,
-      title: title,
-      type: SignatureType.handwriting,
-      filePath: path,
-      createdAt: DateTime.now(),
-      width: exportSize.width.toInt(),
-      height: exportSize.height.toInt(),
-      transparent: true,
+    final image = await picture.toImage(
+      exportSize.width.toInt(),
+      exportSize.height.toInt(),
     );
+
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+
+    final filePath = await _saveRawBytes(bytes!.buffer.asUint8List());
+
+    final item = await _signatureService.createSignature(
+      name: title,
+      type: 'image_handwriting',
+      filePath: filePath,
+    );
+
     _items.add(item);
-    await _persist();
     notifyListeners();
+
+    await _cleanupTempFile(filePath);
+
     return item;
   }
+
+  // ================================
+  // UTILITIES
+  // ================================
+
+  Future<String> _saveTempImage(img.Image image, bool forcePng) async {
+    final dir = await _getSignaturesDir();
+    final id = DateTime.now().microsecondsSinceEpoch.toString();
+
+    final path = '${dir.path}/$id.${forcePng ? 'png' : 'jpg'}';
+
+    final file = File(path);
+
+    await file.writeAsBytes(
+      forcePng
+          ? img.encodePng(image, level: 6)
+          : img.encodeJpg(image, quality: 95),
+    );
+
+    return path;
+  }
+
+  Future<String> _saveRawBytes(Uint8List bytes) async {
+    final dir = await _getSignaturesDir();
+    final id = DateTime.now().microsecondsSinceEpoch.toString();
+    final path = '${dir.path}/$id.png';
+
+    final file = File(path);
+    await file.writeAsBytes(bytes);
+
+    return path;
+  }
+
+  Future<void> _cleanupTempFile(String path) async {
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {}
+  }
+
+  Future<Directory> _getSignaturesDir() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final signaturesDir = Directory('${dir.path}/signatures');
+
+    if (!await signaturesDir.exists()) {
+      await signaturesDir.create(recursive: true);
+    }
+
+    return signaturesDir;
+  }
 }
+
+// ================================
+// STROKE MODEL
+// ================================
 
 class Stroke {
   final List<Offset> points;

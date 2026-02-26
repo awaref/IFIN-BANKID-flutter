@@ -3,6 +3,7 @@ import 'package:bankid_app/screens/national_id_verification_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key});
@@ -33,7 +34,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -48,13 +49,13 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                         'Choose your language',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
-                          
+                          fontSize: 16.sp,
                           color: const Color(0xFF172A47),
                         ),
                     textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
 
                 // 🔹 Language options
                 _buildLanguageOption(
@@ -82,15 +83,15 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 9),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       elevation: 0,
                     ),
                     child: Text(
                       AppLocalizations.of(context)?.continueButton ?? 'Continue',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),
@@ -106,13 +107,13 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     final isSelected = _selectedLanguageCode == localeCode;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
         border: Border.all(
           color: isSelected ? primaryColor : const Color(0xFFE0E0E0),
-          width: isSelected ? 2.0 : 1.0,
+          width: isSelected ? 2.0.w : 1.0.w,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
       ),
       child: InkWell(
         onTap: () {
@@ -122,32 +123,37 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           Provider.of<LanguageProvider>(context, listen: false)
               .changeLanguage(Locale(localeCode));
         },
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w300,
-                  color: isSelected ? const Color(0xFF212B36) : const Color(0xFF919EAB),
-                ),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w300,
+                color: isSelected
+                    ? const Color(0xFF212B36)
+                    : const Color(0xFF919EAB),
               ),
-              if (isSelected)
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 16),
-                ),
-            ],
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
+          if (isSelected)
+            Container(
+              width: 24.w,
+              height: 24.h,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.check, color: Colors.white, size: 16.sp),
+            ),
+        ],
+      ),
         ),
       ),
     );

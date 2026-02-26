@@ -1,6 +1,9 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_darwin/local_auth_darwin.dart';
 import 'package:bankid_app/screens/setup_passcode_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 
@@ -13,8 +16,7 @@ class AppProtectionScreen extends StatefulWidget {
 
 class _AppProtectionScreenState extends State<AppProtectionScreen> {
   final LocalAuthentication auth = LocalAuthentication();
-  // String _authorized = 'Not Authorized'; // Unused field
-  // final bool _isBiometricSupported = false; // Unused field
+  bool _isDeviceSupported = false;
   bool _canCheckBiometrics = false;
 
   @override
@@ -25,40 +27,70 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
 
   Future<void> _checkBiometrics() async {
     bool canCheckBiometrics;
+    bool isDeviceSupported;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics;
+      isDeviceSupported = await auth.isDeviceSupported();
     } catch (e) {
       canCheckBiometrics = false;
-      // print("Error checking biometrics: $e"); // Avoid print in production code
+      isDeviceSupported = false;
     }
     if (!mounted) return;
 
     setState(() {
       _canCheckBiometrics = canCheckBiometrics;
+      _isDeviceSupported = isDeviceSupported;
     });
   }
 
   Future<void> _authenticate() async {
-    bool authenticated = false;
+    final l10n = AppLocalizations.of(context)!;
+    
     try {
-      authenticated = await auth.authenticate(
-        localizedReason: AppLocalizations.of(context)!.appProtectionScanFingerprint,
-        options: const AuthenticationOptions(stickyAuth: true),
+      final List<BiometricType> availableBiometrics = await auth.getAvailableBiometrics();
+      
+      String localizedReason = l10n.appProtectionScanFingerprint;
+      if (availableBiometrics.contains(BiometricType.face)) {
+        localizedReason = l10n.appProtectionScanFace;
+      }
+
+      final bool authenticated = await auth.authenticate(
+        localizedReason: localizedReason,
+        biometricOnly: true,
+        persistAcrossBackgrounding: true,
+        authMessages: const [
+          AndroidAuthMessages(),
+          IOSAuthMessages(),
+        ],
       );
-    } catch (e) {
-      // print("Error authenticating: $e"); // Avoid print in production code
+
+      if (authenticated && mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const SetupPasscodeScreen()),
+        );
+      }
+    } on PlatformException catch (e) {
+      if (e.code == 'NotEnrolled') {
+        _showErrorSnackBar(l10n.biometricsNotEnrolled);
+      } else if (e.code == 'LockedOut' || e.code == 'PermanentlyLockedOut') {
+        _showErrorSnackBar(l10n.biometricsLockedOut);
+      } else if (e.code == 'NotAvailable') {
+        _showErrorSnackBar(l10n.biometricsNotSupported);
+      } else {
+        _showErrorSnackBar('${l10n.authenticationError} ${e.message}');
+      }
     }
+  }
+
+  void _showErrorSnackBar(String message) {
     if (!mounted) return;
-
-    setState(() {
-      // _authorized = authenticated ? 'Authorized' : 'Not Authorized'; // Unused field
-    });
-
-    if (authenticated) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const SetupPasscodeScreen()),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color(0xFFDC3545),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -108,12 +140,12 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
               title: l10n.appProtectionUseBiometrics,
               subtitle: l10n.appProtectionUseSecureWay,
               isRecommended: true,
-              onTap: _canCheckBiometrics ? _authenticate : null,
+              onTap: (_canCheckBiometrics || _isDeviceSupported) ? _authenticate : null,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             _buildProtectionOption(
               context,
-              icon: HugeIcons.strokeRoundedLock,
+              icon: HugeIcons.strokeRoundedCirclePassword,
               title: l10n.appProtectionSetUpPasscode,
               subtitle: l10n.appProtectionCreatePin,
               onTap: () {
@@ -130,7 +162,11 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
               margin: const EdgeInsets.only(bottom: 64),
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle continue button press
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SetupPasscodeScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF37C293),
@@ -164,82 +200,57 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
     bool isRecommended = false,
     VoidCallback? onTap,
   }) {
-    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+          color: onTap == null ? Colors.grey.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isRecommended ? const Color(0xFF37C293) : const Color(0xFFE0E0E0),
+            width: isRecommended ? 2 : 1,
+          ),
         ),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFF37C293).withAlpha((0.1 * 255).round()),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: HugeIcon(
-                icon: icon,
-                size: 24,
-                color: const Color(0xFF37C293),
-              ),
+            HugeIcon(
+              icon: icon,
+              color: isRecommended ? const Color(0xFF37C293) : Colors.black,
+              size: 32,
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (isRecommended) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFD01F39).withAlpha((0.12 * 255).round()),
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                      child: Text(
-                        l10n.appProtectionRecommended,
-                        style: const TextStyle(
-                          color: Color(0xFFD01F39),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0,
-                        ),
+                  if (isRecommended)
+                    Text(
+                      AppLocalizations.of(context)!.appProtectionRecommended,
+                      style: const TextStyle(
+                        color: Color(0xFF37C293),
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 4),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   Text(
                     subtitle,
                     style: const TextStyle(
                       fontSize: 12,
                       color: Color(0xFF637381),
-                      height: 1.6,
                     ),
                   ),
                 ],
               ),
             ),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF637381)),
           ],
         ),
       ),

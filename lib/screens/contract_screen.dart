@@ -1,25 +1,12 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:bankid_app/models/contract.dart';
 import 'package:bankid_app/screens/verify_pin_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const ContractScreen(),
-    );
-  }
-}
-
 class ContractScreen extends StatelessWidget {
-  const ContractScreen({super.key});
+  final Contract? contract;
+
+  const ContractScreen({super.key, this.contract});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +23,7 @@ class ContractScreen extends StatelessWidget {
           },
         ),
         title: Text(
-          l10n.contractScreenTitle,
+          contract?.title ?? l10n.contractScreenTitle,
           style: const TextStyle(
             color: Color(0xFF1A1D3D),
             fontSize: 18,
@@ -63,16 +50,25 @@ class ContractScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _buildInfoRow(l10n.contractScreenNameLabel, l10n.contractScreenPartyOneNameValue),
+                  _buildInfoRow(
+                    l10n.contractScreenNameLabel,
+                    l10n.contractScreenPartyOneNameValue,
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(l10n.contractScreenIdPassportNumberLabel, l10n.contractScreenPartyOneIdPassportNumberValue),
+                  _buildInfoRow(
+                    l10n.contractScreenIdPassportNumberLabel,
+                    l10n.contractScreenPartyOneIdPassportNumberValue,
+                  ),
                   const SizedBox(height: 8),
                   _buildInfoRow(
                     l10n.contractScreenAddressLabel,
                     l10n.contractScreenPartyOneAddressValue,
                   ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(l10n.contractScreenPhoneLabel, l10n.contractScreenPartyOnePhoneValue),
+                  _buildInfoRow(
+                    l10n.contractScreenPhoneLabel,
+                    l10n.contractScreenPartyOnePhoneValue,
+                  ),
                   const SizedBox(height: 8),
                   _buildInfoRowWithLink(
                     l10n.contractScreenEmailLabel,
@@ -103,9 +99,15 @@ class ContractScreen extends StatelessWidget {
                     l10n.contractScreenPartyTwoAddressValue,
                   ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(l10n.contractScreenPhoneLabel, l10n.contractScreenPartyTwoPhoneValue),
+                  _buildInfoRow(
+                    l10n.contractScreenPhoneLabel,
+                    l10n.contractScreenPartyTwoPhoneValue,
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRowWithLink(l10n.contractScreenEmailLabel, l10n.contractScreenPartyTwoEmailValue),
+                  _buildInfoRowWithLink(
+                    l10n.contractScreenEmailLabel,
+                    l10n.contractScreenPartyTwoEmailValue,
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     l10n.contractScreenIntroductionTitle,
@@ -242,17 +244,35 @@ class ContractScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _buildInfoRow(l10n.contractScreenPartyOneTitle, l10n.contractScreenPartyOneNameValue),
+                  _buildInfoRow(
+                    l10n.contractScreenPartyOneTitle,
+                    l10n.contractScreenPartyOneNameValue,
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(l10n.contractScreenSignatureLabel, l10n.contractScreenSignatureValue),
+                  _buildInfoRow(
+                    l10n.contractScreenSignatureLabel,
+                    l10n.contractScreenSignatureValue,
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(l10n.contractScreenDateLabel, l10n.contractScreenDateValue),
+                  _buildInfoRow(
+                    l10n.contractScreenDateLabel,
+                    contract?.date ?? l10n.contractScreenDateValue,
+                  ),
                   const SizedBox(height: 16),
-                  _buildInfoRow(l10n.contractScreenPartyTwoTitle, l10n.contractScreenPartyTwoSignatureValue),
+                  _buildInfoRow(
+                    l10n.contractScreenPartyTwoTitle,
+                    l10n.contractScreenPartyTwoSignatureValue,
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(l10n.contractScreenSignatureLabel, l10n.contractScreenSignatureValue),
+                  _buildInfoRow(
+                    l10n.contractScreenSignatureLabel,
+                    l10n.contractScreenSignatureValue,
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(l10n.contractScreenDateLabel, l10n.contractScreenDateValue),
+                  _buildInfoRow(
+                    l10n.contractScreenDateLabel,
+                    contract?.date ?? l10n.contractScreenDateValue,
+                  ),
                   const SizedBox(height: 80),
                 ],
               ),
@@ -260,56 +280,56 @@ class ContractScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha((0.05 * 255).round()),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const VerifyPinScreen(),
+      bottomNavigationBar: contract?.status == 'signed'
+          ? null
+          : Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha((0.05 * 255).round()),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VerifyPinScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF37C293),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    l10n.contractScreenSignContractButton,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF37C293),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 7),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              l10n.contractScreenSignContractButton,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
               ),
             ),
-          ),
-        ),
-      ),
-    ); }
+    );
+  }
 
   Widget _buildInfoRow(String label, String value) {
     return RichText(
       text: TextSpan(
-        style: const TextStyle(
-          fontSize: 14,
-          height: 1.5,
-        ),
+        style: const TextStyle(fontSize: 14, height: 1.5),
         children: [
           TextSpan(
             text: '$label ',
@@ -320,9 +340,7 @@ class ContractScreen extends StatelessWidget {
           ),
           TextSpan(
             text: value,
-            style: const TextStyle(
-              color: Color(0xFF6B7280),
-            ),
+            style: const TextStyle(color: Color(0xFF6B7280)),
           ),
         ],
       ),

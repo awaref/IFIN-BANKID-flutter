@@ -1,13 +1,16 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
+
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/add_new_signature_screen.dart';
 import 'package:bankid_app/screens/signature_detail_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
 import 'package:bankid_app/providers/signature_provider.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:bankid_app/models/signature.dart';
 
 class DigitalSignaturesListScreen extends StatefulWidget {
   const DigitalSignaturesListScreen({super.key});
@@ -19,63 +22,74 @@ class DigitalSignaturesListScreen extends StatefulWidget {
 
 class _DigitalSignaturesListScreenState
     extends State<DigitalSignaturesListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<SignatureProvider>().load();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
     final l10n = AppLocalizations.of(context)!;
-    final signatures = Provider.of<SignatureProvider>(context).items;
+    final languageProvider = context.watch<LanguageProvider>();
+    final signatureProvider = context.watch<SignatureProvider>();
+
+    final signatures = signatureProvider.signatures;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
           icon: const HugeIcon(
-              icon: HugeIcons.strokeRoundedArrowLeft01, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+          ),
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           l10n.digitalSignaturesListTitle,
           style: const TextStyle(
-            color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
+            color: Colors.black,
           ),
         ),
-        centerTitle: true,
       ),
       body: SafeArea(
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          itemCount: signatures.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final sig = signatures[index];
-            return _buildSignatureCard(
-              context,
-              sig.title,
-              sig.createdAt,
-              sig.filePath,
-              languageProvider.isRTL,
-            );
-          },
-        ),
+        child: signatureProvider.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : signatures.isEmpty
+            ? Center(child: Text(l10n.noSignaturesFound))
+            : ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                itemCount: signatures.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 14),
+                itemBuilder: (context, index) {
+                  final sig = signatures[index];
+                  return _SignatureCard(
+                    signature: sig,
+                    isRTL: languageProvider.isRTL,
+                  );
+                },
+              ),
       ),
       bottomNavigationBar: Container(
         color: Colors.white,
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: SafeArea(
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => const AddNewSignatureScreen()),
-                );
-              },
               icon: const HugeIcon(
                 icon: HugeIcons.strokeRoundedAdd01,
                 color: Colors.white,
@@ -84,112 +98,116 @@ class _DigitalSignaturesListScreenState
               label: Text(
                 l10n.addNewSignatureButton,
                 style: const TextStyle(
-                  fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  fontSize: 16,
                   color: Colors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF37C293),
-                padding: const EdgeInsets.symmetric(vertical: 9),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 0,
               ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AddNewSignatureScreen(),
+                  ),
+                );
+              },
             ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildSignatureCard(
-    BuildContext context,
-    String title,
-    DateTime date,
-    String path,
-    bool isRTL,
-  ) {
+class _SignatureCard extends StatelessWidget {
+  final SignatureItem signature;
+  final bool isRTL;
+
+  const _SignatureCard({required this.signature, required this.isRTL});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(
+        Navigator.push(
+          context,
           MaterialPageRoute(
-            builder: (context) => SignatureDetailScreen(
-              signatureNumber: 0,
-              signatureImagePath: path,
-            ),
+            builder: (_) => SignatureDetailScreen(signature: signature),
           ),
         );
       },
       child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF000000).withValues(alpha: 0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Column(
-          crossAxisAlignment:
-              isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isRTL
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
-            // Signature preview
+            // Preview Container
             Container(
-              width: double.infinity,
               height: 120,
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFFF3F3F3),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(
-                child: _SignaturePreview(path: path),
-              ),
+              child: Center(child: _SignaturePreview(signature: signature)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
 
-            // Icon + Title
+            // Title Row
             Row(
-              mainAxisAlignment:
-                  isRTL ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment: isRTL
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
               children: [
                 const HugeIcon(
                   icon: HugeIcons.strokeRoundedSignature,
-                  color: Colors.black,
                   size: 20,
+                  color: Colors.black,
                 ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    title,
+                    signature.name,
                     textAlign: isRTL ? TextAlign.right : TextAlign.left,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1A1A),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 2),
 
-            // Date
+            const SizedBox(height: 4),
+
             Align(
               alignment: isRTL ? Alignment.centerRight : Alignment.centerLeft,
               child: Text(
-                '${AppLocalizations.of(context)?.fileAddedOnLabel ?? 'File added on'} ${_formatDate(date)}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF8E8E93),
-                ),
-                textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                '${l10n.fileAddedOnLabel} ${_formatDate(signature.createdAt)}',
+                style: const TextStyle(fontSize: 12, color: Color(0xFF8E8E93)),
               ),
             ),
           ],
@@ -199,11 +217,7 @@ class _DigitalSignaturesListScreenState
   }
 
   String _formatDate(DateTime d) {
-    return '${_monthName(d.month)} ${d.day}, ${d.year}';
-  }
-
-  String _monthName(int m) {
-    const names = [
+    const months = [
       'January',
       'February',
       'March',
@@ -215,23 +229,59 @@ class _DigitalSignaturesListScreenState
       'September',
       'October',
       'November',
-      'December'
+      'December',
     ];
-    return names[m - 1];
+    return '${months[d.month - 1]} ${d.day}, ${d.year}';
   }
-
 }
 
 class _SignaturePreview extends StatelessWidget {
-  final String path;
-  const _SignaturePreview({required this.path});
+  final SignatureItem signature;
+
+  const _SignaturePreview({required this.signature});
 
   @override
   Widget build(BuildContext context) {
-    final lower = path.toLowerCase();
-    if (lower.endsWith('.svg')) {
-      return SvgPicture.file(File(path), fit: BoxFit.contain);
+    // TEXT SIGNATURE
+    if (signature.type == SignatureType.text && signature.textValue != null) {
+      return Text(
+        signature.textValue!,
+        style: GoogleFonts.allura(
+          fontSize: 26,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
+        ),
+      );
     }
-    return Image.file(File(path), fit: BoxFit.contain);
+
+    // IMAGE & HANDWRITING & SVG
+    return FutureBuilder<Uint8List>(
+      future: context.read<SignatureProvider>().getSignatureImageBytes(
+        signature.id,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Icon(Icons.broken_image, color: Colors.grey);
+        }
+
+        if (snapshot.hasData) {
+          if (signature.type == SignatureType.svg) {
+            return SvgPicture.memory(snapshot.data!, fit: BoxFit.contain);
+          }
+
+          return Image.memory(snapshot.data!, fit: BoxFit.contain);
+        }
+
+        return const Icon(Icons.image_not_supported, color: Colors.grey);
+      },
+    );
   }
 }

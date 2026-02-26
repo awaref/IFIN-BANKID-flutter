@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/app_protection_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OnboardingScreen extends StatelessWidget {
   final String title;
@@ -17,7 +18,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -26,23 +27,23 @@ class OnboardingScreen extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: 18.sp,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF212B36),
+              color: const Color(0xFF212B36),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Text(
             description,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF637381),
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: const Color(0xFF637381),
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: 40.h),
         ],
       ),
     );
@@ -113,66 +114,68 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: onboardingData.length,
-              reverse: isRTL,
-              onPageChanged: (page) {
-                setState(() => _currentPage = page);
-              },
-              itemBuilder: (context, index) {
-                return OnboardingScreen(
-                  title: onboardingData[index]['title']!,
-                  description: onboardingData[index]['description']!,
-                  isRTL: isRTL,
-                );
-              },
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: onboardingData.length,
+                reverse: isRTL,
+                onPageChanged: (page) {
+                  setState(() => _currentPage = page);
+                },
+                itemBuilder: (context, index) {
+                  return OnboardingScreen(
+                    title: onboardingData[index]['title']!,
+                    description: onboardingData[index]['description']!,
+                    isRTL: isRTL,
+                  );
+                },
+              ),
             ),
-          ),
 
-          // Progress Dots
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              onboardingData.length,
-              (index) => buildDot(index),
+            // Progress Dots
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                onboardingData.length,
+                (index) => buildDot(index),
+              ),
             ),
-          ),
 
-          const SizedBox(height: 94),
+            SizedBox(height: 94.h),
 
-          // Button (always visible, full width)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: SizedBox(
-              width: double.infinity, // full width
-              child: ElevatedButton(
-                onPressed: () => _onButtonPressed(context, onboardingData.length),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF37C293),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            // Button (always visible, full width)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: SizedBox(
+                width: double.infinity, // full width
+                child: ElevatedButton(
+                  onPressed: () => _onButtonPressed(context, onboardingData.length),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF37C293),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  AppLocalizations.of(context)?.getStartedButton ?? 'Get started now',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                  child: Text(
+                    AppLocalizations.of(context)?.getStartedButton ?? 'Get started now',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 64),
-        ],
+            SizedBox(height: 64.h),
+          ],
+        ),
       ),
     );
   }
@@ -180,11 +183,11 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   Widget buildDot(int index) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      height: 5,
-      width: _currentPage == index ? 67 : 18.5,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
+      height: 5.h,
+      width: _currentPage == index ? 67.w : 18.5.w,
+      margin: EdgeInsets.symmetric(horizontal: 4.w),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
         color: _currentPage == index
             ? const Color(0xFFD01F39)
             : const Color(0xFFEFEEF5),

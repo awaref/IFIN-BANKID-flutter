@@ -9,16 +9,32 @@ import 'package:bankid_app/providers/auth_provider.dart';
 
 class NationalIdScreen extends StatefulWidget {
   final MalaaApiClient? malaaClient;
-  const NationalIdScreen({super.key, this.malaaClient});
+  final String? nationalId;
+  const NationalIdScreen({super.key, this.malaaClient, this.nationalId});
 
   @override
   State<NationalIdScreen> createState() => _NationalIdScreenState();
 }
 
 class _NationalIdScreenState extends State<NationalIdScreen> {
-  final TextEditingController _idController = TextEditingController();
+  late final TextEditingController _idController;
   String? _selectedPhoneNumber;
   bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Prefill ID from argument or Provider
+    final initialId = widget.nationalId ?? 
+        Provider.of<AuthProvider>(context, listen: false).nationalId;
+    _idController = TextEditingController(text: initialId);
+  }
+
+  @override
+  void dispose() {
+    _idController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +83,7 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
-                    readOnly: false,
+                    readOnly: _idController.text.isNotEmpty,
                   ),
                 ],
               ),

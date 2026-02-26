@@ -65,10 +65,12 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   }
 
   void _handleDelete() {
-    final password = _controllers.map((c) => c.text).join();
-    debugPrint("Password entered: $password");
+    // final password = _controllers.map((c) => c.text).join();
     // TODO: Implement account deletion logic here
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const UpdateInformationScreen()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UpdateInformationScreen()),
+    );
   }
 
   @override
@@ -100,7 +102,11 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
             const SizedBox(height: 8),
             Text(
               l10n.deleteAccountDescription,
-              style: const TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 30),
             Text(

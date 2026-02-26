@@ -195,9 +195,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete => 'Delete';
 
   @override
-  String get editSignature => 'Edit Signature';
-
-  @override
   String get deleteSignature => 'Delete Signature';
 
   @override
@@ -689,6 +686,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get secretKeyLabel => 'Secret Key: ';
 
   @override
+  String get errorFetchingDataTitle => 'Error Fetching Data';
+
+  @override
+  String get errorFetchingDataDescription =>
+      'There was an error fetching your contracts. Please try again.';
+
+  @override
+  String get noContractsFoundTitle => 'No Contracts Found';
+
+  @override
+  String get noContractsFoundDescription =>
+      'It looks like you don\'t have any contracts yet.';
+
+  @override
   String get noInternetConnectionTitle => 'No internet connection';
 
   @override
@@ -1001,6 +1012,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pinCodeDescription => 'Please enter your 6-digit PIN to proceed.';
 
   @override
+  String get noSignaturesFound => 'No signatures found';
+
+  @override
   String get incorrectPin => 'Incorrect PIN. Please try again.';
 
   @override
@@ -1008,4 +1022,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get issuer => 'Social Flow';
+
+  @override
+  String get biometricsNotSupported =>
+      'Biometrics are not supported on this device';
+
+  @override
+  String get biometricsNotEnrolled =>
+      'Biometrics are not set up on this device. Please go to settings to enroll.';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get noPendingContracts => 'No pending contracts';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get failedToLoadNotifications => 'Failed to load notifications.';
+
+  @override
+  String get biometricsLockedOut =>
+      'Biometrics are locked due to too many attempts. Please use your PIN or wait a few minutes.';
+
+  @override
+  String get appProtectionScanFace => 'Scan your face to authenticate';
+
+  @override
+  String get usePinInstead => 'Use PIN instead';
+
+  @override
+  String get biometricsChanged =>
+      'Biometrics have changed on this device. Please re-authenticate.';
+
+  @override
+  String get qrScanTitle => 'Scan QR Code';
+
+  @override
+  String get qrScanInstructions => 'Align the QR code within the frame to scan';
+
+  @override
+  String get qrAuthTitle => 'Authentication Request';
+
+  @override
+  String get qrAuthRequestFrom => 'Authentication request from';
+
+  @override
+  String get qrAuthRequiresApproval =>
+      'This request requires your approval to proceed.';
+
+  @override
+  String get qrAuthApprove => 'Approve';
+
+  @override
+  String get qrAuthReject => 'Reject';
+
+  @override
+  String get qrAuthSuccess => 'Authenticated successfully';
+
+  @override
+  String get qrAuthRejected => 'Authentication rejected';
+
+  @override
+  String get qrAuthError => 'Authentication failed';
+
+  @override
+  String get qrInvalidCode => 'Invalid QR code';
+
+  @override
+  String get qrSessionExpired => 'Session expired or not found';
+
+  @override
+  String get failedToLoadUserData => 'Failed to load user data';
+
+  @override
+  String get noUserDataFound => 'No user data found';
+
+  @override
+  String get accountKycPending => 'KYC Pending';
 }

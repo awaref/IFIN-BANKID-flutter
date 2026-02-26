@@ -243,15 +243,4 @@ class _CheckInformationScreenState extends State<CheckInformationScreen> {
       ),
     );
   }
-
-  Widget _buildDivider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Divider(
-        color: const Color(0xFF919EAB).withAlpha((0.2 * 255).round()),
-        thickness: 1.0,
-        height: 0.0,
-      ),
-    );
-  }
 }

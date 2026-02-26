@@ -9,6 +9,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bankid_app/providers/signature_provider.dart';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddNewSignatureScreen extends StatefulWidget {
   const AddNewSignatureScreen({super.key});
@@ -40,7 +43,8 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
   double _brushSize = 6;
   Color _brushColor = const Color(0xFF111827);
   Stroke? _currentStroke;
-  final Size _canvasSize = const Size(600, 200);
+  final GlobalKey _repaintKey = GlobalKey();
+  ScrollPhysics _scrollPhysics = const BouncingScrollPhysics();
 
   @override
   void initState() {
@@ -88,6 +92,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
           children: [
             Expanded(
               child: SingleChildScrollView(
+                physics: _scrollPhysics,
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,6 +139,7 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
                       height: 460,
                       child: TabBarView(
                         controller: _tabController,
+                        physics: _scrollPhysics,
                         children: [
                           _buildTextTab(context, l10n),
                           _buildImageTab(context, l10n),
@@ -301,10 +307,12 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
             child: Crop(
               image: _selectedRasterBytes!,
               controller: _cropController,
-              onCropped: (bytes) {
-                setState(() {
-                  _selectedRasterBytes = bytes;
-                });
+              onCropped: (result) {
+                if (result is CropSuccess) {
+                  setState(() {
+                    _selectedRasterBytes = result.croppedImage;
+                  });
+                }
               },
             ),
           ),
@@ -371,34 +379,102 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: double.infinity,
-          height: 220,
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFE0E0E0), width: 1)),
-          child: Listener(
-            onPointerDown: (e) {
-              _redo.clear();
-              _currentStroke = Stroke(points: [e.localPosition], width: _widthForPressure(e.pressure), color: _brushColor);
-              setState(() {});
-            },
-            onPointerMove: (e) {
-              if (_currentStroke != null) {
-                _currentStroke!.points.add(e.localPosition);
-                _currentStroke = Stroke(points: List.of(_currentStroke!.points), width: _widthForPressure(e.pressure), color: _brushColor);
-                setState(() {});
-              }
-            },
-            onPointerUp: (e) {
-              if (_currentStroke != null) {
-                _strokes.add(_currentStroke!);
-                _currentStroke = null;
-                setState(() {});
-              }
-            },
-            child: CustomPaint(
-              painter: _SignaturePainter(strokes: _strokes, current: _currentStroke, bgColor: const Color(0x00000000)),
+        Stack(
+          children: [
+            RepaintBoundary(
+              key: _repaintKey,
+              child: Container(
+                width: double.infinity,
+                height: 220,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+                ),
+                child: Listener(
+                  behavior: HitTestBehavior.opaque,
+                  onPointerDown: (e) {
+                    _redo.clear();
+                    _currentStroke = Stroke(
+                      points: [e.localPosition],
+                      width: _widthForPressure(e.pressure),
+                      color: _brushColor,
+                    );
+                    setState(() {
+                      _scrollPhysics = const NeverScrollableScrollPhysics();
+                    });
+                  },
+                  onPointerMove: (e) {
+                    if (_currentStroke != null) {
+                      _currentStroke!.points.add(e.localPosition);
+                      _currentStroke = Stroke(
+                        points: List.of(_currentStroke!.points),
+                        width: _widthForPressure(e.pressure),
+                        color: _brushColor,
+                      );
+                      setState(() {});
+                    }
+                  },
+                  onPointerUp: (e) {
+                    if (_currentStroke != null) {
+                      _strokes.add(_currentStroke!);
+                      _currentStroke = null;
+                      setState(() {
+                        _scrollPhysics = const BouncingScrollPhysics();
+                      });
+                    }
+                  },
+                  onPointerCancel: (e) {
+                    if (_currentStroke != null) {
+                      _strokes.add(_currentStroke!);
+                      _currentStroke = null;
+                      setState(() {
+                        _scrollPhysics = const BouncingScrollPhysics();
+                      });
+                    }
+                  },
+                  child: CustomPaint(
+                    painter: _SignaturePainter(
+                      strokes: _strokes,
+                      current: _currentStroke,
+                      bgColor: const Color(0x00000000),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Row(
+                children: [
+                  _iconButton(
+                    icon: Icons.undo,
+                    onTap: _strokes.isEmpty ? null : _undo,
+                    color: _strokes.isEmpty ? Colors.grey : const Color(0xFF212B36),
+                  ),
+                  const SizedBox(width: 8),
+                  _iconButton(
+                    icon: Icons.redo,
+                    onTap: _redo.isEmpty ? null : _redoAction,
+                    color: _redo.isEmpty ? Colors.grey : const Color(0xFF212B36),
+                  ),
+                  const SizedBox(width: 8),
+                  _iconButton(
+                    icon: Icons.delete_outline,
+                    onTap: _strokes.isEmpty ? null : _clear,
+                    color: _strokes.isEmpty ? Colors.grey : const Color(0xFFD01F39),
+                  ),
+                  const SizedBox(width: 8),
+                  _iconButton(
+                    icon: Icons.check,
+                    onTap: _strokes.isEmpty ? null : _onSave,
+                    color: _strokes.isEmpty ? Colors.grey : const Color(0xFF37C293),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         Row(
@@ -438,32 +514,28 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _undo,
-                child: const Text('Undo'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _redoAction,
-                child: const Text('Redo'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _clear,
-                child: const Text('Clear'),
-              ),
+      ],
+    );
+  }
+
+  Widget _iconButton({required IconData icon, VoidCallback? onTap, required Color color}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.8),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-      ],
+        child: Icon(icon, size: 20, color: color),
+      ),
     );
   }
 
@@ -503,6 +575,42 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
     setState(() {});
   }
 
+  Future<Uint8List> _svgStringToPngBytes(String svgString, {double? width, double? height}) async {
+    final SvgStringLoader svgStringLoader = SvgStringLoader(svgString);
+    final PictureInfo pictureInfo = await vg.loadPicture(svgStringLoader, null);
+    final ui.Picture picture = pictureInfo.picture;
+
+    final double targetWidth = width ?? pictureInfo.size.width;
+    final double targetHeight = height ?? pictureInfo.size.height;
+
+    final ui.PictureRecorder recorder = ui.PictureRecorder();
+    final ui.Canvas canvas = Canvas(recorder, Rect.fromPoints(Offset.zero, Offset(targetWidth, targetHeight)));
+    canvas.scale(targetWidth / pictureInfo.size.width, targetHeight / pictureInfo.size.height);
+    canvas.drawPicture(picture);
+    final ui.Image imgByteData = await recorder.endRecording().toImage(targetWidth.ceil(), targetHeight.ceil());
+    final ByteData? bytesData = await imgByteData.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List imageData = bytesData?.buffer.asUint8List() ?? Uint8List(0);
+    pictureInfo.picture.dispose();
+    return imageData;
+  }
+
+  Future<String> _saveTempFileFromBytes(Uint8List bytes, String extension) async {
+    final tempDir = await getTemporaryDirectory();
+    final fileName = '${DateTime.now().microsecondsSinceEpoch}.$extension';
+    final file = File('${tempDir.path}/$fileName');
+    await file.writeAsBytes(bytes);
+    return file.path;
+  }
+
+  Future<void> _cleanupTempFile(String path) async {
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {}
+  }
+
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['png', 'jpg', 'jpeg', 'svg']);
@@ -532,25 +640,69 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
     final provider = Provider.of<SignatureProvider>(context, listen: false);
     final tab = _tabController.index;
     final navigator = Navigator.of(context);
-    if (tab == 0) {
-      if (_textController.text.trim().isEmpty) return;
-      await provider.addTextSignature(title: title, text: _textController.text.trim(), color: _textColor, fontSize: _textFontSize);
-      navigator.pop();
-    } else if (tab == 1) {
-      if (_selectedSvgPath != null) {
-        final svgString = await File(_selectedSvgPath!).readAsString();
-        await provider.addSvgSignature(title: title, svgString: svgString);
-        navigator.pop();
-        return;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    
+    try {
+      if (tab == 0) {
+        if (_textController.text.trim().isEmpty) return;
+        await provider.addTextSignature(
+          title: title, 
+          text: _textController.text.trim(), 
+        );
+      } else if (tab == 1) {
+        String? tempFilePath;
+        try {
+          if (_selectedSvgPath != null) {
+            final svgString = await File(_selectedSvgPath!).readAsString();
+            final pngBytes = await _svgStringToPngBytes(svgString, width: _targetWidth.toDouble(), height: (_targetWidth / 3).toDouble()); // Assuming a 3:1 aspect ratio for signatures
+            tempFilePath = await _saveTempFileFromBytes(pngBytes, 'png');
+          } else if (_selectedRasterBytes != null) {
+            tempFilePath = await _saveTempFileFromBytes(_selectedRasterBytes!, 'png');
+          } else {
+            return;
+          }
+
+          await provider.addImageSignature(
+            title: title,
+            source: File(tempFilePath),
+            targetMaxWidth: _targetWidth,
+            forcePng: true,
+          );
+        } finally {
+          if (tempFilePath != null) {
+            await _cleanupTempFile(tempFilePath);
+          }
+        }
+      } else {
+        if (_strokes.isEmpty) return;
+        String? tempFilePath;
+        try {
+          // Export via RepaintBoundary for high-DPI
+          final boundary = _repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+          if (boundary != null) {
+            final image = await boundary.toImage(pixelRatio: 3.0);
+            final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+            if (byteData != null) {
+              final bytes = byteData.buffer.asUint8List();
+              tempFilePath = await _saveTempFileFromBytes(bytes, 'png');
+              await provider.addImageSignature(
+                title: title,
+                source: File(tempFilePath),
+                forcePng: true,
+              );
+            }
+          }
+        } finally {
+          if (tempFilePath != null) {
+            await _cleanupTempFile(tempFilePath);
+          }
+        }
       }
-      if (_selectedRasterBytes != null) {
-        await provider.addImageBytesSignature(title: title, bytes: _selectedRasterBytes!, targetMaxWidth: _targetWidth, forcePng: true);
-        navigator.pop();
-      }
-    } else {
-      if (_strokes.isEmpty) return;
-      await provider.addHandwritingSignature(title: title, strokes: _strokes, canvasSize: _canvasSize);
       navigator.pop();
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error saving signature: $e')),
+      );
     }
   }
 }
@@ -570,6 +722,8 @@ class _SignaturePainter extends CustomPainter {
         ..color = s.color
         ..strokeWidth = s.width
         ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..isAntiAlias = true
         ..style = PaintingStyle.stroke;
       for (int i = 1; i < s.points.length; i++) {
         canvas.drawLine(s.points[i - 1], s.points[i], p);
@@ -580,6 +734,8 @@ class _SignaturePainter extends CustomPainter {
         ..color = current!.color
         ..strokeWidth = current!.width
         ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..isAntiAlias = true
         ..style = PaintingStyle.stroke;
       for (int i = 1; i < current!.points.length; i++) {
         canvas.drawLine(current!.points[i - 1], current!.points[i], p);

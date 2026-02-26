@@ -81,7 +81,6 @@
   "yourPhoneNumbersDescription": "We found these numbers on your National ID. Pick one to start with it.",
   "pickNumberButton": "Pick number",
   "delete": "Delete",
-  "editSignature": "Edit Signature",
   "deleteSignature": "Delete Signature",
   "areYouSureYouWantToDeleteSignature": "Are you sure you want to delete Signature Number {number}?",
   "digitalSignatures": "Digital Signatures",
@@ -236,6 +235,10 @@
   "issuerLabel": "Issuer: ",
   "accountLabel": "Account: ",
   "secretKeyLabel": "Secret Key: ",
+  "errorFetchingDataTitle": "Error Fetching Data",
+  "errorFetchingDataDescription": "There was an error fetching your contracts. Please try again.",
+  "noContractsFoundTitle": "No Contracts Found",
+  "noContractsFoundDescription": "It looks like you don't have any contracts yet.",
   "noInternetConnectionTitle": "No internet connection",
   "noInternetConnectionDescription": "Please check your internet connection and try again.",
   "retryButton": "Retry",
@@ -333,7 +336,43 @@
   "updateInformationButton": "Update Information",
   "enterPinCode": "Enter PIN Code",
   "pinCodeDescription": "Please enter your 6-digit PIN to proceed.",
+  "noSignaturesFound": "No signatures found",
   "incorrectPin": "Incorrect PIN. Please try again.",
   "verify": "Verify",
-  "issuer": "Social Flow"
+  "issuer": "Social Flow",
+  "biometricsNotSupported": "Biometrics are not supported on this device",
+  "biometricsNotEnrolled": "Biometrics are not set up on this device. Please go to settings to enroll.",
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Text for loading state"
+  },
+  "noPendingContracts": "No pending contracts",
+  "@noPendingContracts": {
+    "description": "Text when there are no pending contracts"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Tooltip text for the notifications icon"
+  },
+ 
+  "failedToLoadNotifications": "Failed to load notifications.",
+  "biometricsLockedOut": "Biometrics are locked due to too many attempts. Please use your PIN or wait a few minutes.",
+  "appProtectionScanFace": "Scan your face to authenticate",
+  "usePinInstead": "Use PIN instead",
+  "biometricsChanged": "Biometrics have changed on this device. Please re-authenticate.",
+  "qrScanTitle": "Scan QR Code",
+  "qrScanInstructions": "Align the QR code within the frame to scan",
+  "qrAuthTitle": "Authentication Request",
+  "qrAuthRequestFrom": "Authentication request from",
+  "qrAuthRequiresApproval": "This request requires your approval to proceed.",
+  "qrAuthApprove": "Approve",
+  "qrAuthReject": "Reject",
+  "qrAuthSuccess": "Authenticated successfully",
+  "qrAuthRejected": "Authentication rejected",
+  "qrAuthError": "Authentication failed",
+  "qrInvalidCode": "Invalid QR code",
+  "qrSessionExpired": "Session expired or not found",
+  "failedToLoadUserData": "Failed to load user data",
+  "noUserDataFound": "No user data found",
+  "accountKycPending": "KYC Pending"
 }

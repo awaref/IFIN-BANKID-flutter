@@ -458,12 +458,6 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get delete;
 
-  /// No description provided for @editSignature.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit Signature'**
-  String get editSignature;
-
   /// No description provided for @deleteSignature.
   ///
   /// In en, this message translates to:
@@ -1353,6 +1347,30 @@ abstract class AppLocalizations {
   /// **'Secret Key: '**
   String get secretKeyLabel;
 
+  /// No description provided for @errorFetchingDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error Fetching Data'**
+  String get errorFetchingDataTitle;
+
+  /// No description provided for @errorFetchingDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'There was an error fetching your contracts. Please try again.'**
+  String get errorFetchingDataDescription;
+
+  /// No description provided for @noContractsFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Contracts Found'**
+  String get noContractsFoundTitle;
+
+  /// No description provided for @noContractsFoundDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'It looks like you don\'t have any contracts yet.'**
+  String get noContractsFoundDescription;
+
   /// No description provided for @noInternetConnectionTitle.
   ///
   /// In en, this message translates to:
@@ -1935,6 +1953,12 @@ abstract class AppLocalizations {
   /// **'Please enter your 6-digit PIN to proceed.'**
   String get pinCodeDescription;
 
+  /// No description provided for @noSignaturesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No signatures found'**
+  String get noSignaturesFound;
+
   /// No description provided for @incorrectPin.
   ///
   /// In en, this message translates to:
@@ -1952,6 +1976,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Social Flow'**
   String get issuer;
+
+  /// No description provided for @biometricsNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics are not supported on this device'**
+  String get biometricsNotSupported;
+
+  /// No description provided for @biometricsNotEnrolled.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics are not set up on this device. Please go to settings to enroll.'**
+  String get biometricsNotEnrolled;
+
+  /// Text for loading state
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// Text when there are no pending contracts
+  ///
+  /// In en, this message translates to:
+  /// **'No pending contracts'**
+  String get noPendingContracts;
+
+  /// Tooltip text for the notifications icon
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @failedToLoadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load notifications.'**
+  String get failedToLoadNotifications;
+
+  /// No description provided for @biometricsLockedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics are locked due to too many attempts. Please use your PIN or wait a few minutes.'**
+  String get biometricsLockedOut;
+
+  /// No description provided for @appProtectionScanFace.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan your face to authenticate'**
+  String get appProtectionScanFace;
+
+  /// No description provided for @usePinInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Use PIN instead'**
+  String get usePinInstead;
+
+  /// No description provided for @biometricsChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics have changed on this device. Please re-authenticate.'**
+  String get biometricsChanged;
+
+  /// No description provided for @qrScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR Code'**
+  String get qrScanTitle;
+
+  /// No description provided for @qrScanInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Align the QR code within the frame to scan'**
+  String get qrScanInstructions;
+
+  /// No description provided for @qrAuthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication Request'**
+  String get qrAuthTitle;
+
+  /// No description provided for @qrAuthRequestFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication request from'**
+  String get qrAuthRequestFrom;
+
+  /// No description provided for @qrAuthRequiresApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'This request requires your approval to proceed.'**
+  String get qrAuthRequiresApproval;
+
+  /// No description provided for @qrAuthApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get qrAuthApprove;
+
+  /// No description provided for @qrAuthReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get qrAuthReject;
+
+  /// No description provided for @qrAuthSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticated successfully'**
+  String get qrAuthSuccess;
+
+  /// No description provided for @qrAuthRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication rejected'**
+  String get qrAuthRejected;
+
+  /// No description provided for @qrAuthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed'**
+  String get qrAuthError;
+
+  /// No description provided for @qrInvalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid QR code'**
+  String get qrInvalidCode;
+
+  /// No description provided for @qrSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired or not found'**
+  String get qrSessionExpired;
+
+  /// No description provided for @failedToLoadUserData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load user data'**
+  String get failedToLoadUserData;
+
+  /// No description provided for @noUserDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user data found'**
+  String get noUserDataFound;
+
+  /// No description provided for @accountKycPending.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Pending'**
+  String get accountKycPending;
 }
 
 class _AppLocalizationsDelegate

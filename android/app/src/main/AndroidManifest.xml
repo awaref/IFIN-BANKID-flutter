@@ -13,9 +13,9 @@
 
     <application
         android:enableOnBackInvokedCallback="true"
-        android:label="bankid_app"
+        android:label="IFIN Bank ID"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
 
         <!-- Main Flutter Activity -->

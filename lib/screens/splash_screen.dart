@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:bankid_app/l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
 import 'package:bankid_app/screens/national_id_verification_screen.dart';
 import 'package:bankid_app/screens/home_screen.dart';
-import 'package:bankid_app/providers/auth_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:bankid_app/l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,14 +19,31 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   bool _navigated = false;
-  bool _isLoading = true; // Added for loading indicator
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    // --- Animation ---
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.forward();
+
+    // --- Start flow ---
     _requestNotificationPermission();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -36,54 +53,58 @@ class _SplashScreenState extends State<SplashScreen> {
     return Directionality(
       textDirection: localeCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: Colors.white, // 🔹 Brand/splash color
+        backgroundColor: Colors.white,
         body: Center(
-          child: _isLoading
-              ? const CircularProgressIndicator() // Show loading indicator
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)?.splashScreenLogo ??
-                          "BankID",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.rubik(
-                        fontSize: 40.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                        height: 1.6,
-                      ),
-                    ),
-                  ],
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  "assets/images/bankid_logo.png",
+                  width: 140.w,
+                  height: 140.w,
                 ),
+                SizedBox(height: 40.h),
+                const CircularProgressIndicator(color: Colors.black),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  // --- Navigation ---
+  void _navigateToHome() {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
     );
   }
 
   void _navigateToVerification() {
     if (_navigated || !mounted) return;
     _navigated = true;
-
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const NationalIdVerificationScreen()),
     );
   }
 
-  void _navigateToHome() {
-    if (_navigated || !mounted) return;
-    _navigated = true;
-
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+  // --- Permissions ---
+  Future<void> _requestNotificationPermission() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      final status = await Permission.notification.request();
+      if (!mounted) return;
+      if (status.isPermanentlyDenied) await openAppSettings();
+    }
+    await _determineStartScreen();
   }
 
+  // --- Language + auth check ---
   Future<void> _determineStartScreen() async {
-    final languageProvider = Provider.of<LanguageProvider>(
-      context,
-      listen: false,
-    );
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     final savedCode = prefs.getString('language_code');
     const supported = ['en', 'ar'];
@@ -93,31 +114,14 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       await languageProvider.changeLanguage(const Locale('en'));
     }
-    await _checkAuthentication(); // Always check authentication after language is set
-  }
-
-  /// 🔹 Request system notification permission (Android 13+, iOS 12+)
-  Future<void> _requestNotificationPermission() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      final status = await Permission.notification.request();
-
-      if (!mounted) return;
-
-      if (status.isPermanentlyDenied) {
-        await openAppSettings();
-      }
-    }
-
-    // 👉 Determine start based on stored language after permission request
-    await _determineStartScreen();
+    await _checkAuthentication();
   }
 
   Future<void> _checkAuthentication() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    try {
-      setState(() => _isLoading = true);
 
-      // ── Step 1: Try biometric fast-path ──────────────────────────────────
+    try {
+      // --- Step 1: biometric fast-path ---
       final canUseBiometric = await authProvider.canLoginWithBiometric();
       if (canUseBiometric) {
         final biometricSuccess = await authProvider.loginWithBiometric();
@@ -125,21 +129,17 @@ class _SplashScreenState extends State<SplashScreen> {
           _navigateToHome();
           return;
         }
-        // Biometric cancelled / failed → fall through to token check below.
-        // (User may still have a valid access_token from a previous session.)
       }
 
-      // ── Step 2: Normal token / session check ─────────────────────────────
+      // --- Step 2: normal session/token ---
       final isAuthenticated = await authProvider.loadCurrentUser();
       if (isAuthenticated) {
         _navigateToHome();
       } else {
         _navigateToVerification();
       }
-    } catch (e) {
+    } catch (_) {
       _navigateToVerification();
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 }

@@ -17,74 +17,60 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bankid_app/firebase_options.dart';
 import 'package:bankid_app/services/device_api.dart';
-import 'package:bankid_app/repositories/device_repository.dart'; // Import DeviceApi
+import 'package:bankid_app/repositories/device_repository.dart';
+import 'package:bankid_app/services/notification_service.dart';
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  debugPrint("Handling a background message: ${message.messageId}");
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+  debugPrint("🔥 BACKGROUND PUSH RECEIVED");
+  debugPrint("Message ID: ${message.messageId}");
+  debugPrint("Title: ${message.notification?.title}");
+  debugPrint("Body: ${message.notification?.body}");
+  debugPrint("Data: ${message.data}");
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // Request permission for notifications
-  NotificationSettings settings = await FirebaseMessaging.instance
-      .requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
-
-  debugPrint('User granted permission: ${settings.authorizationStatus}');
-
-  // Handle foreground messages
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    debugPrint('Got a message whilst in the foreground!');
-    debugPrint('Message data: ${message.data}');
-
-    if (message.notification != null) {
-      debugPrint(
-        'Message also contained a notification: ${message.notification}',
-      );
-    }
-  });
-
-  // Listen for token refreshes
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-    debugPrint("FCM Token refreshed: $newToken");
-    final apiService = ApiService(baseUrl: AppConfig.baseUrl);
-    final storedAuthToken = await apiService.getPublicToken();
-    if (storedAuthToken != null) {
-      await DeviceApi().registerDevice(authToken: storedAuthToken);
-    } else {
-      debugPrint(
-        "No stored auth token found, skipping device registration on token refresh.",
-      );
-    }
-  });
 
   // Load environment variables
   await dotenv.load(fileName: ".env");
 
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize Notification Service
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+
+  // Initialize API & Repositories
   final apiService = ApiService(baseUrl: AppConfig.baseUrl);
   final authRepository = AuthRepository(apiService: apiService);
   final signatureService = SignatureService(apiService: apiService);
 
-  // Define the onUnauthorized callback
+  // Callback for unauthorized responses
   void onUnauthorizedCallback() {
-    authRepository.deleteToken(); // This will clear the token
-    // Optionally, navigate to login screen or show a message
+    authRepository.deleteToken();
   }
 
   final deviceApi = DeviceApi(onUnauthorized: onUnauthorizedCallback);
   final deviceRepository = DeviceRepository(deviceApi: deviceApi);
+
+  // Setup Firebase background handler
+  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+
+  // Register device automatically once user is logged in
+  final storedAuthToken = await authRepository.getToken();
+  if (storedAuthToken != null) {
+    await deviceRepository.registerDevice(authToken: storedAuthToken);
+  }
+
+  // Listen for token refresh and re-register in Firebase
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    debugPrint("🔄 FCM Token refreshed: $newToken");
+    final storedAuthToken = await authRepository.getToken();
+    if (storedAuthToken != null) {
+      await deviceRepository.registerDevice(authToken: storedAuthToken);
+    }
+  });
 
   runApp(
     MultiProvider(
@@ -99,6 +85,7 @@ void main() async {
           create: (_) =>
               SignatureProvider(signatureService: signatureService)..load(),
         ),
+        Provider<NotificationService>.value(value: notificationService),
       ],
       child: const MyApp(),
     ),
@@ -111,16 +98,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
+    final notificationService = Provider.of<NotificationService>(context);
 
     return ScreenUtilInit(
-      designSize: const Size(375, 812), // Standard iPhone design size
+      designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp(
+          navigatorKey: notificationService.navigatorKey,
           title: 'BankID App',
           debugShowCheckedModeBanner: false,
-          // Localization support
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -128,10 +116,9 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('en'), // English
-            Locale('ar'), // Arabic
+            Locale('en'),
+            Locale('ar'),
           ],
-          // Use the current locale from the provider
           locale: languageProvider.currentLocale,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
@@ -164,11 +151,9 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           home: const SplashScreen(),
-          // Enable RTL text direction based on locale
           builder: (context, child) {
             return Directionality(
-              textDirection:
-                  Localizations.localeOf(context).languageCode == 'ar'
+              textDirection: Localizations.localeOf(context).languageCode == 'ar'
                   ? TextDirection.rtl
                   : TextDirection.ltr,
               child: child!,

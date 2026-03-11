@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:bankid_app/screens/home_screen.dart'; // Import home_screen.dart
+import 'package:bankid_app/screens/home_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
+import 'package:bankid_app/core/utils/country_utils.dart';
 
 class UpdateInformationScreen extends StatelessWidget {
   const UpdateInformationScreen({super.key});
@@ -9,6 +12,9 @@ class UpdateInformationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final locale = Localizations.localeOf(context).languageCode;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -25,7 +31,7 @@ class UpdateInformationScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView( // ✅ allows scrolling instead of overflow
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -40,7 +46,6 @@ class UpdateInformationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              /// ✅ Row with flexible images
               Row(
                 children: [
                   Expanded(child: _buildImagePlaceholder()),
@@ -50,21 +55,39 @@ class UpdateInformationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              _buildInfoRow(l10n.firstNameLabel, 'AYHAM'),
+              _buildInfoRow(l10n.firstNameLabel, authProvider.firstName ?? '-'),
               _buildDivider(),
-              _buildInfoRow(l10n.lastNameLabel, 'AZEEMAH'),
+              _buildInfoRow(l10n.lastNameLabel, authProvider.lastName ?? '-'),
               _buildDivider(),
-              _buildInfoRow(l10n.genderLabel, 'Male'),
+              _buildInfoRow(l10n.genderLabel, authProvider.gender ?? '-'),
               _buildDivider(),
-              _buildInfoRow(l10n.dateOfBirthLabel, '25/10/1971'),
+              _buildInfoRow(
+                l10n.dateOfBirthLabel,
+                authProvider.dateOfBirth ?? '-',
+              ),
               _buildDivider(),
-              _buildInfoRow(l10n.nationalityLabel, 'British'),
+              _buildInfoRow(
+                l10n.nationalityLabel,
+                CountryUtils.getCountryName(
+                  authProvider.nationality ?? '-',
+                  locale: locale,
+                ),
+              ),
               _buildDivider(),
-              _buildInfoRow(l10n.nationalIdNumberLabel, '71105350328'),
+              _buildInfoRow(
+                l10n.nationalIdNumberLabel,
+                authProvider.nationalId ?? '-',
+              ),
               _buildDivider(),
-              _buildInfoRow(l10n.dateOfIssueLabel, '19/01/2022'),
+              _buildInfoRow(
+                l10n.dateOfIssueLabel,
+                authProvider.dateOfIssue ?? '-',
+              ),
               _buildDivider(),
-              _buildInfoRow(l10n.dateOfExpiryLabel, '19/01/2027'),
+              _buildInfoRow(
+                l10n.dateOfExpiryLabel,
+                authProvider.dateOfExpiry ?? '-',
+              ),
 
               const SizedBox(height: 32),
 

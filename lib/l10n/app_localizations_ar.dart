@@ -594,7 +594,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contractScreenSignatureValue => '___________';
 
   @override
-  String get contractScreenDateLabel => 'التاريخ:';
+  String get contractScreenDateLabel => 'التاريخ';
 
   @override
   String get contractScreenDateValue => '15/08/2025';
@@ -611,6 +611,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contractScreenPartyOneTitle => 'الطرف الأول:';
+
+  @override
+  String get contractScreenDocumentTab => 'المستند';
+
+  @override
+  String get contractScreenDetailsTab => 'التفاصيل';
+
+  @override
+  String get contractScreenStatusLabel => 'الحالة';
+
+  @override
+  String get contractScreenTypeLabel => 'النوع';
+
+  @override
+  String get contractScreenExpiresAtLabel => 'تاريخ الانتهاء';
+
+  @override
+  String get contractScreenCreatedAtLabel => 'تاريخ الإنشاء';
 
   @override
   String get deleteAccountTitle => 'حذف الحساب.';
@@ -1099,4 +1117,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountKycPending => 'في انتظار التحقق من الهوية';
+
+  @override
+  String get statusSigned => 'موقّع';
+
+  @override
+  String get statusPending => 'قيد الانتظار';
+
+  @override
+  String get statusPendingSignature => 'بانتظار التوقيع';
+
+  @override
+  String get statusRejected => 'مرفوض';
+
+  @override
+  String get notAvailable => 'غير متوفر';
+
+  @override
+  String get bankNameLabel => 'اسم البنك';
+
+  @override
+  String get accountNumberLabel => 'رقم الحساب';
+
+  @override
+  String get accountBalanceLabel => 'الرصيد';
 }

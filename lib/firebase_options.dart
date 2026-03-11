@@ -41,49 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyD3EVak3gel1mUC6dA-hp7MiL4rrEibYPw',
-    appId: '1:585665122067:web:8dc5777b2f5465588fd4e6',
-    messagingSenderId: '585665122067',
-    projectId: 'bankid-ifin-a2fff',
-    authDomain: 'bankid-ifin-a2fff.firebaseapp.com',
-    storageBucket: 'bankid-ifin-a2fff.firebasestorage.app',
-    measurementId: 'G-X3SNWQGCL7',
+    apiKey: 'AIzaSyDlyFFAmpNW9pIft5c2uEMk2jyUW2GSRRw',
+    appId: '1:588638431127:web:69648c85bd40462d8386d2',
+    messagingSenderId: '588638431127',
+    projectId: 'bankid-ifin',
+    authDomain: 'bankid-ifin.firebaseapp.com',
+    storageBucket: 'bankid-ifin.firebasestorage.app',
+    measurementId: 'G-X62LV7V3QS',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCY6OdoRaUvMQgERT16Lql7gmKZfhiPAfY',
-    appId: '1:585665122067:android:186d177c84157b8d8fd4e6',
-    messagingSenderId: '585665122067',
-    projectId: 'bankid-ifin-a2fff',
-    storageBucket: 'bankid-ifin-a2fff.firebasestorage.app',
+    apiKey: 'AIzaSyDTa8wZ_pV_0HTiLiTNxSm38W9FtvpPVvE',
+    appId: '1:588638431127:android:53a47d45a3d69eb08386d2',
+    messagingSenderId: '588638431127',
+    projectId: 'bankid-ifin',
+    storageBucket: 'bankid-ifin.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAWunSZR-LuI-uP0hfsTSIgkyyHIBwH9Lg',
-    appId: '1:585665122067:ios:6f44cd36e9d5321e8fd4e6',
-    messagingSenderId: '585665122067',
-    projectId: 'bankid-ifin-a2fff',
-    storageBucket: 'bankid-ifin-a2fff.firebasestorage.app',
+    apiKey: 'AIzaSyDXSXuRMGB06T1CKUV3yuCceRhOdPQmEQU',
+    appId: '1:588638431127:ios:9c41ab10201507308386d2',
+    messagingSenderId: '588638431127',
+    projectId: 'bankid-ifin',
+    storageBucket: 'bankid-ifin.firebasestorage.app',
     iosBundleId: 'com.example.bankidApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAWunSZR-LuI-uP0hfsTSIgkyyHIBwH9Lg',
-    appId: '1:585665122067:ios:6f44cd36e9d5321e8fd4e6',
-    messagingSenderId: '585665122067',
-    projectId: 'bankid-ifin-a2fff',
-    storageBucket: 'bankid-ifin-a2fff.firebasestorage.app',
+    apiKey: 'AIzaSyDXSXuRMGB06T1CKUV3yuCceRhOdPQmEQU',
+    appId: '1:588638431127:ios:9c41ab10201507308386d2',
+    messagingSenderId: '588638431127',
+    projectId: 'bankid-ifin',
+    storageBucket: 'bankid-ifin.firebasestorage.app',
     iosBundleId: 'com.example.bankidApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyD3EVak3gel1mUC6dA-hp7MiL4rrEibYPw',
-    appId: '1:585665122067:web:cd26177aa72270498fd4e6',
-    messagingSenderId: '585665122067',
-    projectId: 'bankid-ifin-a2fff',
-    authDomain: 'bankid-ifin-a2fff.firebaseapp.com',
-    storageBucket: 'bankid-ifin-a2fff.firebasestorage.app',
-    measurementId: 'G-ESSSXTXKMY',
+    apiKey: 'AIzaSyDlyFFAmpNW9pIft5c2uEMk2jyUW2GSRRw',
+    appId: '1:588638431127:web:8e838179520ae2f48386d2',
+    messagingSenderId: '588638431127',
+    projectId: 'bankid-ifin',
+    authDomain: 'bankid-ifin.firebaseapp.com',
+    storageBucket: 'bankid-ifin.firebasestorage.app',
+    measurementId: 'G-NN4B3L2QX8',
   );
 
 }

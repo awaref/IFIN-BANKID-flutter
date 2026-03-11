@@ -62,4 +62,23 @@ class DeviceService {
     }
     return 'Unknown Device Name';
   }
+
+  Future<String> getOsVersion() async {
+    final deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.version.release;
+    } else if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      return iosInfo.systemVersion;
+    }
+    return 'Unknown';
+  }
+
+  Future<String> getDeviceFingerprint() async {
+    // Generate a basic fingerprint from deviceId and model
+    final deviceId = await getDeviceId();
+    final deviceModel = await getDeviceModel();
+    return '${deviceId}_$deviceModel'.replaceAll(RegExp(r'\s+'), '_');
+  }
 }

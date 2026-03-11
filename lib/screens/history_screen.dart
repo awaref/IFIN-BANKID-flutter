@@ -375,20 +375,35 @@ class _ContractCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColors = {
       'signed': Colors.green,
       'pending': Colors.orange,
+      'pending_signature': Colors.orange,
       'rejected': Colors.red,
     };
 
-    final statusColor =
-        statusColors[contract.status.toLowerCase()] ?? Colors.grey;
+    final statusText = {
+      'signed': l10n.statusSigned,
+      'pending': l10n.statusPending,
+      'pending_signature': l10n.statusPendingSignature,
+      'rejected': l10n.statusRejected,
+    };
+
+    final statusKey = contract.status.toLowerCase();
+    final statusColor = statusColors[statusKey] ?? Colors.grey;
+    final displayStatus =
+        statusText[statusKey] ?? contract.status.toUpperCase();
 
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => ContractScreen(contract: contract)),
-      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ContractScreen(contractId: contract.id),
+          ),
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -441,28 +456,58 @@ class _ContractCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      contract.subtitle ?? "",
+                      contract.description ?? contract.subtitle ?? "",
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 13,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    Row(
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
                       children: [
-                        HugeIcon(
-                          icon: HugeIcons.strokeRoundedCalendar03,
-                          size: 14,
-                          color: Colors.grey.shade400,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            HugeIcon(
+                              icon: HugeIcons.strokeRoundedCalendar03,
+                              size: 14,
+                              color: Colors.grey.shade400,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              contract.createdAt != null
+                                  ? contract.createdAt!.split('T')[0]
+                                  : (contract.date ?? l10n.notAvailable),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          contract.date ?? "N/A",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
+                        if (contract.expiresAt != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedClock01,
+                                size: 14,
+                                color: Colors.red.shade300,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                contract.expiresAt!.split('T')[0],
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.red.shade300,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
                       ],
                     ),
                   ],
@@ -481,7 +526,7 @@ class _ContractCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      contract.status.toUpperCase(),
+                      displayStatus,
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,

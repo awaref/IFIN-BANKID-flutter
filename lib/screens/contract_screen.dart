@@ -1,377 +1,356 @@
+import 'dart:typed_data';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/models/contract.dart';
-import 'package:bankid_app/screens/verify_pin_screen.dart';
+import 'package:bankid_app/screens/home_screen.dart';
+import 'package:bankid_app/services/api_service.dart';
+import 'package:bankid_app/services/biometric_service.dart';
+import 'package:bankid_app/config.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:provider/provider.dart';
 
-class ContractScreen extends StatelessWidget {
+class SignContractRequest {
+  final String signatureType;
+  final bool? biometricVerified;
+  final String? pinCode;
+  final String? certificateId;
+  final Map<String, dynamic>? signaturePosition;
+
+  SignContractRequest({
+    required this.signatureType,
+    this.biometricVerified,
+    this.pinCode,
+    this.certificateId,
+    this.signaturePosition,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "signature_type": signatureType,
+      if (biometricVerified != null)
+        "biometric_verified": biometricVerified,
+      if (pinCode != null)
+        "pin_code": pinCode,
+      if (certificateId != null)
+        "certificate_id": certificateId,
+      if (signaturePosition != null)
+        "signature_position": signaturePosition,
+    };
+  }
+}
+
+class ContractScreen extends StatefulWidget {
   final Contract? contract;
+  final String? contractId;
 
-  const ContractScreen({super.key, this.contract});
+  const ContractScreen({super.key, this.contract, this.contractId});
+
+  @override
+  State<ContractScreen> createState() => _ContractScreenState();
+}
+
+class _ContractScreenState extends State<ContractScreen> {
+  Contract? _contract;
+  bool _isLoading = false;
+  String? _error;
+  Uint8List? _pdfBytes;
+
+  final BiometricService _biometricService = BiometricService();
+
+  /// Original biometric check (kept unchanged)
+  Future<bool> _verifyAction() async {
+    final isEnabled = await _biometricService.isBiometricEnabledByUser();
+    if (!isEnabled) return true;
+
+    final isAvailable = await _biometricService.isBiometricAvailable();
+    if (!isAvailable) return true;
+
+    return await _biometricService.authenticate(
+      reason: AppLocalizations.of(context)!.authenticateReason,
+    );
+  }
+
+  /// NEW: biometric + refresh token authorization
+  Future<bool> _authorizeSensitiveAction() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    final isEnabled = await _biometricService.isBiometricEnabledByUser();
+    if (!isEnabled) return true;
+
+    final isAvailable = await _biometricService.isBiometricAvailable();
+    if (!isAvailable) return true;
+
+    final authenticated = await _biometricService.authenticate(
+      reason: AppLocalizations.of(context)!.authenticateReason,
+    );
+
+    if (!authenticated) return false;
+
+    final refreshToken = await apiService.getStoredRefreshToken();
+
+    if (refreshToken != null) {
+      return await apiService.refreshWithToken(refreshToken);
+    }
+
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _contract = widget.contract;
+
+    if (_contract == null && widget.contractId != null) {
+      _fetchContract();
+    } else if (_contract != null) {
+      _loadPdfAutomatically();
+    }
+  }
+
+  Future<void> _fetchContract() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final apiService = Provider.of<ApiService>(context, listen: false);
+      final id = _contract?.id ?? widget.contractId!;
+      final fullContract = await apiService.fetchContractById(id);
+
+      setState(() {
+        _contract = fullContract;
+        _isLoading = false;
+      });
+
+      _loadPdfAutomatically();
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadPdfAutomatically() async {
+    if (_contract == null) return;
+
+    String type = _contract!.status.toLowerCase() == 'signed'
+        ? 'signed'
+        : 'original';
+
+    await _loadPdf(type: type);
+  }
+
+  Future<void> _loadPdf({String type = 'original'}) async {
+    if (_contract == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final apiService = Provider.of<ApiService>(context, listen: false);
+
+      final pdfUrl =
+          '${AppConfig.baseUrl}/contracts/${_contract!.id}/download?type=$type';
+
+      final bytes = await apiService.getBytes(pdfUrl);
+
+      if (mounted) {
+        setState(() {
+          _pdfBytes = bytes;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint("PDF load error: $e");
+
+      if (mounted) {
+        setState(() {
+          _error = "Failed to load PDF";
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          contract?.title ?? l10n.contractScreenTitle,
-          style: const TextStyle(
-            color: Color(0xFF1A1D3D),
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
           ),
-        ),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          const Divider(height: 1, color: Color(0xFFE5E5E5)),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.contractScreenPartyOneTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoRow(
-                    l10n.contractScreenNameLabel,
-                    l10n.contractScreenPartyOneNameValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenIdPassportNumberLabel,
-                    l10n.contractScreenPartyOneIdPassportNumberValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenAddressLabel,
-                    l10n.contractScreenPartyOneAddressValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenPhoneLabel,
-                    l10n.contractScreenPartyOnePhoneValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRowWithLink(
-                    l10n.contractScreenEmailLabel,
-                    l10n.contractScreenPartyOneEmailValue,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.contractScreenPartyTwoTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoRow(
-                    l10n.contractScreenNameLabel,
-                    l10n.contractScreenPartyTwoNameValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenCommercialRegistrationLabel,
-                    l10n.contractScreenPartyTwoCommercialRegistrationValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenAddressLabel,
-                    l10n.contractScreenPartyTwoAddressValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenPhoneLabel,
-                    l10n.contractScreenPartyTwoPhoneValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRowWithLink(
-                    l10n.contractScreenEmailLabel,
-                    l10n.contractScreenPartyTwoEmailValue,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.contractScreenIntroductionTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.contractScreenIntroductionDescription,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.contractScreenArticleOneTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.contractScreenArticleOneDescription,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.contractScreenArticleTwoTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.contractScreenArticleTwoDescription,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.contractScreenArticleThreeTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.contractScreenArticleThreeDescription,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.contractScreenArticleFourTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.contractScreenArticleFourDescription,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.contractScreenArticleFiveTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.contractScreenArticleFiveDescription,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.contractScreenArticleSixTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.contractScreenArticleSixDescription,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.contractScreenSignaturesTitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1D3D),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoRow(
-                    l10n.contractScreenPartyOneTitle,
-                    l10n.contractScreenPartyOneNameValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenSignatureLabel,
-                    l10n.contractScreenSignatureValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenDateLabel,
-                    contract?.date ?? l10n.contractScreenDateValue,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildInfoRow(
-                    l10n.contractScreenPartyTwoTitle,
-                    l10n.contractScreenPartyTwoSignatureValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenSignatureLabel,
-                    l10n.contractScreenSignatureValue,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.contractScreenDateLabel,
-                    contract?.date ?? l10n.contractScreenDateValue,
-                  ),
-                  const SizedBox(height: 80),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: contract?.status == 'signed'
-          ? null
-          : Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha((0.05 * 255).round()),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: SafeArea(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VerifyPinScreen(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF37C293),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    l10n.contractScreenSignContractButton,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(fontSize: 14, height: 1.5),
-        children: [
-          TextSpan(
-            text: '$label ',
+          title: Text(
+            _contract?.title ?? l10n.contractScreenTitle,
             style: const TextStyle(
-              fontWeight: FontWeight.w600,
               color: Color(0xFF1A1D3D),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          TextSpan(
-            text: value,
-            style: const TextStyle(color: Color(0xFF6B7280)),
+          centerTitle: true,
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text(_error!))
+                : _pdfBytes != null
+                    ? SfPdfViewer.memory(_pdfBytes!)
+                    : const Center(child: Text("No document")),
+        bottomNavigationBar:
+            (_contract?.status == 'signed' || _contract?.status == 'rejected')
+                ? null
+                : _buildBottomBar(l10n),
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: _isLoading || _contract == null
+                  ? null
+                  : () async {
+                      final authorized =
+                          await _authorizeSensitiveAction();
+
+                      if (authorized && mounted) {
+                        _showRejectDialog(l10n);
+                      }
+                    },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: Text(l10n.statusRejected),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: _isLoading || _contract == null
+                  ? null
+                  : () async {
+                      final authorized =
+                          await _authorizeSensitiveAction();
+
+                      if (authorized && mounted) {
+                        setState(() => _isLoading = true);
+
+                        try {
+                          final apiService = Provider.of<ApiService>(
+                            context,
+                            listen: false,
+                          );
+
+                          await apiService.signContract(
+                            _contract!.id,
+                            SignContractRequest(
+                              signatureType: "biometric",
+                              biometricVerified: true,
+                            ).toJson(),
+                          );
+
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Contract signed successfully'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (_) => const HomeScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            setState(() {
+                              _error = e.toString();
+                              _isLoading = false;
+                            });
+                          }
+                        }
+                      }
+                    },
+              child: Text(l10n.contractScreenSignContractButton),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRowWithLink(String label, String email) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$label ',
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1D3D),
-            height: 1.5,
+  Future<void> _showRejectDialog(AppLocalizations l10n) async {
+    final TextEditingController reasonController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(l10n.statusRejected),
+        content: TextField(
+          controller: reasonController,
+          decoration: const InputDecoration(
+            hintText: 'Reason...',
           ),
         ),
-        Expanded(
-          child: Text(
-            email,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF3B82F6),
-              height: 1.5,
-              decoration: TextDecoration.underline,
-            ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
-        ),
-      ],
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _rejectContract(reasonController.text);
+            },
+            child: const Text('Reject'),
+          ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _rejectContract(String reason) async {
+    setState(() => _isLoading = true);
+
+    try {
+      final apiService = Provider.of<ApiService>(context, listen: false);
+
+      await apiService.rejectContract(_contract!.id, reason);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Contract rejected successfully'),
+          ),
+        );
+
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
   }
 }

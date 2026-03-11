@@ -80,16 +80,12 @@ class MalaaApiClient {
       'Content-Type': 'application/json; charset=utf-8',
       'Accept': 'application/json',
     };
-    
+
     _logRequest('POST', uri, headers, bodyMap);
 
     try {
       final response = await _client
-          .post(
-            uri,
-            headers: headers,
-            body: body,
-          )
+          .post(uri, headers: headers, body: body)
           .timeout(const Duration(seconds: 15));
 
       final duration = DateTime.now().difference(startTime).inMilliseconds;
@@ -98,7 +94,8 @@ class MalaaApiClient {
       if (response.statusCode < 200 || response.statusCode >= 300) {
         return MalaaPhoneNumbersResult(
           numbers: [],
-          error: _extractApiError(response.body) ?? 'HTTP ${response.statusCode}',
+          error:
+              _extractApiError(response.body) ?? 'HTTP ${response.statusCode}',
           statusCode: response.statusCode,
         );
       }
@@ -107,20 +104,22 @@ class MalaaApiClient {
       try {
         decoded = jsonDecode(response.body);
         debugPrint('🔵 First decode, type: ${decoded.runtimeType}');
-        
+
         // Handle double-encoded JSON (response is a JSON string containing another JSON string)
         if (decoded is String) {
           debugPrint('🔵 Response is double-encoded, decoding again...');
           decoded = jsonDecode(decoded);
           debugPrint('🔵 Second decode, type: ${decoded.runtimeType}');
         }
-        
+
         if (decoded is List && decoded.isNotEmpty) {
           debugPrint('🔵 List detected, taking first element');
           decoded = decoded[0];
         }
-        
-        debugPrint('🔵 Top-level keys: ${decoded is Map ? decoded.keys : "Not a map"}');
+
+        debugPrint(
+          '🔵 Top-level keys: ${decoded is Map ? decoded.keys : "Not a map"}',
+        );
 
         if (decoded is! Map<String, dynamic>) {
           debugPrint('⚠ Response is not a Map, converting to empty map');
@@ -130,13 +129,17 @@ class MalaaApiClient {
         // 🔹 Safely decode EncryptObject
         decoded['Data'] ??= {};
         debugPrint('🔵 Data type: ${decoded['Data'].runtimeType}');
-        debugPrint('🔵 Data keys: ${decoded['Data'] is Map ? decoded['Data'].keys : "Not a map"}');
-        
+        debugPrint(
+          '🔵 Data keys: ${decoded['Data'] is Map ? decoded['Data'].keys : "Not a map"}',
+        );
+
         final encryptStr = decoded['Data']['EncryptObject'];
         debugPrint('🔵 EncryptObject type: ${encryptStr.runtimeType}');
-        
+
         if (encryptStr != null) {
-          debugPrint('🔵 EncryptObject first 200 chars: ${encryptStr.toString().substring(0, encryptStr.toString().length > 200 ? 200 : encryptStr.toString().length)}');
+          debugPrint(
+            '🔵 EncryptObject first 200 chars: ${encryptStr.toString().substring(0, encryptStr.toString().length > 200 ? 200 : encryptStr.toString().length)}',
+          );
         }
 
         if (encryptStr is String && encryptStr.trim().isNotEmpty) {
@@ -151,10 +154,14 @@ class MalaaApiClient {
               final doubleDecoded = jsonDecode(encryptStr);
               if (doubleDecoded is String) {
                 decoded['Data']['EncryptObject'] = jsonDecode(doubleDecoded);
-                debugPrint('✅ Successfully decoded double-escaped EncryptObject');
+                debugPrint(
+                  '✅ Successfully decoded double-escaped EncryptObject',
+                );
               }
             } catch (e2) {
-              debugPrint('⚠ Failed to decode EncryptObject (double-escaped): $e2');
+              debugPrint(
+                '⚠ Failed to decode EncryptObject (double-escaped): $e2',
+              );
               decoded['Data']['EncryptObject'] = {};
             }
           }
@@ -184,15 +191,17 @@ class MalaaApiClient {
       debugPrint('🔵 Starting extraction from entire response...');
       final allNumbers = _extractMobileNumbers(decoded);
       debugPrint('🔵 All numbers found: $allNumbers');
-      
+
       debugPrint('🔵 Starting extraction from Data...');
       final dataNumbers = _extractMobileNumbers(decoded['Data']);
       debugPrint('🔵 Data numbers: $dataNumbers');
-      
+
       debugPrint('🔵 Starting extraction from EncryptObject...');
-      final encryptNumbers = _extractMobileNumbers(decoded['Data']['EncryptObject']);
+      final encryptNumbers = _extractMobileNumbers(
+        decoded['Data']['EncryptObject'],
+      );
       debugPrint('🔵 EncryptObject numbers: $encryptNumbers');
-      
+
       final numbers = <String>{
         ...allNumbers,
         ...dataNumbers,
@@ -237,10 +246,7 @@ class MalaaApiClient {
         error: 'Request timed out',
       );
     } on http.ClientException {
-      return const MalaaPhoneNumbersResult(
-        numbers: [],
-        error: 'Network error',
-      );
+      return const MalaaPhoneNumbersResult(numbers: [], error: 'Network error');
     } catch (e) {
       debugPrint('⚠ Unexpected Malaa Error: $e');
       return const MalaaPhoneNumbersResult(
@@ -279,49 +285,36 @@ class MalaaApiClient {
     });
   }
 
-  dynamic _sanitizeBody(dynamic body) {
-    if (body is Map) {
-      return body.map((key, value) {
-        if (key.toString().toLowerCase().contains('password') ||
-            key.toString().toLowerCase().contains('token') ||
-            key.toString().toLowerCase() == 'civilnumber' || // Maybe sensitive?
-            key.toString().toLowerCase() == 'mobilenumber') {
-          // Keeping civilNumber visible might be useful for debugging specific cases, 
-          // but masking it follows the "comprehensive sanitization" instruction.
-          // However, for debugging "why it works in Postman", seeing the value might be crucial.
-          // The user asked for "proper data sanitization", so I will mask it.
-          // But wait, if I mask civilNumber, I can't see what I sent.
-          // I'll mask it partially or leave it if it's not strictly a "password/token".
-          // Let's stick to standard sensitive fields + maybe PII if needed.
-          // For now, I'll treat civilNumber as PII and mask it partially if I could, 
-          // but simple masking is safer.
-          // Let's just mask standard auth/secret fields.
-          return MapEntry(key, value); 
-        }
-        return MapEntry(key, value);
-      });
-    }
-    return body;
-  }
-
-  void _logRequest(String method, Uri uri, Map<String, String> headers, dynamic body) {
+  void _logRequest(
+    String method,
+    Uri uri,
+    Map<String, String> headers,
+    dynamic body,
+  ) {
     final requestId = DateTime.now().millisecondsSinceEpoch.toString();
     _log('--- REQUEST START ($requestId) ---');
     _log('Method: $method');
     _log('URL: $uri');
     _log('Headers: ${_sanitizeHeaders(headers)}');
     if (body != null) {
-      _log('Body: $body'); // Logging full body for Malaa to debug the specific issue
+      _log(
+        'Body: $body',
+      ); // Logging full body for Malaa to debug the specific issue
     }
     _log('Timestamp: ${DateTime.now().toIso8601String()}');
     _log('--- REQUEST END ($requestId) ---');
   }
 
-  void _logResponse(String method, Uri uri, http.Response response, int durationMs) {
+  void _logResponse(
+    String method,
+    Uri uri,
+    http.Response response,
+    int durationMs,
+  ) {
     final requestId = DateTime.now().millisecondsSinceEpoch.toString();
     final status = response.statusCode;
     final level = status >= 200 && status < 300 ? 'DEBUG' : 'ERROR';
-    
+
     _log('--- RESPONSE START ($requestId) ---');
     _log('Level: $level');
     _log('Method: $method');
@@ -400,11 +393,22 @@ class MalaaApiClient {
       final v = value is String ? value.trim() : value.toString().trim();
       if (v.isEmpty) return;
       // Names: prefer explicit first/last; then Name_1_En/Name_2_En; capture latinName for fallback
-      if ((k.contains('firstname') || k == 'first_name') && (firstName == null)) firstName = v;
-      if ((k.contains('lastname') || k == 'last_name') && (lastName == null)) lastName = v;
-      if (k == 'name_1_en' && (firstName == null)) firstName = v;
-      if (k == 'name_2_en' && (lastName == null)) lastName = v;
-      if (k == 'latinname' && latinName == null) latinName = v;
+      if ((k.contains('firstname') || k == 'first_name') &&
+          (firstName == null)) {
+        firstName = v;
+      }
+      if ((k.contains('lastname') || k == 'last_name') && (lastName == null)) {
+        lastName = v;
+      }
+      if (k == 'name_1_en' && (firstName == null)) {
+        firstName = v;
+      }
+      if (k == 'name_2_en' && (lastName == null)) {
+        lastName = v;
+      }
+      if (k == 'latinname' && latinName == null) {
+        latinName = v;
+      }
       // Gender: prefer English description, then Arabic description, then code/value
       if (k.contains('gender_desc_en')) {
         gender = v;
@@ -413,7 +417,10 @@ class MalaaApiClient {
       } else if (k == 'gender' && gender == null) {
         gender = v;
       }
-      if (dateOfBirth == null && (k.contains('dateofbirth') || k == 'dob' || k == 'date_of_birth')) dateOfBirth = v;
+      if (dateOfBirth == null &&
+          (k.contains('dateofbirth') || k == 'dob' || k == 'date_of_birth')) {
+        dateOfBirth = v;
+      }
       // Nationality: prefer English description, then Arabic description, then code/value
       if (k.contains('nationality_desc_en')) {
         nationality = v;
@@ -424,9 +431,17 @@ class MalaaApiClient {
       } else if (k.contains('nationality_code') && nationality == null) {
         nationality = v;
       }
-      if (dateOfIssue == null && (k.contains('issuedate') || k == 'date_of_issue')) dateOfIssue = v;
-      if (dateOfExpiry == null && (k.contains('expirydate') || k == 'date_of_expiry')) dateOfExpiry = v;
-      if (email == null && (k == 'email' || k.contains('emailaddress'))) email = v;
+      if (dateOfIssue == null &&
+          (k.contains('issuedate') || k == 'date_of_issue')) {
+        dateOfIssue = v;
+      }
+      if (dateOfExpiry == null &&
+          (k.contains('expirydate') || k == 'date_of_expiry')) {
+        dateOfExpiry = v;
+      }
+      if (email == null && (k == 'email' || k.contains('emailaddress'))) {
+        email = v;
+      }
     }
 
     void walk(dynamic node) {
@@ -445,9 +460,16 @@ class MalaaApiClient {
     walk(json);
     // Fallback: split latinName into first/last if needed
     if ((firstName == null || lastName == null) && latinName != null) {
-      final parts = latinName!.split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
-      if (parts.isNotEmpty && firstName == null) firstName = parts.first;
-      if (parts.length > 1 && lastName == null) lastName = parts.sublist(1).join(' ');
+      final parts = latinName!
+          .split(RegExp(r'\s+'))
+          .where((e) => e.isNotEmpty)
+          .toList();
+      if (parts.isNotEmpty && firstName == null) {
+        firstName = parts.first;
+      }
+      if (parts.length > 1 && lastName == null) {
+        lastName = parts.sublist(1).join(' ');
+      }
     }
     return {
       'first_name': firstName,

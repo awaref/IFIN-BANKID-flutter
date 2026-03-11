@@ -1,1 +1,25 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"bankid-ifin-a2fff","appId":"1:585665122067:android:186d177c84157b8d8fd4e6","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"bankid-ifin-a2fff","configurations":{"android":"1:585665122067:android:186d177c84157b8d8fd4e6","ios":"1:585665122067:ios:6f44cd36e9d5321e8fd4e6","macos":"1:585665122067:ios:6f44cd36e9d5321e8fd4e6","web":"1:585665122067:web:8dc5777b2f5465588fd4e6","windows":"1:585665122067:web:cd26177aa72270498fd4e6"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "bankid-ifin",
+                    "appId": "1:588638431127:android:53a47d45a3d69eb08386d2",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "bankid-ifin",
+                    "configurations": {
+                        "android": "1:588638431127:android:53a47d45a3d69eb08386d2",
+                        "ios": "1:588638431127:ios:9c41ab10201507308386d2",
+                        "macos": "1:588638431127:ios:9c41ab10201507308386d2",
+                        "web": "1:588638431127:web:69648c85bd40462d8386d2",
+                        "windows": "1:588638431127:web:8e838179520ae2f48386d2"
+                    }
+                }
+            }
+        }
+    }
+}

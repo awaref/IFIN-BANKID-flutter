@@ -213,6 +213,13 @@
   "contractScreenSignContractButton": "Sign the contract",
   "contractScreenTitle": "Sign a contract",
   "contractScreenPartyOneTitle": "Party One:",
+  "contractScreenDocumentTab": "Document",
+  "contractScreenDetailsTab": "Details",
+  "contractScreenStatusLabel": "Status",
+  "contractScreenDateLabel": "Date",
+  "contractScreenTypeLabel": "Type",
+  "contractScreenExpiresAtLabel": "Expires At",
+  "contractScreenCreatedAtLabel": "Created At",
   "deleteAccountTitle": "Delete account.",
   "deleteAccountDescription": "Are you sure you want to delete your account? You must enter your password to confirm.",
   "deleteAccountPasswordLabel": "Password",
@@ -374,5 +381,13 @@
   "qrSessionExpired": "Session expired or not found",
   "failedToLoadUserData": "Failed to load user data",
   "noUserDataFound": "No user data found",
-  "accountKycPending": "KYC Pending"
-}
+  "accountKycPending": "KYC Pending",
+  "statusSigned": "Signed",
+  "statusPending": "Pending",
+  "statusPendingSignature": "Pending Signature",
+  "statusRejected": "Rejected",
+  "notAvailable": "N/A",
+  "bankNameLabel": "Bank Name",
+  "accountNumberLabel": "Account Number",
+  "accountBalanceLabel": "Account Balance"
+  }

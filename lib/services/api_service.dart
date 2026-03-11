@@ -435,8 +435,75 @@ class ApiService {
     });
   }
 
+  Future<Contract> fetchContractById(String id) async {
+    return get<Contract>('/contracts/$id', (json) {
+      if (json['data'] is Map<String, dynamic>) {
+        return Contract.fromJson(json['data'] as Map<String, dynamic>);
+      }
+      return Contract.fromJson(json);
+    });
+  }
+
+  Future<Map<String, dynamic>> signContract(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    return _safeRequest(() async {
+      final response = await _sendRequest(
+        'POST',
+        '/contracts/$id/sign',
+        body: data,
+      );
+      return jsonDecode(response.body);
+    });
+  }
+
+  Future<Map<String, dynamic>> rejectContract(String id, String reason) async {
+    return _safeRequest(() async {
+      final response = await _sendRequest(
+        'POST',
+        '/contracts/$id/reject',
+        body: {'reason': reason},
+      );
+      return jsonDecode(response.body);
+    });
+  }
+
   Future<String?> getPublicToken() async {
     return _getAccessToken();
+  }
+
+  /// Exposes the stored refresh token — used by biometric login flow.
+  Future<String?> getStoredRefreshToken() async {
+    return _getRefreshToken();
+  }
+
+  /// Calls /auth/refresh with the given [refreshToken] and saves new tokens.
+  /// Returns true on success.
+  Future<bool> refreshWithToken(String refreshToken) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('$baseUrl/auth/refresh'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refresh_token': refreshToken}),
+      );
+
+      _log('refreshWithToken status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await saveTokens(
+          accessToken: data['access_token'],
+          refreshToken: data['refresh_token'] ?? refreshToken,
+        );
+        _log('Token refreshed via biometric successfully');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      _log('refreshWithToken failed: $e');
+      return false;
+    }
   }
 
   Future<Map<String, dynamic>> uploadKycDocuments({
@@ -490,5 +557,31 @@ class ApiService {
 
       return jsonDecode(response.body);
     });
+  }
+  // ================= BIOMETRIC SESSION UNLOCK =================
+
+  /// Unlocks session using stored refresh token after biometric authentication
+  Future<bool> biometricUnlockSession() async {
+    final refreshToken = await _getRefreshToken();
+
+    if (refreshToken == null) {
+      _log('Biometric unlock failed: No refresh token stored.');
+      return false;
+    }
+
+    try {
+      final success = await refreshWithToken(refreshToken);
+
+      if (success) {
+        _log('Session unlocked successfully via biometric.');
+        return true;
+      }
+
+      _log('Biometric unlock failed: refresh token rejected.');
+      return false;
+    } catch (e) {
+      _log('Biometric unlock exception: $e');
+      return false;
+    }
   }
 }

@@ -11,20 +11,21 @@ class AuthProvider with ChangeNotifier {
   final AuthRepository _authRepository;
   AuthRepository get authRepository => _authRepository;
   DeviceRepository _deviceRepository;
-  
+
   AuthStatus _status = AuthStatus.initial;
   String? _errorMessage;
   bool _isNationalIdVerified = false;
 
-  AuthProvider(this._deviceRepository, {AuthRepository? authRepository, DeviceRepository? deviceRepository})
-      : _authRepository = authRepository ??
-            AuthRepository(
-              apiService: ApiService(baseUrl: AppConfig.baseUrl),
-            ) {
-    _deviceRepository = deviceRepository ??
-        DeviceRepository(
-          deviceApi: DeviceApi(onUnauthorized: logout),
-        );
+  AuthProvider(
+    this._deviceRepository, {
+    AuthRepository? authRepository,
+    DeviceRepository? deviceRepository,
+  }) : _authRepository =
+           authRepository ??
+           AuthRepository(apiService: ApiService(baseUrl: AppConfig.baseUrl)) {
+    _deviceRepository =
+        deviceRepository ??
+        DeviceRepository(deviceApi: DeviceApi(onUnauthorized: logout));
   }
 
   AuthStatus get status => _status;
@@ -89,7 +90,10 @@ class AuthProvider with ChangeNotifier {
       if (success) {
         final authToken = await _authRepository.getToken();
         if (authToken != null) {
-          await _deviceRepository.registerDevice(authToken: authToken, onUnauthorized: logout);
+          await _deviceRepository.registerDevice(
+            authToken: authToken,
+            onUnauthorized: logout,
+          );
         }
       }
       _status = success ? AuthStatus.authenticated : AuthStatus.unauthenticated;
@@ -109,13 +113,46 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final success = await _authRepository.loginWithNationalId(nationalId, password);
+      final success = await _authRepository.loginWithNationalId(
+        nationalId,
+        password,
+      );
       if (success) {
         final authToken = await _authRepository.getToken();
         if (authToken != null) {
-          await _deviceRepository.registerDevice(authToken: authToken, onUnauthorized: logout);
+          await _deviceRepository.registerDevice(
+            authToken: authToken,
+            onUnauthorized: logout,
+          );
         }
       }
+      _status = success ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+      notifyListeners();
+      return success;
+    } catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // ================= BIOMETRIC LOGIN =================
+
+  /// Returns true if biometric auth is available AND there are stored tokens.
+  Future<bool> canLoginWithBiometric() async {
+    return _authRepository.canLoginWithBiometric();
+  }
+
+  /// Triggers the system biometric prompt, then refreshes the access token
+  /// via the backend. Returns true on full success.
+  Future<bool> loginWithBiometric() async {
+    _status = AuthStatus.loading;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final success = await _authRepository.loginWithBiometric();
       _status = success ? AuthStatus.authenticated : AuthStatus.unauthenticated;
       notifyListeners();
       return success;
@@ -131,7 +168,7 @@ class AuthProvider with ChangeNotifier {
     _selectedPhoneNumber = phone;
     notifyListeners();
   }
-  
+
   void setIdentityData({
     String? firstName,
     String? lastName,
@@ -163,7 +200,10 @@ class AuthProvider with ChangeNotifier {
       if (success) {
         final authToken = await _authRepository.getToken();
         if (authToken != null) {
-          await _deviceRepository.registerDevice(authToken: authToken, onUnauthorized: logout);
+          await _deviceRepository.registerDevice(
+            authToken: authToken,
+            onUnauthorized: logout,
+          );
         }
       }
       _status = success ? AuthStatus.authenticated : AuthStatus.unauthenticated;
@@ -186,7 +226,7 @@ class AuthProvider with ChangeNotifier {
     _nationalId = id;
     notifyListeners();
   }
-  
+
   void setUsername(String username) {
     _username = username;
     notifyListeners();
@@ -211,7 +251,7 @@ class AuthProvider with ChangeNotifier {
     _kycRequestId = null;
     notifyListeners();
   }
-  
+
   Future<void> logout() async {
     await _authRepository.deleteToken();
     _deviceRepository.resetRegistrationStatus();
@@ -244,8 +284,18 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
     try {
       final data = await _authRepository.fetchCurrentUser();
-      _updateUserData(data);
+      _updateUserData(data['user'] ?? data);
       _profileLoaded = true;
+
+      // Register device with current FCM token
+      final authToken = await _authRepository.getToken();
+      if (authToken != null) {
+        await _deviceRepository.registerDevice(
+          authToken: authToken,
+          onUnauthorized: logout,
+        );
+      }
+
       _status = AuthStatus.initial;
       notifyListeners();
       return true;
@@ -279,10 +329,14 @@ class AuthProvider with ChangeNotifier {
     final String? fn = (data['first_name'] ?? data['firstName'])?.toString();
     final String? ln = (data['last_name'] ?? data['lastName'])?.toString();
     final String? g = (data['gender'])?.toString();
-    final String? dob = (data['date_of_birth'] ?? data['dateOfBirth'] ?? data['dob'])?.toString();
+    final String? dob =
+        (data['date_of_birth'] ?? data['dateOfBirth'] ?? data['dob'])
+            ?.toString();
     final String? nat = (data['nationality'])?.toString();
-    final String? doi = (data['date_of_issue'] ?? data['dateOfIssue'])?.toString();
-    final String? doe = (data['date_of_expiry'] ?? data['dateOfExpiry'])?.toString();
+    final String? doi = (data['date_of_issue'] ?? data['dateOfIssue'])
+        ?.toString();
+    final String? doe = (data['date_of_expiry'] ?? data['dateOfExpiry'])
+        ?.toString();
     final String? nid = (data['national_id'] ?? data['nationalId'])?.toString();
     final String? em = (data['email'])?.toString();
     _firstName = fn ?? _firstName;

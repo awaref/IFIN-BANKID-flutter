@@ -2,15 +2,12 @@ import 'package:bankid_app/screens/about_screen.dart' show AboutScreen;
 import 'package:bankid_app/screens/privacy_screen.dart';
 import 'package:bankid_app/screens/terms_screen.dart';
 import 'package:bankid_app/screens/two_factor_auth_screen.dart';
+import 'package:bankid_app/services/biometric_service.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/delete_account_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:local_auth/local_auth.dart';
-import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_darwin/local_auth_darwin.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
 import 'package:bankid_app/screens/digital_signatures_list_screen.dart';
@@ -23,56 +20,55 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final LocalAuthentication auth = LocalAuthentication();
-
-  late String _authorized;
+  final BiometricService _biometricService = BiometricService();
+  bool _isBiometricEnabled = false;
+  bool _isLoadingBiometric = true;
 
   @override
   void initState() {
     super.initState();
+    _loadBiometricState();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _authorized = AppLocalizations.of(context)!.notAuthorizedStatus;
-  }
-
-  Future<void> _authenticate() async {
-    bool authenticated = false;
-    try {
+  Future<void> _loadBiometricState() async {
+    final enabled = await _biometricService.isBiometricEnabledByUser();
+    if (mounted) {
       setState(() {
-        _authorized = 'Authenticating';
+        _isBiometricEnabled = enabled;
+        _isLoadingBiometric = false;
       });
-      authenticated = await auth.authenticate(
-        localizedReason: AppLocalizations.of(context)!.authenticateReason,
-        persistAcrossBackgrounding: true,
-        authMessages: const [
-          AndroidAuthMessages(),
-          IOSAuthMessages(),
-        ],
-      );
-    } on PlatformException catch (e) {
-      // print(e);
-      setState(() {
-        _authorized =
-            AppLocalizations.of(context)!.authenticationError +
-            (e.message ?? '');
-      });
-      return;
     }
-    if (!mounted) return;
-
-    setState(
-      () => _authorized = authenticated
-          ? AppLocalizations.of(context)!.authorizedStatus
-          : AppLocalizations.of(context)!.notAuthorizedStatus,
-    );
   }
 
-  Future<void> _cancelAuthentication() async {
-    await auth.stopAuthentication();
-    setState(() {});
+  Future<void> _toggleBiometric() async {
+    if (_isBiometricEnabled) {
+      // Turn off
+      await _biometricService.setBiometricEnabled(false);
+      setState(() => _isBiometricEnabled = false);
+    } else {
+      // Check if device supports it first
+      final isAvailable = await _biometricService.isBiometricAvailable();
+      if (!isAvailable) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.authenticationError),
+          ), // fallback error message
+        );
+        return;
+      }
+
+      // Turn on - authenticate first to prove it's the owner
+      final authenticated = await _biometricService.authenticate(
+        reason: AppLocalizations.of(context)!.authenticateReason,
+      );
+      if (authenticated) {
+        await _biometricService.setBiometricEnabled(true);
+        if (mounted) {
+          setState(() => _isBiometricEnabled = true);
+        }
+      }
+    }
   }
 
   static final TextStyle _rubikTextStyle = GoogleFonts.rubik(
@@ -301,25 +297,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AppLocalizations.of(context)!.appFingerprintTitle,
               style: _rubikTextStyle,
             ),
-            trailing: TextButton(
-              onPressed: () {
-                if (_authorized == 'Authorized') {
-                  _cancelAuthentication();
-                } else {
-                  _authenticate();
-                }
-              },
-              child: Text(
-                _authorized == AppLocalizations.of(context)!.authorizedStatus
-                    ? AppLocalizations.of(context)!.turnOff
-                    : AppLocalizations.of(context)!.turnOn,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF637381),
-                ),
-              ),
-            ),
+            trailing: _isLoadingBiometric
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : TextButton(
+                    onPressed: _toggleBiometric,
+                    child: Text(
+                      _isBiometricEnabled
+                          ? AppLocalizations.of(context)!.turnOff
+                          : AppLocalizations.of(context)!.turnOn,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF637381),
+                      ),
+                    ),
+                  ),
           ),
           ListTile(
             leading: HugeIcon(

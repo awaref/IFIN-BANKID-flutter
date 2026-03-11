@@ -15,8 +15,8 @@
   "getStartedButton": "ابدأ الآن",
   "@getStartedButton": {
     "description": "Text for the 'Get started now' button"
-    },
-    "loading": "جار التحميل...",
+  },
+  "loading": "جار التحميل...",
   "@loading": {
     "description": "Text for loading state"
   },
@@ -232,6 +232,13 @@
   "contractScreenSignContractButton": "توقيع العقد",
   "contractScreenTitle": "توقيع عقد",
   "contractScreenPartyOneTitle": "الطرف الأول:",
+  "contractScreenDocumentTab": "المستند",
+  "contractScreenDetailsTab": "التفاصيل",
+  "contractScreenStatusLabel": "الحالة",
+  "contractScreenDateLabel": "التاريخ",
+  "contractScreenTypeLabel": "النوع",
+  "contractScreenExpiresAtLabel": "تاريخ الانتهاء",
+  "contractScreenCreatedAtLabel": "تاريخ الإنشاء",
   "deleteAccountTitle": "حذف الحساب.",
   "deleteAccountDescription": "هل أنت متأكد أنك تريد حذف حسابك؟ يجب عليك إدخال كلمة المرور الخاصة بك للتأكيد.",
   "deleteAccountPasswordLabel": "كلمة المرور",
@@ -383,5 +390,13 @@
   "qrSessionExpired": "انتهت صلاحية الجلسة أو غير موجودة",
   "failedToLoadUserData": "فشل تحميل بيانات المستخدم",
   "noUserDataFound": "لم يتم العثور على بيانات المستخدم",
-  "accountKycPending": "في انتظار التحقق من الهوية"
+  "accountKycPending": "في انتظار التحقق من الهوية",
+  "statusSigned": "موقّع",
+  "statusPending": "قيد الانتظار",
+  "statusPendingSignature": "بانتظار التوقيع",
+  "statusRejected": "مرفوض",
+  "notAvailable": "غير متوفر",
+  "bankNameLabel": "اسم البنك",
+  "accountNumberLabel": "رقم الحساب",
+  "accountBalanceLabel": "الرصيد"
 }

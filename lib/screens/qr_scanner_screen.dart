@@ -86,7 +86,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
           _showError(AppLocalizations.of(context)!.qrInvalidCode);
         }
       }
-    } catch (e, stacktrace) {
+    } catch (e) {
       if (mounted) {
         String message = AppLocalizations.of(context)!.qrAuthError;
         

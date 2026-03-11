@@ -24,10 +24,7 @@ class MyApp extends StatelessWidget {
 class VerifyPinScreen extends StatefulWidget {
   final bool fromPinBiometrics;
 
-  const VerifyPinScreen({
-    super.key,
-    this.fromPinBiometrics = false,
-  });
+  const VerifyPinScreen({super.key, this.fromPinBiometrics = false});
 
   @override
   State<VerifyPinScreen> createState() => _VerifyPinScreenState();
@@ -69,15 +66,13 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
     _focusNode.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
+      appBar: AppBar(backgroundColor: Colors.white, elevation: 0),
       body: GestureDetector(
         onTap: () {
           // Refocus when tapping anywhere on the screen
@@ -124,10 +119,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
                 const SizedBox(height: 12),
                 Text(
                   l10n.incorrectPin,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.red,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.red),
                 ),
               ],
               // Hidden TextField for native keyboard input
@@ -201,7 +193,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
   Widget _buildPinBox(int index) {
     bool hasDigit = index < _controller.text.length;
     bool isSelected = index == _controller.text.length;
-    
+
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 48),
       child: Container(
@@ -213,8 +205,8 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
             color: isError
                 ? Colors.red
                 : isSelected
-                    ? const Color(0xFF4CD964)
-                    : const Color(0xFFE5E5E5),
+                ? const Color(0xFF4CD964)
+                : const Color(0xFFE5E5E5),
             width: isSelected || isError ? 2 : 1.5,
           ),
         ),
@@ -251,7 +243,10 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
     try {
       final bool success;
       if (widget.fromPinBiometrics && authProvider.nationalId != null) {
-        success = await authProvider.loginWithNationalId(authProvider.nationalId!, pin);
+        success = await authProvider.loginWithNationalId(
+          authProvider.nationalId!,
+          pin,
+        );
       } else {
         success = await authProvider.loginWithPassword(pin);
       }
@@ -260,9 +255,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen> {
 
       if (success) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
           (route) => false,
         );
       } else {

@@ -3,14 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/screens/edit_phone_number_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
+import 'package:bankid_app/core/utils/country_utils.dart';
 
 class ProfileScreen extends StatelessWidget {
-  final bool isVerified;
-  const ProfileScreen({super.key, this.isVerified = true});
+  final bool? isVerifiedOverride;
+  const ProfileScreen({super.key, this.isVerifiedOverride});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider;
+    final isVerified = isVerifiedOverride ?? user.profileLoaded;
+    final locale = Localizations.localeOf(context).languageCode;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4FA),
       body: SingleChildScrollView(
@@ -54,7 +62,11 @@ class ProfileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            l10n.accountFullName,
+                            "${user.firstName ?? ''} ${user.lastName ?? ''}"
+                                    .trim()
+                                    .isEmpty
+                                ? l10n.accountFullName
+                                : "${user.firstName} ${user.lastName}",
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -63,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            l10n.accountPersonalId,
+                            user.nationalId ?? l10n.accountPersonalId,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF6B7280),
@@ -130,7 +142,7 @@ class ProfileScreen extends StatelessWidget {
                     _infoField(
                       context,
                       l10n.accountPhoneNumber,
-                      l10n.accountPhoneNumberActual,
+                      user.selectedPhoneNumber ?? l10n.accountPhoneNumberActual,
                       editable: true,
                       onTap: () => Navigator.push(
                         context,
@@ -140,17 +152,44 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _infoField(context, l10n.accountGender, l10n.accountGenderActual),
+                    _infoField(
+                      context,
+                      l10n.accountGender,
+                      user.gender ?? l10n.accountGenderActual,
+                    ),
                     const SizedBox(height: 12),
-                    _infoField(context, l10n.accountDateOfBirth, l10n.accountDateOfBirthActual),
+                    _infoField(
+                      context,
+                      l10n.accountDateOfBirth,
+                      user.dateOfBirth ?? l10n.accountDateOfBirthActual,
+                    ),
                     const SizedBox(height: 12),
-                    _infoField(context, l10n.accountNationality, l10n.accountNationalityActual),
+                    _infoField(
+                      context,
+                      l10n.accountNationality,
+                      CountryUtils.getCountryName(
+                        user.nationality ?? '',
+                        locale: locale,
+                      ),
+                    ),
                     const SizedBox(height: 12),
-                    _infoField(context, l10n.accountNationalIdNumber, l10n.accountNationalIdNumberActual),
+                    _infoField(
+                      context,
+                      l10n.accountNationalIdNumber,
+                      user.nationalId ?? l10n.accountNationalIdNumberActual,
+                    ),
                     const SizedBox(height: 12),
-                    _infoField(context, l10n.accountDateOfIssue, l10n.accountDateOfIssueActual),
+                    _infoField(
+                      context,
+                      l10n.accountDateOfIssue,
+                      user.dateOfIssue ?? l10n.accountDateOfIssueActual,
+                    ),
                     const SizedBox(height: 12),
-                    _infoField(context, l10n.accountDateOfExpiration, l10n.accountDateOfExpirationActual),
+                    _infoField(
+                      context,
+                      l10n.accountDateOfExpiration,
+                      user.dateOfExpiry ?? l10n.accountDateOfExpirationActual,
+                    ),
                     const SizedBox(height: 16),
 
                     // ID Card Image Section

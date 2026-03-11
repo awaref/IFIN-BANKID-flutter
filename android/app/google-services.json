@@ -1,13 +1,32 @@
 {
   "project_info": {
-    "project_number": "585665122067",
-    "project_id": "bankid-ifin-a2fff",
-    "storage_bucket": "bankid-ifin-a2fff.firebasestorage.app"
+    "project_number": "588638431127",
+    "project_id": "bankid-ifin",
+    "storage_bucket": "bankid-ifin.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:585665122067:android:186d177c84157b8d8fd4e6",
+        "mobilesdk_app_id": "1:588638431127:android:c787d3e8cbdc07558386d2",
+        "android_client_info": {
+          "package_name": "com.example.bankidApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTa8wZ_pV_0HTiLiTNxSm38W9FtvpPVvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588638431127:android:53a47d45a3d69eb08386d2",
         "android_client_info": {
           "package_name": "com.example.bankid_app"
         }
@@ -15,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCY6OdoRaUvMQgERT16Lql7gmKZfhiPAfY"
+          "current_key": "AIzaSyDTa8wZ_pV_0HTiLiTNxSm38W9FtvpPVvE"
         }
       ],
       "services": {

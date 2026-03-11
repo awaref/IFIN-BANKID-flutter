@@ -1,5 +1,6 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:bankid_app/core/utils/country_utils.dart';
 import 'dart:io';
 import 'package:bankid_app/screens/home_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -55,7 +56,8 @@ class _CheckInformationScreenState extends State<CheckInformationScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView( // ✅ allows scrolling instead of overflow
+        child: SingleChildScrollView(
+          // ✅ allows scrolling instead of overflow
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -80,7 +82,8 @@ class _CheckInformationScreenState extends State<CheckInformationScreen> {
               ),
               const SizedBox(height: 16),
 
-              if (authProvider.status == AuthStatus.loading && !authProvider.profileLoaded)
+              if (authProvider.status == AuthStatus.loading &&
+                  !authProvider.profileLoaded)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24),
                   child: Center(
@@ -92,17 +95,43 @@ class _CheckInformationScreenState extends State<CheckInformationScreen> {
                   ),
                 )
               else ...[
-                _buildInfoRow(l10n.checkInformationFirstName, authProvider.firstName ?? '-'),
-                _buildInfoRow(l10n.checkInformationLastName, authProvider.lastName ?? '-'),
-                _buildInfoRow(l10n.checkInformationGender, authProvider.gender ?? '-'),
-                _buildInfoRow(l10n.checkInformationDateOfBirth, authProvider.dateOfBirth ?? '-'),
-                _buildInfoRow(l10n.checkInformationNationality, authProvider.nationality ?? '-'),
-                _buildInfoRow(l10n.checkInformationNationalIdNumber, authProvider.nationalId ?? '-'),
-                _buildInfoRow(l10n.checkInformationDateOfIssue, authProvider.dateOfIssue ?? '-'),
-                _buildInfoRow(l10n.checkInformationDateOfExpiry, authProvider.dateOfExpiry ?? '-'),
+                _buildInfoRow(
+                  l10n.checkInformationFirstName,
+                  authProvider.firstName ?? '-',
+                ),
+                _buildInfoRow(
+                  l10n.checkInformationLastName,
+                  authProvider.lastName ?? '-',
+                ),
+                _buildInfoRow(
+                  l10n.checkInformationGender,
+                  authProvider.gender ?? '-',
+                ),
+                _buildInfoRow(
+                  l10n.checkInformationDateOfBirth,
+                  authProvider.dateOfBirth ?? '-',
+                ),
+                _buildInfoRow(
+                  l10n.checkInformationNationality,
+                  CountryUtils.getCountryName(
+                    authProvider.nationality ?? '-',
+                    locale: Localizations.localeOf(context).languageCode,
+                  ),
+                ),
+                _buildInfoRow(
+                  l10n.checkInformationNationalIdNumber,
+                  authProvider.nationalId ?? '-',
+                ),
+                _buildInfoRow(
+                  l10n.checkInformationDateOfIssue,
+                  authProvider.dateOfIssue ?? '-',
+                ),
+                _buildInfoRow(
+                  l10n.checkInformationDateOfExpiry,
+                  authProvider.dateOfExpiry ?? '-',
+                ),
               ],
               const SizedBox(height: 32),
-
 
               SizedBox(
                 width: double.infinity,
@@ -134,7 +163,6 @@ class _CheckInformationScreenState extends State<CheckInformationScreen> {
               ),
 
               const SizedBox(height: 16), // Added SizedBox for spacing
-
               /// Report a Problem Button
               SizedBox(
                 width: double.infinity,

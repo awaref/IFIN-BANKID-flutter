@@ -1,11 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:bankid_app/services/api_service.dart';
+import 'package:bankid_app/services/biometric_service.dart';
 import 'package:bankid_app/models/qr_models.dart';
 
 class AuthRepository {
   final ApiService _api;
+  final BiometricService _biometric;
 
-  AuthRepository({required ApiService apiService}) : _api = apiService;
+  AuthRepository({
+    required ApiService apiService,
+    BiometricService? biometricService,
+  }) : _api = apiService,
+       _biometric = biometricService ?? BiometricService();
 
   // ================= NATIONAL ID CHECK =================
 
@@ -17,36 +23,72 @@ class AuthRepository {
         (json) => json,
       );
 
-      return result['exists'] == true ||
-          result['status'] == 'success';
+      return result['exists'] == true || result['status'] == 'success';
     } on ApiException catch (e) {
       if (e.statusCode == 404) return false;
       rethrow;
     }
   }
 
+  // ================= BIOMETRIC LOGIN =================
+
+  /// Returns true if the device has biometrics enrolled AND we have stored
+  /// tokens (meaning the user previously logged in with a password), AND
+  /// the user has explicitly enabled biometric login in settings.
+  Future<bool> canLoginWithBiometric() async {
+    final hasToken = await _api.getPublicToken() != null;
+    if (!hasToken) return false;
+
+    final isEnabled = await _biometric.isBiometricEnabledByUser();
+    if (!isEnabled) return false;
+
+    return _biometric.isBiometricAvailable();
+  }
+
+  /// Shows the system biometric prompt. On success, calls /auth/refresh to
+  /// obtain a fresh access_token without requiring the user's password.
+  /// Returns true if the full flow (local + backend) succeeds.
+  Future<bool> loginWithBiometric() async {
+    debugPrint('DEBUG: loginWithBiometric: starting biometric prompt');
+
+    // Step 1 — local biometric check
+    final authenticated = await _biometric.authenticate(
+      reason: 'Authenticate to access your account',
+    );
+
+    if (!authenticated) {
+      debugPrint('DEBUG: loginWithBiometric: biometric failed or cancelled');
+      return false;
+    }
+
+    // Step 2 — use stored refresh_token to get a new access_token
+    final refreshToken = await _api.getStoredRefreshToken();
+    if (refreshToken == null || refreshToken.isEmpty) {
+      debugPrint('DEBUG: loginWithBiometric: no refresh token stored');
+      return false;
+    }
+
+    final success = await _api.refreshWithToken(refreshToken);
+    debugPrint('DEBUG: loginWithBiometric: backend refresh success=$success');
+    return success;
+  }
+
   // ================= LOGIN =================
 
   Future<bool> loginWithPassword(String password) async {
-    final tokens = await _api.post<Map<String, dynamic>>(
-      '/auth/login',
-      {'password': password},
-      (json) => json,
-    );
+    final tokens = await _api.post<Map<String, dynamic>>('/auth/login', {
+      'password': password,
+    }, (json) => json);
     debugPrint('DEBUG: loginWithPassword API response: $tokens');
 
     await _storeTokens(tokens);
     return true;
   }
 
-  Future<bool> loginWithNationalId(
-      String nationalId, String password) async {
+  Future<bool> loginWithNationalId(String nationalId, String password) async {
     final tokens = await _api.post<Map<String, dynamic>>(
       '/auth/login/national-id',
-      {
-        'national_id': nationalId,
-        'password': password,
-      },
+      {'national_id': nationalId, 'password': password},
       (json) => json,
     );
     debugPrint('DEBUG: loginWithNationalId API response: $tokens');
@@ -69,12 +111,8 @@ class AuthRepository {
     }
 
     // fallback auto-login
-    if (data.containsKey('national_id') &&
-        data.containsKey('password')) {
-      await loginWithNationalId(
-        data['national_id'],
-        data['password'],
-      );
+    if (data.containsKey('national_id') && data.containsKey('password')) {
+      await loginWithNationalId(data['national_id'], data['password']);
       return true;
     }
     return false;
@@ -85,10 +123,14 @@ class AuthRepository {
     final refreshToken = json['refresh_token'];
 
     if (accessToken == null) {
-      debugPrint('DEBUG: _storeTokens: Access token is null from API response.');
+      debugPrint(
+        'DEBUG: _storeTokens: Access token is null from API response.',
+      );
       throw ApiException('Authentication failed: no access token.');
     }
-    debugPrint('DEBUG: _storeTokens: Saving access token: ${accessToken != null ? 'exists' : 'null'}, Refresh token: ${refreshToken != null ? 'exists' : 'null'}');
+    debugPrint(
+      'DEBUG: _storeTokens: Saving access token: ${accessToken != null ? 'exists' : 'null'}, Refresh token: ${refreshToken != null ? 'exists' : 'null'}',
+    );
 
     await _api.saveTokens(
       accessToken: accessToken,
@@ -99,36 +141,32 @@ class AuthRepository {
   // ================= USER =================
 
   Future<Map<String, dynamic>> fetchCurrentUser() async {
-    return _api.get<Map<String, dynamic>>(
+    final response = await _api.get<Map<String, dynamic>>(
       '/auth/me',
-      (json) => json['user'] ?? json,
+      (json) => json,
     );
+    debugPrint('DEBUG: fetchCurrentUser response: $response');
+    return response;
   }
 
   // ================= QR AUTH =================
 
   Future<QrScanResponse> scanQrCode(String code) {
-    return _api.post<QrScanResponse>(
-      '/qr/scan',
-      {'qr_code': code},
-      (json) => QrScanResponse.fromJson(json),
-    );
+    return _api.post<QrScanResponse>('/qr/scan', {
+      'qr_code': code,
+    }, (json) => QrScanResponse.fromJson(json));
   }
 
   Future<QrApproveResponse> approveQrAuth(String sessionToken) {
-    return _api.post<QrApproveResponse>(
-      '/qr/approve',
-      {'session_token': sessionToken},
-      (json) => QrApproveResponse.fromJson(json),
-    );
+    return _api.post<QrApproveResponse>('/qr/approve', {
+      'session_token': sessionToken,
+    }, (json) => QrApproveResponse.fromJson(json));
   }
 
   Future<QrRejectResponse> rejectQrAuth(String sessionToken) {
-    return _api.post<QrRejectResponse>(
-      '/qr/reject',
-      {'session_token': sessionToken},
-      (json) => QrRejectResponse.fromJson(json),
-    );
+    return _api.post<QrRejectResponse>('/qr/reject', {
+      'session_token': sessionToken,
+    }, (json) => QrRejectResponse.fromJson(json));
   }
 
   // ================= KYC =================
@@ -169,10 +207,7 @@ class AuthRepository {
   }
 
   Future<Map<String, dynamic>> getKycRequest(String id) {
-    return _api.get<Map<String, dynamic>>(
-      '/kyc/requests/$id',
-      (json) => json,
-    );
+    return _api.get<Map<String, dynamic>>('/kyc/requests/$id', (json) => json);
   }
 
   // ================= LOGOUT =================
@@ -189,7 +224,6 @@ class AuthRepository {
     await _api.clearTokens();
   }
 
-
   Future<String?> getAccessToken() async {
     return await _api.getPublicToken();
   }
@@ -197,5 +231,4 @@ class AuthRepository {
   Future<String?> getToken() async {
     return await _api.getPublicToken();
   }
-
 }

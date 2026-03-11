@@ -596,7 +596,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contractScreenSignatureValue => '___________';
 
   @override
-  String get contractScreenDateLabel => 'Date:';
+  String get contractScreenDateLabel => 'Date';
 
   @override
   String get contractScreenDateValue => '15/08/2025';
@@ -613,6 +613,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contractScreenPartyOneTitle => 'Party One:';
+
+  @override
+  String get contractScreenDocumentTab => 'Document';
+
+  @override
+  String get contractScreenDetailsTab => 'Details';
+
+  @override
+  String get contractScreenStatusLabel => 'Status';
+
+  @override
+  String get contractScreenTypeLabel => 'Type';
+
+  @override
+  String get contractScreenExpiresAtLabel => 'Expires At';
+
+  @override
+  String get contractScreenCreatedAtLabel => 'Created At';
 
   @override
   String get deleteAccountTitle => 'Delete account.';
@@ -1102,4 +1120,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountKycPending => 'KYC Pending';
+
+  @override
+  String get statusSigned => 'Signed';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusPendingSignature => 'Pending Signature';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get bankNameLabel => 'Bank Name';
+
+  @override
+  String get accountNumberLabel => 'Account Number';
+
+  @override
+  String get accountBalanceLabel => 'Account Balance';
 }

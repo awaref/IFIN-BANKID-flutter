@@ -1182,7 +1182,7 @@ abstract class AppLocalizations {
   /// No description provided for @contractScreenDateLabel.
   ///
   /// In en, this message translates to:
-  /// **'Date:'**
+  /// **'Date'**
   String get contractScreenDateLabel;
 
   /// No description provided for @contractScreenDateValue.
@@ -1214,6 +1214,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Party One:'**
   String get contractScreenPartyOneTitle;
+
+  /// No description provided for @contractScreenDocumentTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get contractScreenDocumentTab;
+
+  /// No description provided for @contractScreenDetailsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get contractScreenDetailsTab;
+
+  /// No description provided for @contractScreenStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get contractScreenStatusLabel;
+
+  /// No description provided for @contractScreenTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get contractScreenTypeLabel;
+
+  /// No description provided for @contractScreenExpiresAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires At'**
+  String get contractScreenExpiresAtLabel;
+
+  /// No description provided for @contractScreenCreatedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get contractScreenCreatedAtLabel;
 
   /// No description provided for @deleteAccountTitle.
   ///
@@ -2126,6 +2162,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'KYC Pending'**
   String get accountKycPending;
+
+  /// No description provided for @statusSigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed'**
+  String get statusSigned;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusPendingSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Signature'**
+  String get statusPendingSignature;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejected;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
+
+  /// No description provided for @bankNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Name'**
+  String get bankNameLabel;
+
+  /// No description provided for @accountNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Number'**
+  String get accountNumberLabel;
+
+  /// No description provided for @accountBalanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Balance'**
+  String get accountBalanceLabel;
 }
 
 class _AppLocalizationsDelegate

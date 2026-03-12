@@ -34,7 +34,7 @@ class NotificationService {
 
     // 3. Initialize local notifications
     final AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_notification');
     final InitializationSettings initSettings =
         InitializationSettings(android: androidSettings);
     await _localNotifications.initialize(initSettings,

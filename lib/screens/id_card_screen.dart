@@ -291,7 +291,7 @@ class _IDCardScreenState extends State<IDCardScreen> {
   Future<Map<String, dynamic>> _fetchUser() async {
     final apiService = ApiService(baseUrl: AppConfig.baseUrl);
     final authRepository = AuthRepository(apiService: apiService);
-    return await authRepository.fetchCurrentUser();
+    return authRepository.fetchCurrentUser();
   }
 
   Color _hexToColor(String hex) {
@@ -304,8 +304,9 @@ class _IDCardScreenState extends State<IDCardScreen> {
     if (value.trim().isEmpty || value == '-') {
       return const SizedBox.shrink();
     }
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -330,12 +331,40 @@ class _IDCardScreenState extends State<IDCardScreen> {
     );
   }
 
+  bool _isKycApproved(dynamic status) {
+    final s = status.toString().toLowerCase();
+
+    const approvedStatuses = [
+      "approved",
+      "verified",
+      "completed",
+      "success",
+      "active",
+    ];
+
+    return approvedStatuses.contains(s) || status == true;
+  }
+
+  bool _isKycRejected(dynamic status) {
+    final s = status.toString().toLowerCase();
+
+    const rejectedStatuses = [
+      "rejected",
+      "declined",
+      "failed",
+      "blocked",
+    ];
+
+    return rejectedStatuses.contains(s);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     final screenWidth = MediaQuery.of(context).size.width;
-    final profileSize = (screenWidth * 0.35 > 190 ? 190 : screenWidth * 0.35)
-        .toDouble();
+    final profileSize =
+        (screenWidth * 0.35 > 190 ? 190 : screenWidth * 0.35).toDouble();
 
     return Scaffold(
       appBar: AppBar(
@@ -349,57 +378,77 @@ class _IDCardScreenState extends State<IDCardScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+
           if (snapshot.hasError) {
             return Center(
               child: Text("${l10n.failedToLoadUserData}: ${snapshot.error}"),
             );
           }
+
           if (!snapshot.hasData) {
             return Center(child: Text(l10n.noUserDataFound));
           }
 
-          // ==== Extract data from API response ====
           final response = snapshot.data!;
           final user = response['user'] ?? response;
 
           final firstName = user['first_name'] ?? '';
           final lastName = user['last_name'] ?? '';
           final nationalId = user['national_id'] ?? '';
-          final kycStatus = user['kyc_status'] ?? '';
-          final isVerified = kycStatus.toString().toLowerCase() == "approved";
+          final kycStatus = user['kyc_status'];
 
-          // Bank info
+          final isVerified = _isKycApproved(kycStatus);
+          final isRejected = _isKycRejected(kycStatus);
+
           final bank = response['bank_tenant'] ?? user['bank_tenant'] ?? {};
           final bankName = bank['name'] ?? '';
-          final primaryColorHex = '#D01F39';
-          final secondaryColorHex = '#637381';
 
-          // User info
+          const primaryColorHex = '#D01F39';
+          const secondaryColorHex = '#637381';
+
           final phone = user['phone'] ?? '';
           final rawNationality = user['nationality'] ?? '';
+
           final nationality = CountryUtils.getCountryName(
             rawNationality,
             locale: Localizations.localeOf(context).languageCode,
           );
 
-          // Accounts info
           final accounts = user['accounts'] as List<dynamic>? ?? [];
           final primaryAccount = accounts.isNotEmpty ? accounts.first : {};
+
           final accountNumber = primaryAccount['account_number'] ?? '';
           final balance = primaryAccount['balance']?.toString() ?? '';
           final currency = primaryAccount['currency'] ?? '';
 
+          /// STATUS UI
+          List<List<dynamic>> statusIcon;
+          Color statusColor;
+          String statusText;
+
+          if (isVerified) {
+            statusIcon = HugeIcons.strokeRoundedCheckmarkBadge01;
+            statusColor = const Color(0xFF10B67E);
+            statusText = l10n.accountVerifiedAccount;
+          } else if (isRejected) {
+            statusIcon = HugeIcons.strokeRoundedCancelCircle;
+            statusColor = Colors.red;
+            statusText = "KYC Rejected";
+          } else {
+            statusIcon = HugeIcons.strokeRoundedAlert02;
+            statusColor = Colors.orange;
+            statusText = l10n.accountKycPending;
+          }
+
           return SingleChildScrollView(
             child: Column(
               children: [
-                // Header section
                 Container(
                   width: double.infinity,
                   height: 130,
                   color: _hexToColor(primaryColorHex),
                 ),
 
-                // Card container
                 Transform.translate(
                   offset: const Offset(0, -60),
                   child: Padding(
@@ -433,6 +482,7 @@ class _IDCardScreenState extends State<IDCardScreen> {
                                 child: Column(
                                   children: [
                                     const SizedBox(height: 140),
+
                                     Text(
                                       "$firstName $lastName",
                                       style: TextStyle(
@@ -441,8 +491,9 @@ class _IDCardScreenState extends State<IDCardScreen> {
                                         color: _hexToColor("#212B36"),
                                       ),
                                     ),
+
                                     const SizedBox(height: 12),
-                                    // Info Grid
+
                                     _buildInfoRow(
                                       l10n.nationalIdNumberLabel,
                                       nationalId,
@@ -475,30 +526,22 @@ class _IDCardScreenState extends State<IDCardScreen> {
                                     ),
 
                                     const SizedBox(height: 20),
+
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
                                         HugeIcon(
-                                          icon: isVerified
-                                              ? HugeIcons
-                                                    .strokeRoundedCheckmarkBadge01
-                                              : HugeIcons.strokeRoundedAlert02,
+                                          icon: statusIcon,
                                           size: 20,
-                                          color: isVerified
-                                              ? const Color(0xFF10B67E)
-                                              : Colors.orange,
+                                          color: statusColor,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
-                                          isVerified
-                                              ? l10n.accountVerifiedAccount
-                                              : l10n.accountKycPending,
+                                          statusText,
                                           style: TextStyle(
                                             fontSize: 14,
-                                            color: isVerified
-                                                ? const Color(0xFF10B67E)
-                                                : Colors.orange,
+                                            color: statusColor,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -508,7 +551,7 @@ class _IDCardScreenState extends State<IDCardScreen> {
                                 ),
                               ),
                             ),
-                            // Profile image
+
                             Positioned(
                               top: -47,
                               child: Container(
@@ -529,7 +572,7 @@ class _IDCardScreenState extends State<IDCardScreen> {
                                 ),
                               ),
                             ),
-                            // Oman emblem
+
                             Positioned(
                               top: 8,
                               right: 0,

@@ -389,5 +389,6 @@
   "notAvailable": "N/A",
   "bankNameLabel": "Bank Name",
   "accountNumberLabel": "Account Number",
-  "accountBalanceLabel": "Account Balance"
+  "accountBalanceLabel": "Account Balance",
+  "protectYourBankID": "Protect your BankID"
   }

@@ -2210,6 +2210,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account Balance'**
   String get accountBalanceLabel;
+
+  /// No description provided for @protectYourBankID.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect your BankID'**
+  String get protectYourBankID;
 }
 
 class _AppLocalizationsDelegate

@@ -7,7 +7,6 @@ import 'package:bankid_app/screens/settings_screen.dart';
 import 'package:bankid_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 
@@ -211,13 +210,13 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             children: [
-              SvgPicture.asset(
-                'assets/images/logo.svg',
+              Image.asset(
+                'assets/images/bankid_logo.png',
                 height: 120.h,
               ),
               SizedBox(height: 24.h),
               Text(
-                'Protect your BankID',
+                l10n.protectYourBankID,
                 style: TextStyle(
                   fontSize: 28.sp,
                   fontWeight: FontWeight.w700,

@@ -1144,4 +1144,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountBalanceLabel => 'Account Balance';
+
+  @override
+  String get protectYourBankID => 'Protect your BankID';
 }

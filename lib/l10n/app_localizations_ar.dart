@@ -1141,4 +1141,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountBalanceLabel => 'الرصيد';
+
+  @override
+  String get protectYourBankID => 'قم بحماية تطبيق BankID الخاص بك';
 }

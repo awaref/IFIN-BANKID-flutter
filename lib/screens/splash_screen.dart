@@ -9,8 +9,6 @@ import 'package:bankid_app/providers/auth_provider.dart';
 import 'package:bankid_app/screens/national_id_verification_screen.dart';
 import 'package:bankid_app/screens/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:bankid_app/l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:bankid_app/services/auth_repository.dart';
 import 'package:bankid_app/repositories/device_repository.dart';
 import 'package:bankid_app/services/api_service.dart';
+import 'package:bankid_app/services/biometric_service.dart';
 import 'package:bankid_app/config.dart';
 
 enum AuthStatus {
@@ -76,6 +77,28 @@ class AuthProvider with ChangeNotifier {
     await _deviceRepository.registerDevice(authToken: token);
   }
 
+  /// Register then trust the device (after PIN / biometric enrollment).
+  Future<void> trustDeviceIfNeeded() async {
+    final token = await _authRepository.getToken();
+    if (token == null) return;
+
+    await _deviceRepository.registerDevice(authToken: token);
+    await _deviceRepository.trustDevice(authToken: token);
+  }
+
+  /// On session restore: trust if PIN or biometric is already enrolled.
+  Future<void> _trustIfAlreadyEnrolled() async {
+    final token = await _authRepository.getToken();
+    if (token == null) return;
+
+    final hasPin = _pin != null && _pin!.isNotEmpty;
+    final biometricEnabled =
+        await BiometricService().isBiometricEnabledByUser();
+    if (hasPin || biometricEnabled) {
+      await _deviceRepository.trustDevice(authToken: token);
+    }
+  }
+
   Future<bool> checkNationalId(String nationalId) async {
     _setState(AuthStatus.loading);
 
@@ -107,6 +130,7 @@ class AuthProvider with ChangeNotifier {
     try {
       await action();
       await _registerDeviceIfNeeded();
+      await _trustIfAlreadyEnrolled();
       _setState(AuthStatus.authenticated);
       return true;
     } on ApiException catch (e) {
@@ -126,7 +150,10 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final success = await _authRepository.loginWithBiometric();
-      if (success) await _registerDeviceIfNeeded();
+      if (success) {
+        await _registerDeviceIfNeeded();
+        await _trustIfAlreadyEnrolled();
+      }
       _setState(
         success ? AuthStatus.authenticated : AuthStatus.unauthenticated,
       );
@@ -142,7 +169,10 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final success = await _authRepository.registerUser(data);
-      if (success) await _registerDeviceIfNeeded();
+      if (success) {
+        await _registerDeviceIfNeeded();
+        await _trustIfAlreadyEnrolled();
+      }
       _setState(
         success ? AuthStatus.authenticated : AuthStatus.unauthenticated,
       );
@@ -161,6 +191,7 @@ class AuthProvider with ChangeNotifier {
       _updateUserData(data['user'] ?? data);
       _profileLoaded = true;
       await _registerDeviceIfNeeded();
+      await _trustIfAlreadyEnrolled();
       _setState(AuthStatus.initial);
       return true;
     } catch (e) {
@@ -226,6 +257,8 @@ class AuthProvider with ChangeNotifier {
   void setPin(String pin) {
     _pin = pin;
     notifyListeners();
+    // Fire-and-forget trust after local PIN enrollment
+    trustDeviceIfNeeded();
   }
 
   void setNationalId(String id) {

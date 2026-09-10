@@ -154,24 +154,7 @@
 //   }
 
 //   // ================= QR AUTH =================
-
-//   Future<QrScanResponse> scanQrCode(String code) {
-//     return _api.post<QrScanResponse>('/qr/scan', {
-//       'qr_code': code,
-//     }, (json) => QrScanResponse.fromJson(json));
-//   }
-
-//   Future<QrApproveResponse> approveQrAuth(String sessionToken) {
-//     return _api.post<QrApproveResponse>('/qr/approve', {
-//       'session_token': sessionToken,
-//     }, (json) => QrApproveResponse.fromJson(json));
-//   }
-
-//   Future<QrRejectResponse> rejectQrAuth(String sessionToken) {
-//     return _api.post<QrRejectResponse>('/qr/reject', {
-//       'session_token': sessionToken,
-//     }, (json) => QrRejectResponse.fromJson(json));
-//   }
+//   // (legacy qr_code / session_token path removed — see live AuthRepository)
 
 //   // ================= KYC =================
 
@@ -239,16 +222,20 @@
 import 'package:bankid_app/core/utils/app_logger.dart';
 import 'package:bankid_app/services/api_service.dart';
 import 'package:bankid_app/services/biometric_service.dart';
+import 'package:bankid_app/services/device_service.dart';
 import 'package:bankid_app/models/qr_models.dart';
 
 class AuthRepository {
   final ApiService _api;
   final BiometricService _biometric;
+  final DeviceService _deviceService;
 
   AuthRepository({
     required ApiService apiService,
+    DeviceService? deviceService,
     BiometricService? biometricService,
   })  : _api = apiService,
+        _deviceService = deviceService ?? DeviceService(),
         _biometric = biometricService ?? BiometricService();
 
   ApiService get apiService => _api;
@@ -400,32 +387,75 @@ class AuthRepository {
   }
 
   // =========================
-  // QR AUTH
+  // QR AUTH (animated payload)
   // =========================
 
-  Future<QrScanResponse> scanQrCode(String code) {
+  Future<QrScanResponse> scanQrCode(String qrPayload) async {
+    final deviceId = await _deviceService.getDeviceId();
+    AppLogger.log(
+      'QR scan: payload_len=${qrPayload.length}, device_id_len=${deviceId.length}',
+    );
     return _api.post<QrScanResponse>(
       '/qr/scan',
-      {'qr_code': code},
+      {
+        'qr_payload': qrPayload,
+        'device_id': deviceId,
+        'biometric_verified': false,
+      },
       (json) => QrScanResponse.fromJson(json),
     );
   }
 
-  Future<QrApproveResponse> approveQr(String sessionToken) {
+  Future<QrApproveResponse> approveQr(String approvalRef) async {
+    final deviceId = await _deviceService.getDeviceId();
+    AppLogger.log(
+      'QR approve: approval_ref_len=${approvalRef.length}, device_id_len=${deviceId.length}',
+    );
     return _api.post<QrApproveResponse>(
       '/qr/approve',
-      {'session_token': sessionToken},
+      {
+        'approval_ref': approvalRef,
+        'device_id': deviceId,
+        'biometric_verified': true,
+      },
       (json) => QrApproveResponse.fromJson(json),
     );
   }
 
-  Future<QrRejectResponse> rejectQr(String sessionToken) {
+  Future<QrRejectResponse> rejectQr(String approvalRef) async {
+    final deviceId = await _deviceService.getDeviceId();
+    AppLogger.log(
+      'QR reject: approval_ref_len=${approvalRef.length}, device_id_len=${deviceId.length}',
+    );
     return _api.post<QrRejectResponse>(
       '/qr/reject',
-      {'session_token': sessionToken},
+      {
+        'approval_ref': approvalRef,
+        'device_id': deviceId,
+      },
       (json) => QrRejectResponse.fromJson(json),
     );
   }
+
+  /// Same-device autostart lookup. Returns the same shape as scan success.
+  Future<QrScanResponse> autostartQr(String autostartToken) async {
+    final deviceId = await _deviceService.getDeviceId();
+    final encodedToken = Uri.encodeComponent(autostartToken);
+    final encodedDeviceId = Uri.encodeQueryComponent(deviceId);
+    AppLogger.log(
+      'QR autostart: token_len=${autostartToken.length}, device_id_len=${deviceId.length}',
+    );
+    return _api.get<QrScanResponse>(
+      '/qr/autostart/$encodedToken?device_id=$encodedDeviceId',
+      (json) => QrScanResponse.fromJson(json),
+    );
+  }
+
+  Future<QrApproveResponse> approveQrAuth(String approvalRef) =>
+      approveQr(approvalRef);
+
+  Future<QrRejectResponse> rejectQrAuth(String approvalRef) =>
+      rejectQr(approvalRef);
 
   // =========================
   // KYC
@@ -471,12 +501,6 @@ class AuthRepository {
   Future<Map<String, dynamic>> getKyc(String id) {
     return _api.get('/kyc/requests/$id', (json) => json);
   }
-
-  Future<QrApproveResponse> approveQrAuth(String sessionToken) =>
-      approveQr(sessionToken);
-
-  Future<QrRejectResponse> rejectQrAuth(String sessionToken) =>
-      rejectQr(sessionToken);
 
   Future<void> uploadKycDocuments({
     required String requestId,

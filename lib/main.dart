@@ -18,6 +18,7 @@ import 'package:bankid_app/firebase_options.dart';
 import 'package:bankid_app/services/device_api.dart';
 import 'package:bankid_app/repositories/device_repository.dart';
 import 'package:bankid_app/services/notification_service.dart';
+import 'package:bankid_app/services/autostart_link_service.dart';
 import 'package:bankid_app/core/utils/app_logger.dart';
 
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
@@ -69,6 +70,10 @@ void main() async {
   // Defer non-critical startup work until after the first frame to improve TTFF
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     await notificationService.initialize();
+
+    await AutostartLinkService.instance.initialize(
+      navigatorKey: notificationService.navigatorKey,
+    );
 
     final storedAuthToken = await authRepository.getToken();
     if (storedAuthToken != null) {

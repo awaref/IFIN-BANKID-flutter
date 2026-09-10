@@ -2130,13 +2130,13 @@ abstract class AppLocalizations {
   /// No description provided for @qrAuthSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Authenticated successfully'**
+  /// **'Identification completed. You can return to the website.'**
   String get qrAuthSuccess;
 
   /// No description provided for @qrAuthRejected.
   ///
   /// In en, this message translates to:
-  /// **'Authentication rejected'**
+  /// **'Cancelled.'**
   String get qrAuthRejected;
 
   /// No description provided for @qrAuthError.
@@ -2156,6 +2156,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session expired or not found'**
   String get qrSessionExpired;
+
+  /// No description provided for @qrOutdated.
+  ///
+  /// In en, this message translates to:
+  /// **'This QR is outdated. Ask the website to refresh.'**
+  String get qrOutdated;
+
+  /// No description provided for @qrExpiredOrUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not use this QR. It may be expired or already used. Ask the website to show a new code.'**
+  String get qrExpiredOrUsed;
+
+  /// No description provided for @qrDeviceNotTrusted.
+  ///
+  /// In en, this message translates to:
+  /// **'This device is not trusted. Complete device setup and try again.'**
+  String get qrDeviceNotTrusted;
+
+  /// No description provided for @qrAccountNeedsVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account needs verification before you can use BankID login.'**
+  String get qrAccountNeedsVerification;
+
+  /// No description provided for @qrNetworkRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Check your connection and try again.'**
+  String get qrNetworkRetry;
+
+  /// No description provided for @qrLogInTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to {name}?'**
+  String qrLogInTo(String name);
+
+  /// No description provided for @qrSignFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign for {name}?'**
+  String qrSignFor(String name);
+
+  /// No description provided for @qrRequestExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This request has expired. Please scan a new QR code.'**
+  String get qrRequestExpired;
+
+  /// No description provided for @qrLocalAuthRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please authenticate with biometrics or your device PIN to approve.'**
+  String get qrLocalAuthRequired;
 
   /// No description provided for @failedToLoadUserData.
   ///

@@ -376,11 +376,34 @@
   "qrAuthRequiresApproval": "This request requires your approval to proceed.",
   "qrAuthApprove": "Approve",
   "qrAuthReject": "Reject",
-  "qrAuthSuccess": "Authenticated successfully",
-  "qrAuthRejected": "Authentication rejected",
+  "qrAuthSuccess": "Identification completed. You can return to the website.",
+  "qrAuthRejected": "Cancelled.",
   "qrAuthError": "Authentication failed",
   "qrInvalidCode": "Invalid QR code",
   "qrSessionExpired": "Session expired or not found",
+  "qrOutdated": "This QR is outdated. Ask the website to refresh.",
+  "qrExpiredOrUsed": "Could not use this QR. It may be expired or already used. Ask the website to show a new code.",
+  "qrDeviceNotTrusted": "This device is not trusted. Complete device setup and try again.",
+  "qrAccountNeedsVerification": "Your account needs verification before you can use BankID login.",
+  "qrNetworkRetry": "Something went wrong. Check your connection and try again.",
+  "qrLogInTo": "Log in to {name}?",
+  "@qrLogInTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "qrSignFor": "Sign for {name}?",
+  "@qrSignFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "qrRequestExpired": "This request has expired. Please scan a new QR code.",
+  "qrLocalAuthRequired": "Please authenticate with biometrics or your device PIN to approve.",
   "failedToLoadUserData": "Failed to load user data",
   "noUserDataFound": "No user data found",
   "accountKycPending": "KYC Pending",

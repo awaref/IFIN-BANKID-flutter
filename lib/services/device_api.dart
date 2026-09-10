@@ -34,7 +34,6 @@ class DeviceApi {
 
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    // Request permissions (iOS + Android 13+)
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       badge: true,
@@ -42,32 +41,27 @@ class DeviceApi {
     );
     AppLogger.log("🔔 Permission status: ${settings.authorizationStatus}");
 
-    // Foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       AppLogger.log("📩 FOREGROUND PUSH RECEIVED: ${message.notification?.title}");
     });
 
-    // Notification tapped
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       AppLogger.log("👆 USER TAPPED PUSH: ${message.notification?.title}");
     });
 
-    // Background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    // Ensure token is available
     String? token = await _getFcmTokenWithRetry();
     if (token != null) {
       AppLogger.log("📱 FCM TOKEN: $token");
       await _secureStorage.write(key: _storedTokenKey, value: token);
-
-      // Register in backend AND automatically in Firebase
-      await registerDevice(authToken: authToken);
     } else {
       AppLogger.log("❌ Failed to get FCM token after retries");
     }
 
-    // Listen for token refresh
+    // Register even when FCM token is missing (required for QR device trust)
+    await registerDevice(authToken: authToken);
+
     messaging.onTokenRefresh.listen((newToken) async {
       AppLogger.log("🔄 FCM TOKEN REFRESHED: $newToken");
       await _secureStorage.write(key: _storedTokenKey, value: newToken);
@@ -75,7 +69,6 @@ class DeviceApi {
     });
   }
 
-  /// Retry helper to ensure we get FCM token
   Future<String?> _getFcmTokenWithRetry({int maxRetries = 5}) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     String? token;
@@ -99,12 +92,13 @@ class DeviceApi {
     return token;
   }
 
-  /// Register device with backend AND ensure FCM registration is active
+  /// Register / upsert device. Push token is optional — registration must
+  /// succeed without FCM so QR scan can bind to a trusted device_id.
   Future<void> registerDevice({required String authToken}) async {
     final deviceId = await _deviceService.getDeviceId();
     String? pushToken;
     try {
-      pushToken = await FirebaseMessaging.instance.getToken(); // Ensure latest
+      pushToken = await FirebaseMessaging.instance.getToken();
     } catch (e) {
       AppLogger.log("❌ Error getting FCM token for registration: $e");
     }
@@ -113,28 +107,31 @@ class DeviceApi {
     final deviceName = await _deviceService.getDeviceName();
 
     AppLogger.log("🚀 Registering device");
-    AppLogger.log("Device ID: $deviceId, Push Token: $pushToken");
+    AppLogger.log("Device ID length: ${deviceId.length}, Push Token present: ${pushToken != null}");
 
     if (pushToken == null) {
-      AppLogger.log("⚠️ Push token is NULL, registration skipped");
-      return;
+      AppLogger.log("⚠️ Push token is NULL — registering device without push_token");
     }
 
     try {
+      final body = <String, dynamic>{
+        "device_id": deviceId,
+        "device_name": deviceName,
+        "platform": Platform.isAndroid ? "android" : "ios",
+        "app_version": appVersion,
+        "device_model": deviceModel,
+      };
+      if (pushToken != null) {
+        body["push_token"] = pushToken;
+      }
+
       final response = await http.post(
         Uri.parse('$_baseUrl/devices/register'),
         headers: {
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          "device_id": deviceId,
-          "device_name": deviceName,
-          "platform": Platform.isAndroid ? "android" : "ios",
-          "push_token": pushToken,
-          "app_version": appVersion,
-          "device_model": deviceModel,
-        }),
+        body: jsonEncode(body),
       );
 
       AppLogger.log("📡 Backend register status: ${response.statusCode}");
@@ -144,7 +141,7 @@ class DeviceApi {
         AppLogger.log("❌ Unauthorized during registration");
         onUnauthorized?.call();
       } else {
-        AppLogger.log("⚠️ Unexpected response: ${response.body}");
+        AppLogger.log("⚠️ Unexpected register response: ${response.statusCode}");
       }
     } on SocketException {
       AppLogger.log("🌐 No internet connection during registration");
@@ -153,10 +150,46 @@ class DeviceApi {
     }
   }
 
-  /// Get stored FCM token
+  /// Mark this device as trusted after local PIN / biometric enrollment.
+  Future<bool> trustDevice({required String authToken}) async {
+    final deviceId = await _deviceService.getDeviceId();
+    AppLogger.log("🔐 Trusting device (id length: ${deviceId.length})");
+
+    try {
+      final encodedId = Uri.encodeComponent(deviceId);
+      final response = await http.post(
+        Uri.parse('$_baseUrl/devices/$encodedId/trust'),
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({}),
+      );
+
+      AppLogger.log("📡 Backend trust status: ${response.statusCode}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        AppLogger.log("✅ Device trusted successfully");
+        return true;
+      } else if (response.statusCode == 401) {
+        AppLogger.log("❌ Unauthorized during trust");
+        onUnauthorized?.call();
+        return false;
+      } else {
+        AppLogger.log("⚠️ Unexpected trust response: ${response.statusCode}");
+        return false;
+      }
+    } on SocketException {
+      AppLogger.log("🌐 No internet connection during trust");
+      return false;
+    } catch (e) {
+      AppLogger.log("❌ Device trust error: $e");
+      return false;
+    }
+  }
+
   Future<String?> getStoredToken() async {
     final token = await _secureStorage.read(key: _storedTokenKey);
-    AppLogger.log("🔐 Stored FCM Token: $token");
+    AppLogger.log("🔐 Stored FCM Token present: ${token != null}");
     return token;
   }
 }

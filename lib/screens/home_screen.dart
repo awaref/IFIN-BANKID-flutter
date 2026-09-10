@@ -6,6 +6,7 @@ import 'package:bankid_app/screens/contract_screen.dart';
 import 'package:bankid_app/screens/qr_scanner_screen.dart' deferred as qr;
 import 'package:bankid_app/screens/settings_screen.dart';
 import 'package:bankid_app/services/api_service.dart';
+import 'package:bankid_app/services/autostart_link_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -25,6 +26,16 @@ class _HomeScreenState extends State<HomeScreen> {
   int _pendingContractsCount = 0;
   bool _isLoadingNotifications = false;
   String? _notificationError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        AutostartLinkService.instance.processPendingIfAny(context);
+      }
+    });
+  }
 
   @override
   void didChangeDependencies() {

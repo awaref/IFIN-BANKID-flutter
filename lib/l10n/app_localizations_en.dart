@@ -1104,10 +1104,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrAuthReject => 'Reject';
 
   @override
-  String get qrAuthSuccess => 'Authenticated successfully';
+  String get qrAuthSuccess =>
+      'Identification completed. You can return to the website.';
 
   @override
-  String get qrAuthRejected => 'Authentication rejected';
+  String get qrAuthRejected => 'Cancelled.';
 
   @override
   String get qrAuthError => 'Authentication failed';
@@ -1117,6 +1118,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrSessionExpired => 'Session expired or not found';
+
+  @override
+  String get qrOutdated => 'This QR is outdated. Ask the website to refresh.';
+
+  @override
+  String get qrExpiredOrUsed =>
+      'Could not use this QR. It may be expired or already used. Ask the website to show a new code.';
+
+  @override
+  String get qrDeviceNotTrusted =>
+      'This device is not trusted. Complete device setup and try again.';
+
+  @override
+  String get qrAccountNeedsVerification =>
+      'Your account needs verification before you can use BankID login.';
+
+  @override
+  String get qrNetworkRetry =>
+      'Something went wrong. Check your connection and try again.';
+
+  @override
+  String qrLogInTo(String name) {
+    return 'Log in to $name?';
+  }
+
+  @override
+  String qrSignFor(String name) {
+    return 'Sign for $name?';
+  }
+
+  @override
+  String get qrRequestExpired =>
+      'This request has expired. Please scan a new QR code.';
+
+  @override
+  String get qrLocalAuthRequired =>
+      'Please authenticate with biometrics or your device PIN to approve.';
 
   @override
   String get failedToLoadUserData => 'Failed to load user data';

@@ -1,21 +1,33 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class DeviceService {
   static const String _deviceIdKey = 'device_id';
 
-  Future<String> getDeviceId() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? deviceId = prefs.getString(_deviceIdKey);
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
-    if (deviceId != null && deviceId.isNotEmpty) {
-      return deviceId;
+  /// Returns a stable device id persisted in secure storage.
+  /// Migrates once from SharedPreferences if a legacy value exists.
+  Future<String> getDeviceId() async {
+    final secureId = await _secureStorage.read(key: _deviceIdKey);
+    if (secureId != null && secureId.isNotEmpty) {
+      return secureId;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final legacyId = prefs.getString(_deviceIdKey);
+    if (legacyId != null && legacyId.isNotEmpty) {
+      await _secureStorage.write(key: _deviceIdKey, value: legacyId);
+      await prefs.remove(_deviceIdKey);
+      return legacyId;
     }
 
     final deviceInfo = DeviceInfoPlugin();
+    String deviceId;
     if (Platform.isAndroid) {
       final android = await deviceInfo.androidInfo;
       deviceId = android.id;
@@ -26,7 +38,11 @@ class DeviceService {
       deviceId = 'unknown_device';
     }
 
-    await prefs.setString(_deviceIdKey, deviceId);
+    if (deviceId.isEmpty) {
+      deviceId = 'unknown_device';
+    }
+
+    await _secureStorage.write(key: _deviceIdKey, value: deviceId);
     return deviceId;
   }
 
@@ -55,10 +71,10 @@ class DeviceService {
     final deviceInfo = DeviceInfoPlugin();
     if (Platform.isAndroid) {
       final androidInfo = await deviceInfo.androidInfo;
-      return androidInfo.model; // Android device name is typically the model
+      return androidInfo.model;
     } else if (Platform.isIOS) {
       final iosInfo = await deviceInfo.iosInfo;
-      return iosInfo.name; // iOS device name (e.g., "My iPhone")
+      return iosInfo.name;
     }
     return 'Unknown Device Name';
   }
@@ -76,7 +92,6 @@ class DeviceService {
   }
 
   Future<String> getDeviceFingerprint() async {
-    // Generate a basic fingerprint from deviceId and model
     final deviceId = await getDeviceId();
     final deviceModel = await getDeviceModel();
     return '${deviceId}_$deviceModel'.replaceAll(RegExp(r'\s+'), '_');

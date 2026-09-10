@@ -6,47 +6,60 @@ part of 'qr_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-PartnerWebsite _$PartnerWebsiteFromJson(Map<String, dynamic> json) =>
-    PartnerWebsite(
+RelyingParty _$RelyingPartyFromJson(Map<String, dynamic> json) => RelyingParty(
       id: json['id'] as String,
       name: json['name'] as String,
       domain: json['domain'] as String,
+      logoUrl: json['logo_url'] as String?,
     );
 
-Map<String, dynamic> _$PartnerWebsiteToJson(PartnerWebsite instance) =>
+Map<String, dynamic> _$RelyingPartyToJson(RelyingParty instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'domain': instance.domain,
+      'logo_url': instance.logoUrl,
     };
 
 QrScanResponse _$QrScanResponseFromJson(Map<String, dynamic> json) =>
     QrScanResponse(
-      sessionToken: json['session_token'] as String,
-      partnerWebsite: PartnerWebsite.fromJson(
-        json['partner_website'] as Map<String, dynamic>,
-      ),
-      requiresApproval: json['requires_approval'] as bool,
+      approvalRef: json['approval_ref'] as String,
+      intent: json['intent'] as String,
+      userVisibleData: json['user_visible_data'] as String?,
+      expiresAt: json['expires_at'] as String?,
+      relyingParty:
+          RelyingParty.fromJson(json['relying_party'] as Map<String, dynamic>),
+      requiresApproval: json['requires_approval'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$QrScanResponseToJson(QrScanResponse instance) =>
     <String, dynamic>{
-      'session_token': instance.sessionToken,
-      'partner_website': instance.partnerWebsite,
+      'approval_ref': instance.approvalRef,
+      'intent': instance.intent,
+      'user_visible_data': instance.userVisibleData,
+      'expires_at': instance.expiresAt,
+      'relying_party': instance.relyingParty,
       'requires_approval': instance.requiresApproval,
     };
 
 QrApproveResponse _$QrApproveResponseFromJson(Map<String, dynamic> json) =>
     QrApproveResponse(
       message: json['message'] as String,
-      session: json['session'] as Map<String, dynamic>,
+      order: json['order'] as Map<String, dynamic>?,
     );
 
 Map<String, dynamic> _$QrApproveResponseToJson(QrApproveResponse instance) =>
-    <String, dynamic>{'message': instance.message, 'session': instance.session};
+    <String, dynamic>{
+      'message': instance.message,
+      'order': instance.order,
+    };
 
 QrRejectResponse _$QrRejectResponseFromJson(Map<String, dynamic> json) =>
-    QrRejectResponse(message: json['message'] as String);
+    QrRejectResponse(
+      message: json['message'] as String,
+    );
 
 Map<String, dynamic> _$QrRejectResponseToJson(QrRejectResponse instance) =>
-    <String, dynamic>{'message': instance.message};
+    <String, dynamic>{
+      'message': instance.message,
+    };

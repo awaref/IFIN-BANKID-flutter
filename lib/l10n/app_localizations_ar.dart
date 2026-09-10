@@ -1101,10 +1101,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get qrAuthReject => 'رفض';
 
   @override
-  String get qrAuthSuccess => 'تمت المصادقة بنجاح';
+  String get qrAuthSuccess => 'اكتملت الهوية. يمكنك العودة إلى الموقع.';
 
   @override
-  String get qrAuthRejected => 'تم رفض المصادقة';
+  String get qrAuthRejected => 'تم الإلغاء.';
 
   @override
   String get qrAuthError => 'فشلت المصادقة';
@@ -1114,6 +1114,42 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qrSessionExpired => 'انتهت صلاحية الجلسة أو غير موجودة';
+
+  @override
+  String get qrOutdated => 'رمز الاستجابة السريعة قديم. اطلب من الموقع تحديثه.';
+
+  @override
+  String get qrExpiredOrUsed =>
+      'تعذر استخدام رمز الاستجابة السريعة. قد يكون منتهي الصلاحية أو مستخدماً بالفعل. اطلب من الموقع عرض رمز جديد.';
+
+  @override
+  String get qrDeviceNotTrusted =>
+      'هذا الجهاز غير موثوق. أكمل إعداد الجهاز وحاول مرة أخرى.';
+
+  @override
+  String get qrAccountNeedsVerification =>
+      'يحتاج حسابك إلى التحقق قبل استخدام تسجيل الدخول عبر BankID.';
+
+  @override
+  String get qrNetworkRetry => 'حدث خطأ ما. تحقق من اتصالك وحاول مرة أخرى.';
+
+  @override
+  String qrLogInTo(String name) {
+    return 'تسجيل الدخول إلى $name؟';
+  }
+
+  @override
+  String qrSignFor(String name) {
+    return 'توقيع لـ $name؟';
+  }
+
+  @override
+  String get qrRequestExpired =>
+      'انتهت صلاحية هذا الطلب. يرجى مسح رمز QR جديد.';
+
+  @override
+  String get qrLocalAuthRequired =>
+      'يرجى المصادقة بالمقاييس الحيوية أو رمز PIN للجهاز للموافقة.';
 
   @override
   String get failedToLoadUserData => 'فشل تحميل بيانات المستخدم';

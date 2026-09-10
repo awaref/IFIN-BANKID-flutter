@@ -10,6 +10,7 @@ import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
+import 'package:bankid_app/providers/auth_provider.dart';
 import 'package:bankid_app/screens/digital_signatures_list_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -48,22 +49,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } else {
       // Check if device supports it first
       final isAvailable = await _biometricService.isBiometricAvailable();
+      if (!mounted) return;
       if (!isAvailable) {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!.authenticationError),
-          ), // fallback error message
+          ),
         );
         return;
       }
 
+      final reason = AppLocalizations.of(context)!.authenticateReason;
+      final authProvider = context.read<AuthProvider>();
+
       // Turn on - authenticate first to prove it's the owner
       final authenticated = await _biometricService.authenticate(
-        reason: AppLocalizations.of(context)!.authenticateReason,
+        reason: reason,
       );
+      if (!mounted) return;
       if (authenticated) {
         await _biometricService.setBiometricEnabled(true);
+        try {
+          await authProvider.trustDeviceIfNeeded();
+        } catch (_) {}
         if (mounted) {
           setState(() => _isBiometricEnabled = true);
         }

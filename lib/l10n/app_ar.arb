@@ -383,11 +383,34 @@
   "qrAuthRequiresApproval": "يتطلب هذا الطلب موافقتك للمتابعة.",
   "qrAuthApprove": "موافقة",
   "qrAuthReject": "رفض",
-  "qrAuthSuccess": "تمت المصادقة بنجاح",
-  "qrAuthRejected": "تم رفض المصادقة",
+  "qrAuthSuccess": "اكتملت الهوية. يمكنك العودة إلى الموقع.",
+  "qrAuthRejected": "تم الإلغاء.",
   "qrAuthError": "فشلت المصادقة",
   "qrInvalidCode": "رمز الاستجابة السريعة غير صالح",
   "qrSessionExpired": "انتهت صلاحية الجلسة أو غير موجودة",
+  "qrOutdated": "رمز الاستجابة السريعة قديم. اطلب من الموقع تحديثه.",
+  "qrExpiredOrUsed": "تعذر استخدام رمز الاستجابة السريعة. قد يكون منتهي الصلاحية أو مستخدماً بالفعل. اطلب من الموقع عرض رمز جديد.",
+  "qrDeviceNotTrusted": "هذا الجهاز غير موثوق. أكمل إعداد الجهاز وحاول مرة أخرى.",
+  "qrAccountNeedsVerification": "يحتاج حسابك إلى التحقق قبل استخدام تسجيل الدخول عبر BankID.",
+  "qrNetworkRetry": "حدث خطأ ما. تحقق من اتصالك وحاول مرة أخرى.",
+  "qrLogInTo": "تسجيل الدخول إلى {name}؟",
+  "@qrLogInTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "qrSignFor": "توقيع لـ {name}؟",
+  "@qrSignFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "qrRequestExpired": "انتهت صلاحية هذا الطلب. يرجى مسح رمز QR جديد.",
+  "qrLocalAuthRequired": "يرجى المصادقة بالمقاييس الحيوية أو رمز PIN للجهاز للموافقة.",
   "failedToLoadUserData": "فشل تحميل بيانات المستخدم",
   "noUserDataFound": "لم يتم العثور على بيانات المستخدم",
   "accountKycPending": "في انتظار التحقق من الهوية",

@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/services/api_service.dart';
+import 'package:bankid_app/services/qr_payload_parser.dart';
+import 'package:bankid_app/services/qr_auth_error_mapper.dart';
 import 'package:bankid_app/providers/auth_provider.dart';
 import 'package:bankid_app/screens/qr_auth_screen.dart';
 
@@ -14,11 +16,11 @@ class QrScannerScreen extends StatefulWidget {
   State<QrScannerScreen> createState() => _QrScannerScreenState();
 }
 
-class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProviderStateMixin {
+class _QrScannerScreenState extends State<QrScannerScreen>
+    with SingleTickerProviderStateMixin {
   final MobileScannerController _controller = MobileScannerController();
   bool _isScanning = true;
   bool _isProcessing = false;
-  bool _showSuccessIndicator = false;
 
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -30,7 +32,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    _animation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
   }
 
   @override
@@ -40,72 +43,60 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
     super.dispose();
   }
 
+  Future<void> _refreshTokenIfPossible() async {
+    final api = context.read<ApiService>();
+    final refresh = await api.getStoredRefreshToken();
+    if (refresh != null) {
+      await api.refreshWithToken(refresh);
+    }
+  }
+
   void _onDetect(BarcodeCapture capture) async {
     if (!_isScanning || _isProcessing) return;
 
-    final List<Barcode> barcodes = capture.barcodes;
+    final barcodes = capture.barcodes;
     if (barcodes.isEmpty) return;
 
     final String? code = barcodes.first.rawValue;
-    if (code == null) {
+    if (code == null) return;
+
+    setState(() => _isProcessing = true);
+
+    final l10n = AppLocalizations.of(context)!;
+    final payload = QrPayloadParser.normalize(code);
+
+    if (QrPayloadParser.looksLikeLegacyToken(payload) ||
+        !QrPayloadParser.isValidAnimatedPayload(payload)) {
+      _showError(l10n.qrOutdated);
       return;
     }
 
-    setState(() {
-      _isProcessing = true;
-    });
-
     try {
-      final authProvider = context.read<AuthProvider>();
-      final authRepo = authProvider.authRepository;
-      final response = await authRepo.scanQrCode(code);
+      await _refreshTokenIfPossible();
+      if (!mounted) return;
 
-      if (!mounted) {
+      final authRepo = context.read<AuthProvider>().authRepository;
+      final response = await authRepo.scanQrCode(payload);
+
+      if (!mounted) return;
+
+      if (response.approvalRef.isEmpty) {
+        _showError(l10n.qrInvalidCode);
         return;
       }
 
-      if (mounted) {
-        if (response.sessionToken.isNotEmpty) {
-          setState(() {
-            _isScanning = false;
-            _showSuccessIndicator = true;
-          });
-          await Future.delayed(const Duration(milliseconds: 1500)); // Show success indicator for 1.5 seconds
-          if (!mounted) return;
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => QrAuthScreen(
-                sessionToken: response.sessionToken,
-                partnerWebsite: response.partnerWebsite,
-                requiresApproval: response.requiresApproval,
-              ),
-            ),
-          );
-        } else {
-          _showError(AppLocalizations.of(context)!.qrInvalidCode);
-        }
-      }
+      setState(() => _isScanning = false);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QrAuthScreen(scanResponse: response),
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        String message = AppLocalizations.of(context)!.qrAuthError;
-        
-        if (e is NetworkException) {
-          message = AppLocalizations.of(context)!.noInternetConnectionTitle; 
-        } else if (e is UnauthorizedException) {
-          message = AppLocalizations.of(context)!.qrSessionExpired;
-        } else if (e is ServerException) {
-           message = '${AppLocalizations.of(context)!.authenticationError} (500)';
-        } else if (e is ApiException) {
-           if (e.statusCode == 404) {
-             message = AppLocalizations.of(context)!.qrSessionExpired;
-           } else {
-             message = e.message;
-           }
-        }
-        
-        _showError(message);
-      }
+      if (!mounted) return;
+      final message = QrAuthErrorMapper.messageFor(context, e);
+      _showError(message);
+      QrAuthErrorMapper.navigateToKycIfNeeded(context, e);
     }
   }
 
@@ -117,13 +108,10 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
         duration: const Duration(seconds: 2),
       ),
     );
-    
-    // Add a small delay before re-enabling scanning to avoid rapid loops
-    Future.delayed(const Duration(seconds: 3), () {
+
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
+        setState(() => _isProcessing = false);
       }
     });
   }
@@ -145,7 +133,6 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
             controller: _controller,
             onDetect: _onDetect,
           ),
-          // Scanner Overlay
           Center(
             child: SizedBox(
               width: 250.w,
@@ -195,23 +182,6 @@ class _QrScannerScreenState extends State<QrScannerScreen> with SingleTickerProv
               ),
             ),
           ),
-          if (_showSuccessIndicator)
-            Positioned.fill(
-              child: Container(
-                color: Colors.black54,
-                child: Center(
-                  child: AnimatedOpacity(
-                    opacity: _showSuccessIndicator ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 500),
-                    child: Icon(
-                      Icons.check_circle_outline,
-                      color: const Color(0xFF37C293),
-                      size: 100.sp,
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -236,7 +206,6 @@ class ScannerOverlayPainter extends CustomPainter {
 
     canvas.drawPath(path, paint);
 
-    // Draw scanning line
     final linePaint = Paint()
       ..color = const Color(0xFF37C293)
       ..style = PaintingStyle.stroke
@@ -247,7 +216,5 @@ class ScannerOverlayPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

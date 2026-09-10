@@ -1,22 +1,7 @@
 import 'package:bankid_app/screens/enable_two_factor_auth_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TwoFactorAuthScreen(),
-    );
-  }
-}
 
 class TwoFactorAuthScreen extends StatelessWidget {
   const TwoFactorAuthScreen({super.key});
@@ -30,7 +15,11 @@ class TwoFactorAuthScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1D1F)),
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(

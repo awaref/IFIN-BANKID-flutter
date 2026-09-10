@@ -7,9 +7,9 @@ class ContractUser {
   final String id;
   @JsonKey(name: 'full_name')
   final String fullName;
-  final String email;
+  final String? email;
 
-  ContractUser({required this.id, required this.fullName, required this.email});
+  ContractUser({required this.id, required this.fullName, this.email});
 
   factory ContractUser.fromJson(Map<String, dynamic> json) =>
       _$ContractUserFromJson(json);

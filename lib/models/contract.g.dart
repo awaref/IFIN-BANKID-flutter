@@ -9,7 +9,7 @@ part of 'contract.dart';
 ContractUser _$ContractUserFromJson(Map<String, dynamic> json) => ContractUser(
   id: json['id'] as String,
   fullName: json['full_name'] as String,
-  email: json['email'] as String,
+  email: json['email'] as String?,
 );
 
 Map<String, dynamic> _$ContractUserToJson(ContractUser instance) =>

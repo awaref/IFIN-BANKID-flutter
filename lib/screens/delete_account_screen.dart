@@ -1,5 +1,4 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
-import 'package:bankid_app/screens/update_information_screen.dart';
 import 'package:flutter/material.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
@@ -45,6 +44,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         keyboardType: TextInputType.number,
         maxLength: 1,
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        obscureText: true,
+        obscuringCharacter: '●',
         decoration: InputDecoration(
           counterText: "",
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -65,12 +66,48 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   }
 
   void _handleDelete() {
-    // final password = _controllers.map((c) => c.text).join();
-    // TODO: Implement account deletion logic here
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const UpdateInformationScreen()),
+    final pin = _controllers.map((c) => c.text).join();
+    if (pin.length < _length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterSixDigitPin)),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.deleteAccountConfirmationTitle),
+        content: Text(AppLocalizations.of(context)!.deleteAccountConfirmationMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              _performDeletion();
+            },
+            child: Text(
+              AppLocalizations.of(context)!.deleteAccountButton,
+              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  void _performDeletion() {
+    // TODO: Call actual API deletion here
+    // For now, we simulate success and go back to splash or logout
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context)!.accountDeletionSuccess)),
+    );
+    
+    // Navigate back to splash/login
+    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
   }
 
   @override
@@ -82,7 +119,11 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+            size: 24,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),

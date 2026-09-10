@@ -1,6 +1,7 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/onetime_recovery_code_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,7 +44,11 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1D1F)),
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(

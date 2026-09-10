@@ -1,6 +1,7 @@
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/screens/confirmation_code_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class EnableTwoFactorAuthScreen extends StatefulWidget {
@@ -22,7 +23,11 @@ class _EnableTwoFactorAuthScreenState extends State<EnableTwoFactorAuthScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(

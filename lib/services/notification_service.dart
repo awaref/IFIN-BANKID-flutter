@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:bankid_app/firebase_options.dart';
 import 'package:bankid_app/screens/contract_screen.dart';
+import 'package:bankid_app/core/utils/app_logger.dart';
 
 class NotificationService {
   // Singleton
@@ -21,8 +22,8 @@ class NotificationService {
 
   /// Initialize Firebase messaging, permissions, and local notifications
   Future<void> initialize() async {
-    // 1. Initialize Firebase
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    // 1. Initialize Firebase (Redundant if done in main.dart, but good for standalone use)
+    // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
     // 2. Request notification permissions
     NotificationSettings settings = await _messaging.requestPermission(
@@ -30,7 +31,7 @@ class NotificationService {
       badge: true,
       sound: true,
     );
-    debugPrint('User granted permission: ${settings.authorizationStatus}');
+    AppLogger.log('User granted permission: ${settings.authorizationStatus}');
 
     // 3. Initialize local notifications
     final AndroidInitializationSettings androidSettings =
@@ -48,8 +49,8 @@ class NotificationService {
 
     // 4. Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      debugPrint('📩 Foreground push received!');
-      debugPrint('Data: ${message.data}');
+      AppLogger.log('📩 Foreground push received!');
+      AppLogger.log('Data: ${message.data}');
       final title = message.notification?.title ?? "Notification";
       final body = message.notification?.body ?? "";
 
@@ -72,20 +73,26 @@ class NotificationService {
 
     // 5. Handle background/tapped messages (app in background)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint('📩 Push tapped (background)!');
+      AppLogger.log('📩 Push tapped (background)!');
       _handleMessage(message);
     });
 
     // 6. Handle app opened from terminated state
     RemoteMessage? initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) {
-      debugPrint('📩 Push opened app from terminated state!');
+      AppLogger.log('📩 Push opened app from terminated state!');
       _handleMessage(initialMessage);
     }
 
-    // Optional: print current FCM token
-    final token = await _messaging.getToken();
-    debugPrint('FCM Token: $token');
+    // 7. Get FCM token (with error handling for FIS_AUTH_ERROR)
+    try {
+      final token = await _messaging.getToken();
+      AppLogger.log('FCM Token: $token');
+    } catch (e) {
+      AppLogger.log('❌ Error getting FCM token: $e');
+      AppLogger.log(
+          '💡 Check if "Firebase Installations API" is enabled in Google Cloud Console.');
+    }
   }
 
   /// Handle push message navigation
@@ -106,10 +113,10 @@ class NotificationService {
       case 'qr_approved':
       case 'qr_rejected':
         final sessionId = message.data['session_id'] as String?;
-        debugPrint('QR session result received: $sessionId for type $type');
+        AppLogger.log('QR session result received: $sessionId for type $type');
         break;
       default:
-        debugPrint('Unknown push type: $type');
+        AppLogger.log('Unknown push type: $type');
         break;
     }
   }
@@ -133,5 +140,5 @@ class NotificationService {
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  debugPrint("📩 Handling background message: ${message.messageId}");
+  AppLogger.log("📩 Handling background message: ${message.messageId}");
 }

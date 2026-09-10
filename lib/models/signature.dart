@@ -1,5 +1,5 @@
+import 'package:bankid_app/core/utils/app_logger.dart';
 import 'package:bankid_app/config.dart';
-import 'package:flutter/foundation.dart';
 
 enum SignatureType { text, imageUpload, imageHandwriting, svg }
 
@@ -93,7 +93,7 @@ class SignatureItem {
       }
 
       // Debugging print to help identify image loading issues
-      debugPrint('DEBUG: SignatureItem fromJson - id: ${json['id']}, type: ${json['type']}, imageUrl: $imageUrl');
+      AppLogger.log('DEBUG: SignatureItem fromJson - id: ${json['id']}, type: ${json['type']}, imageUrl: $imageUrl');
 
       return SignatureItem(
         id: json['id'].toString(),
@@ -113,7 +113,7 @@ class SignatureItem {
         createdAt: DateTime.parse(json['created_at'] ?? json['createdAt'] ?? DateTime.now().toIso8601String()),
       );
     } catch (e) {
-      debugPrint('ERROR: Failed to parse SignatureItem: $e. JSON: $json');
+      AppLogger.log('ERROR: Failed to parse SignatureItem: $e. JSON: $json');
       // Return a dummy item so the list doesn't break
       return SignatureItem(
         id: 'error',

@@ -176,6 +176,18 @@ abstract class AppLocalizations {
   /// **'Get started now'**
   String get getStartedButton;
 
+  /// No description provided for @nextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get nextButton;
+
+  /// No description provided for @skipButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipButton;
+
   /// No description provided for @addNewSignature.
   ///
   /// In en, this message translates to:
@@ -2216,6 +2228,414 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Protect your BankID'**
   String get protectYourBankID;
+
+  /// No description provided for @authenticatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticator'**
+  String get authenticatorTitle;
+
+  /// No description provided for @authenticatorSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticator Settings'**
+  String get authenticatorSettingsTitle;
+
+  /// No description provided for @authenticatorAddAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add account'**
+  String get authenticatorAddAccount;
+
+  /// No description provided for @authenticatorScanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get authenticatorScanQr;
+
+  /// No description provided for @authenticatorManualEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual entry'**
+  String get authenticatorManualEntry;
+
+  /// No description provided for @authenticatorAccountName.
+  ///
+  /// In en, this message translates to:
+  /// **'Account name'**
+  String get authenticatorAccountName;
+
+  /// No description provided for @authenticatorIssuer.
+  ///
+  /// In en, this message translates to:
+  /// **'Issuer'**
+  String get authenticatorIssuer;
+
+  /// No description provided for @authenticatorSecretKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret key'**
+  String get authenticatorSecretKey;
+
+  /// No description provided for @authenticatorAlgorithm.
+  ///
+  /// In en, this message translates to:
+  /// **'Algorithm'**
+  String get authenticatorAlgorithm;
+
+  /// No description provided for @authenticatorDigits.
+  ///
+  /// In en, this message translates to:
+  /// **'Digits'**
+  String get authenticatorDigits;
+
+  /// No description provided for @authenticatorPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period (seconds)'**
+  String get authenticatorPeriod;
+
+  /// No description provided for @authenticatorPreviewAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview account'**
+  String get authenticatorPreviewAccount;
+
+  /// No description provided for @authenticatorEditAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit account'**
+  String get authenticatorEditAccount;
+
+  /// No description provided for @authenticatorRequiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get authenticatorRequiredField;
+
+  /// No description provided for @authenticatorInvalidPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid period'**
+  String get authenticatorInvalidPeriod;
+
+  /// No description provided for @authenticatorDuplicateSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this secret already exists'**
+  String get authenticatorDuplicateSecret;
+
+  /// No description provided for @authenticatorSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save account'**
+  String get authenticatorSaveFailed;
+
+  /// No description provided for @authenticatorEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No accounts yet'**
+  String get authenticatorEmptyTitle;
+
+  /// No description provided for @authenticatorEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an account to generate verification codes'**
+  String get authenticatorEmptySubtitle;
+
+  /// No description provided for @authenticatorSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search accounts...'**
+  String get authenticatorSearchHint;
+
+  /// No description provided for @authenticatorCodeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get authenticatorCodeCopied;
+
+  /// No description provided for @authenticatorDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get authenticatorDeleteTitle;
+
+  /// No description provided for @authenticatorDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get authenticatorDeleteConfirm;
+
+  /// No description provided for @authenticatorDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {issuer} / {accountName}? This will permanently remove this authenticator account.'**
+  String authenticatorDeleteMessage(String issuer, String accountName);
+
+  /// No description provided for @authenticatorInvalidQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid QR code for authenticator setup'**
+  String get authenticatorInvalidQr;
+
+  /// No description provided for @authenticatorCameraPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera permission is required to scan QR codes'**
+  String get authenticatorCameraPermission;
+
+  /// No description provided for @authenticatorOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get authenticatorOpenSettings;
+
+  /// No description provided for @authenticatorScanInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at an otpauth://totp QR code'**
+  String get authenticatorScanInstructions;
+
+  /// No description provided for @authenticatorLivePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Live preview'**
+  String get authenticatorLivePreview;
+
+  /// No description provided for @authenticatorLockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticator locked'**
+  String get authenticatorLockedTitle;
+
+  /// No description provided for @authenticatorUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get authenticatorUnlock;
+
+  /// No description provided for @authenticatorAppLockReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate to view your authenticator accounts'**
+  String get authenticatorAppLockReason;
+
+  /// No description provided for @authenticatorSecuritySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get authenticatorSecuritySection;
+
+  /// No description provided for @authenticatorAppLockSection.
+  ///
+  /// In en, this message translates to:
+  /// **'App lock'**
+  String get authenticatorAppLockSection;
+
+  /// No description provided for @authenticatorLockNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get authenticatorLockNever;
+
+  /// No description provided for @authenticatorLockOnLaunch.
+  ///
+  /// In en, this message translates to:
+  /// **'On app launch'**
+  String get authenticatorLockOnLaunch;
+
+  /// No description provided for @authenticatorLockAfter1Min.
+  ///
+  /// In en, this message translates to:
+  /// **'After 1 minute'**
+  String get authenticatorLockAfter1Min;
+
+  /// No description provided for @authenticatorLockAfter5Min.
+  ///
+  /// In en, this message translates to:
+  /// **'After 5 minutes'**
+  String get authenticatorLockAfter5Min;
+
+  /// No description provided for @authenticatorClipboardSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Clipboard'**
+  String get authenticatorClipboardSection;
+
+  /// No description provided for @authenticatorClipboardDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-clear copied codes'**
+  String get authenticatorClipboardDuration;
+
+  /// No description provided for @authenticatorClipboard30.
+  ///
+  /// In en, this message translates to:
+  /// **'30 seconds'**
+  String get authenticatorClipboard30;
+
+  /// No description provided for @authenticatorClipboard60.
+  ///
+  /// In en, this message translates to:
+  /// **'60 seconds'**
+  String get authenticatorClipboard60;
+
+  /// No description provided for @authenticatorClipboardDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get authenticatorClipboardDisabled;
+
+  /// No description provided for @authenticatorAppearanceSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get authenticatorAppearanceSection;
+
+  /// No description provided for @authenticatorThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get authenticatorThemeLight;
+
+  /// No description provided for @authenticatorThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get authenticatorThemeDark;
+
+  /// No description provided for @authenticatorThemeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get authenticatorThemeSystem;
+
+  /// No description provided for @authenticatorBackupSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get authenticatorBackupSection;
+
+  /// No description provided for @authenticatorExportAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Export accounts'**
+  String get authenticatorExportAccounts;
+
+  /// No description provided for @authenticatorImportAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Import accounts'**
+  String get authenticatorImportAccounts;
+
+  /// No description provided for @authenticatorBackupPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup password'**
+  String get authenticatorBackupPasswordTitle;
+
+  /// No description provided for @authenticatorBackupPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authenticatorBackupPassword;
+
+  /// No description provided for @authenticatorBackupPasswordConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get authenticatorBackupPasswordConfirm;
+
+  /// No description provided for @authenticatorBackupPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authenticatorBackupPasswordMismatch;
+
+  /// No description provided for @authenticatorExportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No accounts to export'**
+  String get authenticatorExportEmpty;
+
+  /// No description provided for @authenticatorExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted backup created'**
+  String get authenticatorExportSuccess;
+
+  /// No description provided for @authenticatorExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed'**
+  String get authenticatorExportFailed;
+
+  /// No description provided for @authenticatorImportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} accounts'**
+  String authenticatorImportSuccess(int count);
+
+  /// No description provided for @authenticatorImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed'**
+  String get authenticatorImportFailed;
+
+  /// No description provided for @authenticatorNoSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching accounts'**
+  String get authenticatorNoSearchResults;
+
+  /// No description provided for @authenticatorNoSearchResultsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different name, issuer, or email'**
+  String get authenticatorNoSearchResultsSubtitle;
+
+  /// No description provided for @authenticatorTapToCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap code to copy'**
+  String get authenticatorTapToCopy;
+
+  /// No description provided for @authenticatorMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get authenticatorMoreActions;
+
+  /// No description provided for @authenticatorScanQrSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest way — scan an otpauth QR code'**
+  String get authenticatorScanQrSubtitle;
+
+  /// No description provided for @authenticatorManualEntrySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter secret key and account details manually'**
+  String get authenticatorManualEntrySubtitle;
+
+  /// No description provided for @authenticatorTorchToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle flashlight'**
+  String get authenticatorTorchToggle;
+
+  /// No description provided for @authenticatorScanSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code recognized'**
+  String get authenticatorScanSuccess;
+
+  /// No description provided for @authenticatorCameraUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera could not be started. Try again or enter the account manually.'**
+  String get authenticatorCameraUnavailable;
 }
 
 class _AppLocalizationsDelegate

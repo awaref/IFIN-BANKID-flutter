@@ -51,6 +51,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get getStartedButton => 'ابدأ الآن';
 
   @override
+  String get nextButton => 'التالي';
+
+  @override
+  String get skipButton => 'تخطي';
+
+  @override
   String get addNewSignature => 'إضافة توقيع جديد';
 
   @override
@@ -1144,4 +1150,217 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get protectYourBankID => 'قم بحماية تطبيق BankID الخاص بك';
+
+  @override
+  String get authenticatorTitle => 'المصادقة';
+
+  @override
+  String get authenticatorSettingsTitle => 'إعدادات المصادقة';
+
+  @override
+  String get authenticatorAddAccount => 'إضافة حساب';
+
+  @override
+  String get authenticatorScanQr => 'مسح رمز QR';
+
+  @override
+  String get authenticatorManualEntry => 'إدخال يدوي';
+
+  @override
+  String get authenticatorAccountName => 'اسم الحساب';
+
+  @override
+  String get authenticatorIssuer => 'المُصدر';
+
+  @override
+  String get authenticatorSecretKey => 'المفتاح السري';
+
+  @override
+  String get authenticatorAlgorithm => 'الخوارزمية';
+
+  @override
+  String get authenticatorDigits => 'عدد الأرقام';
+
+  @override
+  String get authenticatorPeriod => 'الفترة (ثوانٍ)';
+
+  @override
+  String get authenticatorPreviewAccount => 'معاينة الحساب';
+
+  @override
+  String get authenticatorEditAccount => 'تعديل الحساب';
+
+  @override
+  String get authenticatorRequiredField => 'هذا الحقل مطلوب';
+
+  @override
+  String get authenticatorInvalidPeriod => 'أدخل فترة صالحة';
+
+  @override
+  String get authenticatorDuplicateSecret => 'يوجد حساب بنفس المفتاح السري';
+
+  @override
+  String get authenticatorSaveFailed => 'تعذر حفظ الحساب';
+
+  @override
+  String get authenticatorEmptyTitle => 'لا توجد حسابات بعد';
+
+  @override
+  String get authenticatorEmptySubtitle => 'أضف حسابًا لإنشاء رموز التحقق';
+
+  @override
+  String get authenticatorSearchHint => 'ابحث في الحسابات...';
+
+  @override
+  String get authenticatorCodeCopied => 'تم نسخ الرمز';
+
+  @override
+  String get authenticatorDeleteTitle => 'حذف الحساب؟';
+
+  @override
+  String get authenticatorDeleteConfirm => 'حذف';
+
+  @override
+  String authenticatorDeleteMessage(String issuer, String accountName) {
+    return 'حذف $issuer / $accountName؟ سيتم إزالة هذا الحساب نهائيًا.';
+  }
+
+  @override
+  String get authenticatorInvalidQr => 'رمز QR غير صالح لإعداد المصادقة';
+
+  @override
+  String get authenticatorCameraPermission => 'يلزم إذن الكاميرا لمسح رموز QR';
+
+  @override
+  String get authenticatorOpenSettings => 'فتح الإعدادات';
+
+  @override
+  String get authenticatorScanInstructions =>
+      'وجّه الكاميرا نحو رمز otpauth://totp';
+
+  @override
+  String get authenticatorLivePreview => 'معاينة مباشرة';
+
+  @override
+  String get authenticatorLockedTitle => 'المصادقة مقفلة';
+
+  @override
+  String get authenticatorUnlock => 'فتح القفل';
+
+  @override
+  String get authenticatorAppLockReason => 'صادق لعرض حسابات المصادقة';
+
+  @override
+  String get authenticatorSecuritySection => 'الأمان';
+
+  @override
+  String get authenticatorAppLockSection => 'قفل التطبيق';
+
+  @override
+  String get authenticatorLockNever => 'أبدًا';
+
+  @override
+  String get authenticatorLockOnLaunch => 'عند فتح التطبيق';
+
+  @override
+  String get authenticatorLockAfter1Min => 'بعد دقيقة';
+
+  @override
+  String get authenticatorLockAfter5Min => 'بعد 5 دقائق';
+
+  @override
+  String get authenticatorClipboardSection => 'الحافظة';
+
+  @override
+  String get authenticatorClipboardDuration => 'مسح الرموز المنسوخة تلقائيًا';
+
+  @override
+  String get authenticatorClipboard30 => '30 ثانية';
+
+  @override
+  String get authenticatorClipboard60 => '60 ثانية';
+
+  @override
+  String get authenticatorClipboardDisabled => 'معطل';
+
+  @override
+  String get authenticatorAppearanceSection => 'المظهر';
+
+  @override
+  String get authenticatorThemeLight => 'فاتح';
+
+  @override
+  String get authenticatorThemeDark => 'داكن';
+
+  @override
+  String get authenticatorThemeSystem => 'النظام';
+
+  @override
+  String get authenticatorBackupSection => 'النسخ الاحتياطي';
+
+  @override
+  String get authenticatorExportAccounts => 'تصدير الحسابات';
+
+  @override
+  String get authenticatorImportAccounts => 'استيراد الحسابات';
+
+  @override
+  String get authenticatorBackupPasswordTitle => 'كلمة مرور النسخ الاحتياطي';
+
+  @override
+  String get authenticatorBackupPassword => 'كلمة المرور';
+
+  @override
+  String get authenticatorBackupPasswordConfirm => 'تأكيد كلمة المرور';
+
+  @override
+  String get authenticatorBackupPasswordMismatch =>
+      'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get authenticatorExportEmpty => 'لا توجد حسابات للتصدير';
+
+  @override
+  String get authenticatorExportSuccess => 'تم إنشاء نسخة احتياطية مشفرة';
+
+  @override
+  String get authenticatorExportFailed => 'فشل التصدير';
+
+  @override
+  String authenticatorImportSuccess(int count) {
+    return 'تم استيراد $count حساب';
+  }
+
+  @override
+  String get authenticatorImportFailed => 'فشل الاستيراد';
+
+  @override
+  String get authenticatorNoSearchResults => 'لا توجد حسابات مطابقة';
+
+  @override
+  String get authenticatorNoSearchResultsSubtitle =>
+      'جرّب اسماً أو جهة إصدار أو بريداً مختلفاً';
+
+  @override
+  String get authenticatorTapToCopy => 'اضغط على الرمز للنسخ';
+
+  @override
+  String get authenticatorMoreActions => 'المزيد من الإجراءات';
+
+  @override
+  String get authenticatorScanQrSubtitle => 'الأسرع — امسح رمز otpauth QR';
+
+  @override
+  String get authenticatorManualEntrySubtitle =>
+      'أدخل المفتاح السري وتفاصيل الحساب يدوياً';
+
+  @override
+  String get authenticatorTorchToggle => 'تشغيل/إيقاف الفلاش';
+
+  @override
+  String get authenticatorScanSuccess => 'تم التعرف على رمز QR';
+
+  @override
+  String get authenticatorCameraUnavailable =>
+      'تعذر تشغيل الكاميرا. أعد المحاولة أو أدخل الحساب يدوياً.';
 }

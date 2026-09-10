@@ -1,3 +1,4 @@
+import 'package:bankid_app/core/utils/app_logger.dart';
 import 'dart:typed_data';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/models/contract.dart';
@@ -7,6 +8,7 @@ import 'package:bankid_app/services/biometric_service.dart';
 import 'package:bankid_app/config.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 
 class SignContractRequest {
@@ -57,18 +59,6 @@ class _ContractScreenState extends State<ContractScreen> {
 
   final BiometricService _biometricService = BiometricService();
 
-  /// Original biometric check (kept unchanged)
-  Future<bool> _verifyAction() async {
-    final isEnabled = await _biometricService.isBiometricEnabledByUser();
-    if (!isEnabled) return true;
-
-    final isAvailable = await _biometricService.isBiometricAvailable();
-    if (!isAvailable) return true;
-
-    return await _biometricService.authenticate(
-      reason: AppLocalizations.of(context)!.authenticateReason,
-    );
-  }
 
   /// NEW: biometric + refresh token authorization
   Future<bool> _authorizeSensitiveAction() async {
@@ -162,7 +152,7 @@ class _ContractScreenState extends State<ContractScreen> {
         });
       }
     } catch (e) {
-      debugPrint("PDF load error: $e");
+      AppLogger.log("PDF load error: $e");
 
       if (mounted) {
         setState(() {
@@ -176,7 +166,6 @@ class _ContractScreenState extends State<ContractScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return DefaultTabController(
       length: 2,
@@ -186,7 +175,11 @@ class _ContractScreenState extends State<ContractScreen> {
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            icon: const HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowLeft01,
+              color: Colors.black,
+              size: 24,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(

@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import 'package:bankid_app/l10n/app_localizations.dart';
@@ -246,7 +245,8 @@ class _SignaturePreview extends StatelessWidget {
     if (signature.type == SignatureType.text && signature.textValue != null) {
       return Text(
         signature.textValue!,
-        style: GoogleFonts.allura(
+        style: const TextStyle(
+          fontFamily: 'Allura',
           fontSize: 26,
           fontWeight: FontWeight.w500,
           color: Colors.black,
@@ -277,7 +277,11 @@ class _SignaturePreview extends StatelessWidget {
             return SvgPicture.memory(snapshot.data!, fit: BoxFit.contain);
           }
 
-          return Image.memory(snapshot.data!, fit: BoxFit.contain);
+          return Image.memory(
+            snapshot.data!,
+            fit: BoxFit.contain,
+            cacheHeight: 360, // 3x for 120 container height
+          );
         }
 
         return const Icon(Icons.image_not_supported, color: Colors.grey);

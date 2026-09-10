@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:bankid_app/models/signature.dart';
 import 'package:bankid_app/providers/signature_provider.dart';
@@ -34,7 +34,11 @@ class _SignatureDetailScreenState extends State<SignatureDetailScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.black,
+            size: 24,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -166,7 +170,8 @@ class _SignatureDetailScreenState extends State<SignatureDetailScreen> {
         alignment: Alignment.center,
         child: Text(
           signature.textValue!,
-          style: GoogleFonts.allura(
+          style: const TextStyle(
+            fontFamily: 'Allura',
             fontSize: 48,
             fontWeight: FontWeight.w500,
             color: Colors.black,
@@ -204,6 +209,7 @@ class _SignatureDetailScreenState extends State<SignatureDetailScreen> {
           height: 250,
           width: double.infinity,
           fit: BoxFit.contain,
+          cacheHeight: 750, // 3x for 250 height
           errorBuilder: (context, error, stackTrace) =>
               const Icon(Icons.broken_image, size: 64, color: Colors.grey),
         );
@@ -251,6 +257,7 @@ class _SignatureDetailScreenState extends State<SignatureDetailScreen> {
             height: 250,
             width: double.infinity,
             fit: BoxFit.contain,
+            cacheHeight: 750,
           );
         }
 

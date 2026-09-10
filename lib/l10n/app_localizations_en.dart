@@ -51,6 +51,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getStartedButton => 'Get started now';
 
   @override
+  String get nextButton => 'Next';
+
+  @override
+  String get skipButton => 'Skip';
+
+  @override
   String get addNewSignature => 'Add New Signature';
 
   @override
@@ -1147,4 +1153,222 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get protectYourBankID => 'Protect your BankID';
+
+  @override
+  String get authenticatorTitle => 'Authenticator';
+
+  @override
+  String get authenticatorSettingsTitle => 'Authenticator Settings';
+
+  @override
+  String get authenticatorAddAccount => 'Add account';
+
+  @override
+  String get authenticatorScanQr => 'Scan QR code';
+
+  @override
+  String get authenticatorManualEntry => 'Manual entry';
+
+  @override
+  String get authenticatorAccountName => 'Account name';
+
+  @override
+  String get authenticatorIssuer => 'Issuer';
+
+  @override
+  String get authenticatorSecretKey => 'Secret key';
+
+  @override
+  String get authenticatorAlgorithm => 'Algorithm';
+
+  @override
+  String get authenticatorDigits => 'Digits';
+
+  @override
+  String get authenticatorPeriod => 'Period (seconds)';
+
+  @override
+  String get authenticatorPreviewAccount => 'Preview account';
+
+  @override
+  String get authenticatorEditAccount => 'Edit account';
+
+  @override
+  String get authenticatorRequiredField => 'This field is required';
+
+  @override
+  String get authenticatorInvalidPeriod => 'Enter a valid period';
+
+  @override
+  String get authenticatorDuplicateSecret =>
+      'An account with this secret already exists';
+
+  @override
+  String get authenticatorSaveFailed => 'Could not save account';
+
+  @override
+  String get authenticatorEmptyTitle => 'No accounts yet';
+
+  @override
+  String get authenticatorEmptySubtitle =>
+      'Add an account to generate verification codes';
+
+  @override
+  String get authenticatorSearchHint => 'Search accounts...';
+
+  @override
+  String get authenticatorCodeCopied => 'Code copied';
+
+  @override
+  String get authenticatorDeleteTitle => 'Delete account?';
+
+  @override
+  String get authenticatorDeleteConfirm => 'Delete';
+
+  @override
+  String authenticatorDeleteMessage(String issuer, String accountName) {
+    return 'Delete $issuer / $accountName? This will permanently remove this authenticator account.';
+  }
+
+  @override
+  String get authenticatorInvalidQr =>
+      'Invalid QR code for authenticator setup';
+
+  @override
+  String get authenticatorCameraPermission =>
+      'Camera permission is required to scan QR codes';
+
+  @override
+  String get authenticatorOpenSettings => 'Open settings';
+
+  @override
+  String get authenticatorScanInstructions =>
+      'Point your camera at an otpauth://totp QR code';
+
+  @override
+  String get authenticatorLivePreview => 'Live preview';
+
+  @override
+  String get authenticatorLockedTitle => 'Authenticator locked';
+
+  @override
+  String get authenticatorUnlock => 'Unlock';
+
+  @override
+  String get authenticatorAppLockReason =>
+      'Authenticate to view your authenticator accounts';
+
+  @override
+  String get authenticatorSecuritySection => 'Security';
+
+  @override
+  String get authenticatorAppLockSection => 'App lock';
+
+  @override
+  String get authenticatorLockNever => 'Never';
+
+  @override
+  String get authenticatorLockOnLaunch => 'On app launch';
+
+  @override
+  String get authenticatorLockAfter1Min => 'After 1 minute';
+
+  @override
+  String get authenticatorLockAfter5Min => 'After 5 minutes';
+
+  @override
+  String get authenticatorClipboardSection => 'Clipboard';
+
+  @override
+  String get authenticatorClipboardDuration => 'Auto-clear copied codes';
+
+  @override
+  String get authenticatorClipboard30 => '30 seconds';
+
+  @override
+  String get authenticatorClipboard60 => '60 seconds';
+
+  @override
+  String get authenticatorClipboardDisabled => 'Disabled';
+
+  @override
+  String get authenticatorAppearanceSection => 'Appearance';
+
+  @override
+  String get authenticatorThemeLight => 'Light';
+
+  @override
+  String get authenticatorThemeDark => 'Dark';
+
+  @override
+  String get authenticatorThemeSystem => 'System';
+
+  @override
+  String get authenticatorBackupSection => 'Backup';
+
+  @override
+  String get authenticatorExportAccounts => 'Export accounts';
+
+  @override
+  String get authenticatorImportAccounts => 'Import accounts';
+
+  @override
+  String get authenticatorBackupPasswordTitle => 'Backup password';
+
+  @override
+  String get authenticatorBackupPassword => 'Password';
+
+  @override
+  String get authenticatorBackupPasswordConfirm => 'Confirm password';
+
+  @override
+  String get authenticatorBackupPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get authenticatorExportEmpty => 'No accounts to export';
+
+  @override
+  String get authenticatorExportSuccess => 'Encrypted backup created';
+
+  @override
+  String get authenticatorExportFailed => 'Export failed';
+
+  @override
+  String authenticatorImportSuccess(int count) {
+    return 'Imported $count accounts';
+  }
+
+  @override
+  String get authenticatorImportFailed => 'Import failed';
+
+  @override
+  String get authenticatorNoSearchResults => 'No matching accounts';
+
+  @override
+  String get authenticatorNoSearchResultsSubtitle =>
+      'Try a different name, issuer, or email';
+
+  @override
+  String get authenticatorTapToCopy => 'Tap code to copy';
+
+  @override
+  String get authenticatorMoreActions => 'More actions';
+
+  @override
+  String get authenticatorScanQrSubtitle =>
+      'Fastest way — scan an otpauth QR code';
+
+  @override
+  String get authenticatorManualEntrySubtitle =>
+      'Enter secret key and account details manually';
+
+  @override
+  String get authenticatorTorchToggle => 'Toggle flashlight';
+
+  @override
+  String get authenticatorScanSuccess => 'QR code recognized';
+
+  @override
+  String get authenticatorCameraUnavailable =>
+      'Camera could not be started. Try again or enter the account manually.';
 }

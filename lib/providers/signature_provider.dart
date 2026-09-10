@@ -1,3 +1,4 @@
+import 'package:bankid_app/core/utils/app_logger.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -40,7 +41,7 @@ class SignatureProvider extends ChangeNotifier {
         ..clear()
         ..addAll(remoteItems);
     } catch (e) {
-      debugPrint('Error loading signatures: $e');
+      AppLogger.log('Error loading signatures: $e');
       rethrow;
     } finally {
       _isLoading = false;
@@ -58,7 +59,7 @@ class SignatureProvider extends ChangeNotifier {
 
       return await _signatureService.apiService.getBytes(url);
     } catch (e) {
-      debugPrint('Error fetching signature image: $e');
+      AppLogger.log('Error fetching signature image: $e');
       rethrow;
     }
   }
@@ -86,7 +87,7 @@ class SignatureProvider extends ChangeNotifier {
       _items.removeWhere((e) => e.id == id);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error deleting signature: $e');
+      AppLogger.log('Error deleting signature: $e');
       rethrow;
     }
   }
@@ -111,7 +112,7 @@ class SignatureProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('Error setting default signature: $e');
+      AppLogger.log('Error setting default signature: $e');
       rethrow;
     }
   }

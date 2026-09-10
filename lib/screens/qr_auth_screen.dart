@@ -106,7 +106,11 @@ class _QrAuthScreenState extends State<QrAuthScreen> {
         foregroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedCancel01,
+            color: Colors.black,
+            size: 24,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),

@@ -2,8 +2,6 @@ import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_darwin/local_auth_darwin.dart';
 import 'package:bankid_app/screens/home_screen.dart';
 import 'package:bankid_app/screens/verify_pin_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -64,10 +62,7 @@ class _PinBiometricsScreenState extends State<PinBiometricsScreen> {
         localizedReason: localizedReason,
         biometricOnly: true,
         persistAcrossBackgrounding: true,
-        authMessages: const [
-          AndroidAuthMessages(),
-          IOSAuthMessages(),
-        ],
+        authMessages: const [],
       );
 
       if (authenticated && mounted) {
@@ -76,16 +71,24 @@ class _PinBiometricsScreenState extends State<PinBiometricsScreen> {
           (route) => false,
         );
       }
-    } on PlatformException catch (e) {
-      if (e.code == 'NotEnrolled') {
-        _showErrorSnackBar(l10n.biometricsNotEnrolled);
-      } else if (e.code == 'LockedOut' || e.code == 'PermanentlyLockedOut') {
-        _showErrorSnackBar(l10n.biometricsLockedOut);
-      } else if (e.code == 'NotAvailable') {
-        _showErrorSnackBar(l10n.biometricsNotSupported);
-      } else {
-        _showErrorSnackBar('${l10n.authenticationError} ${e.message}');
+    } catch (e) {
+      String errorMessage = l10n.authenticationError;
+      
+      if (e is PlatformException) {
+        if (e.code == 'NotEnrolled') {
+          errorMessage = l10n.biometricsNotEnrolled;
+        } else if (e.code == 'LockedOut' || e.code == 'PermanentlyLockedOut') {
+          errorMessage = l10n.biometricsLockedOut;
+        } else if (e.code == 'NotAvailable') {
+          errorMessage = l10n.biometricsNotSupported;
+        } else {
+          errorMessage = '${l10n.authenticationError} ${e.message}';
+        }
+      } else if (e.toString().contains('noCredentialsSet')) {
+        errorMessage = l10n.biometricsNotEnrolled; // Or a more specific message if available
       }
+      
+      _showErrorSnackBar(errorMessage);
     }
   }
 
@@ -103,13 +106,15 @@ class _PinBiometricsScreenState extends State<PinBiometricsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false, 
-      ),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+        ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -159,6 +164,7 @@ class _PinBiometricsScreenState extends State<PinBiometricsScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 

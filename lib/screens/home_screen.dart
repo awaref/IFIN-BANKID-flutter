@@ -2,7 +2,8 @@ import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/models/contract.dart';
 import 'package:bankid_app/screens/history_screen.dart';
 import 'package:bankid_app/screens/id_card_screen.dart';
-import 'package:bankid_app/screens/qr_scanner_screen.dart';
+import 'package:bankid_app/screens/contract_screen.dart';
+import 'package:bankid_app/screens/qr_scanner_screen.dart' deferred as qr;
 import 'package:bankid_app/screens/settings_screen.dart';
 import 'package:bankid_app/services/api_service.dart';
 import 'package:flutter/material.dart';
@@ -73,17 +74,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      _buildHomeContent(),
-      const HistoryScreen(),
-      const IDCardScreen(),
-      const SettingsScreen(),
-    ];
-
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4FA),
       appBar: _selectedIndex == 0 ? _buildHomeAppBar(context) : null,
-      body: screens[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          _buildHomeContent(),
+          const HistoryScreen(),
+          const IDCardScreen(),
+          const SettingsScreen(),
+        ],
+      ),
       bottomNavigationBar: _buildBottomNav(context),
     );
   }
@@ -99,6 +101,14 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.only(right: 16.w),
           child: PopupMenuButton<Contract>(
             onOpened: _fetchPendingContracts,
+            onSelected: (contract) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ContractScreen(contract: contract),
+                ),
+              );
+            },
             itemBuilder: (_) => _buildNotificationMenu(l10n),
             child: Stack(
               clipBehavior: Clip.none,
@@ -194,9 +204,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        onTap: () {
-          // TODO: Navigate to contract details
-        },
       );
     }).toList();
   }
@@ -213,6 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Image.asset(
                 'assets/images/bankid_logo.png',
                 height: 120.h,
+                cacheHeight: (120.h * 3).toInt(),
               ),
               SizedBox(height: 24.h),
               Text(
@@ -234,11 +242,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 40.h),
               OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const QrScannerScreen()),
-                  );
+                onPressed: () async {
+                  await qr.loadLibrary();
+                  if (mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => qr.QrScannerScreen()),
+                    );
+                  }
                 },
                 style: OutlinedButton.styleFrom(
                   padding:

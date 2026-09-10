@@ -1,8 +1,8 @@
+import 'package:bankid_app/core/utils/app_logger.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:bankid_app/models/signature.dart';
 import 'package:bankid_app/services/api_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class SignatureService {
@@ -36,7 +36,7 @@ class SignatureService {
       final data = response['signature'] ?? response;
       return SignatureItem.fromJson(data);
     } catch (e) {
-      debugPrint('ERROR: getSignature failed: $e');
+      AppLogger.log('ERROR: getSignature failed: $e');
       return null;
     }
   }
@@ -72,18 +72,18 @@ class SignatureService {
     }
 
     try {
-      debugPrint('DEBUG: createSignature sending fields: $fields');
+      AppLogger.log('DEBUG: createSignature sending fields: $fields');
       final response = await apiService.postMultipart(
         '/signatures',
         fields: fields,
         files: files,
       );
-      debugPrint('DEBUG: createSignature response: $response');
+      AppLogger.log('DEBUG: createSignature response: $response');
 
       final data = response['signature'] ?? response;
       return SignatureItem.fromJson(data);
     } catch (e) {
-      debugPrint('ERROR: createSignature failed: $e');
+      AppLogger.log('ERROR: createSignature failed: $e');
       rethrow;
     }
   }

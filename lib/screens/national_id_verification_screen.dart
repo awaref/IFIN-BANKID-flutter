@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:bankid_app/providers/auth_provider.dart';
 import 'package:bankid_app/screens/onboarding_screens.dart';
-import 'package:bankid_app/screens/pin_biometrics_screen.dart';
+import 'package:bankid_app/screens/verify_pin_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NationalIdVerificationScreen extends StatefulWidget {
@@ -46,7 +45,9 @@ class _NationalIdVerificationScreenState extends State<NationalIdVerificationScr
 
     if (exists) {
       navigator.push(
-        MaterialPageRoute(builder: (_) => const PinBiometricsScreen()),
+        MaterialPageRoute(
+          builder: (_) => const VerifyPinScreen(fromPinBiometrics: true),
+        ),
       );
     } else {
       if (authProvider.status == AuthStatus.error) {
@@ -67,21 +68,16 @@ class _NationalIdVerificationScreenState extends State<NationalIdVerificationScr
     final l10n = AppLocalizations.of(context);
     final authProvider = Provider.of<AuthProvider>(context);
     
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
-            color: Colors.black,
-            size: 24.sp,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          automaticallyImplyLeading: false,
         ),
-      ),
-      body: SafeArea(
+        body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.w),
           child: Column(
@@ -148,6 +144,7 @@ class _NationalIdVerificationScreenState extends State<NationalIdVerificationScr
             ],
           ),
         ),
+      ),
       ),
     );
   }

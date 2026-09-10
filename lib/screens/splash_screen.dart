@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bankid_app/providers/language_provider.dart';
 import 'package:bankid_app/providers/auth_provider.dart';
+import 'package:bankid_app/services/api_service.dart';
 import 'package:bankid_app/screens/national_id_verification_screen.dart';
 import 'package:bankid_app/screens/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,12 +33,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
-    // --- Start flow ---
-    _requestNotificationPermission();
+    // Notification permission is requested by NotificationService in main.dart.
+    // Requesting it here races with FirebaseMessaging.requestPermission and can
+    // hang forever ("Can request only one set of permissions at a time").
+    _determineStartScreen();
   }
 
   @override
   void dispose() {
+    // Ensure the flag is reset if we leave the splash screen unexpectedly
+    try {
+      Provider.of<ApiService>(context, listen: false).ignoreSessionExpired = false;
+    } catch (_) {}
     _controller.dispose();
     super.dispose();
   }
@@ -62,6 +67,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   "assets/images/bankid_logo.png",
                   width: 140.w,
                   height: 140.w,
+                  cacheWidth: (140.w * 3).toInt(), // 3x for density
+                  cacheHeight: (140.w * 3).toInt(),
                 ),
                 SizedBox(height: 40.h),
                 const CircularProgressIndicator(color: Colors.black),
@@ -90,40 +97,43 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
   }
 
-  // --- Permissions ---
-  Future<void> _requestNotificationPermission() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      final status = await Permission.notification.request();
-      if (!mounted) return;
-      if (status.isPermanentlyDenied) await openAppSettings();
-    }
-    await _determineStartScreen();
-  }
-
   // --- Language + auth check ---
   Future<void> _determineStartScreen() async {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-    final prefs = await SharedPreferences.getInstance();
-    final savedCode = prefs.getString('language_code');
-    const supported = ['en', 'ar'];
+    try {
+      final languageProvider =
+          Provider.of<LanguageProvider>(context, listen: false);
+      final prefs = await SharedPreferences.getInstance();
+      final savedCode = prefs.getString('language_code');
+      const supported = ['en', 'ar'];
 
-    if (savedCode != null && supported.contains(savedCode)) {
-      await languageProvider.changeLanguage(Locale(savedCode));
-    } else {
-      await languageProvider.changeLanguage(const Locale('en'));
+      if (savedCode != null && supported.contains(savedCode)) {
+        await languageProvider.changeLanguage(Locale(savedCode));
+      } else {
+        await languageProvider.changeLanguage(const Locale('en'));
+      }
+      await _checkAuthentication().timeout(const Duration(seconds: 20));
+    } catch (_) {
+      _navigateToVerification();
     }
-    await _checkAuthentication();
   }
 
   Future<void> _checkAuthentication() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
+      // Set to true so that failing to refresh token here doesn't
+      // trigger the app-wide pushAndRemoveUntil(SplashScreen).
+      apiService.ignoreSessionExpired = true;
+
       // --- Step 1: biometric fast-path ---
       final canUseBiometric = await authProvider.canLoginWithBiometric();
       if (canUseBiometric) {
-        final biometricSuccess = await authProvider.loginWithBiometric();
+        final biometricSuccess = await authProvider
+            .loginWithBiometric()
+            .timeout(const Duration(seconds: 15), onTimeout: () => false);
         if (biometricSuccess) {
+          apiService.ignoreSessionExpired = false;
           _navigateToHome();
           return;
         }
@@ -131,12 +141,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
       // --- Step 2: normal session/token ---
       final isAuthenticated = await authProvider.loadCurrentUser();
+      apiService.ignoreSessionExpired = false;
       if (isAuthenticated) {
         _navigateToHome();
       } else {
         _navigateToVerification();
       }
     } catch (_) {
+      apiService.ignoreSessionExpired = false;
       _navigateToVerification();
     }
   }

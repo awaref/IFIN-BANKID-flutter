@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class IDCardViewerScreen extends StatelessWidget {
   const IDCardViewerScreen({super.key});
@@ -26,7 +27,11 @@ class IDCardViewerScreen extends StatelessWidget {
               top: 12,
               right: 12,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
+                icon: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedCancel01,
+                  color: Colors.white,
+                  size: 24,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
             ),

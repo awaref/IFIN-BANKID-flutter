@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/splash_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -19,13 +18,14 @@ import 'package:bankid_app/firebase_options.dart';
 import 'package:bankid_app/services/device_api.dart';
 import 'package:bankid_app/repositories/device_repository.dart';
 import 'package:bankid_app/services/notification_service.dart';
+import 'package:bankid_app/core/utils/app_logger.dart';
 
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
-  debugPrint("🔥 BACKGROUND PUSH RECEIVED");
-  debugPrint("Message ID: ${message.messageId}");
-  debugPrint("Title: ${message.notification?.title}");
-  debugPrint("Body: ${message.notification?.body}");
-  debugPrint("Data: ${message.data}");
+  AppLogger.log("🔥 BACKGROUND PUSH RECEIVED");
+  AppLogger.log("Message ID: ${message.messageId}");
+  AppLogger.log("Title: ${message.notification?.title}");
+  AppLogger.log("Body: ${message.notification?.body}");
+  AppLogger.log("Data: ${message.data}");
 }
 
 void main() async {
@@ -37,13 +37,22 @@ void main() async {
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize Notification Service
   final notificationService = NotificationService();
-  await notificationService.initialize();
 
   // Initialize API & Repositories
-  final apiService = ApiService(baseUrl: AppConfig.baseUrl);
-  final authRepository = AuthRepository(apiService: apiService);
+  late final AuthRepository authRepository;
+  final apiService = ApiService(
+    baseUrl: AppConfig.baseUrl,
+    onSessionExpired: () {
+      AppLogger.log("🚨 Session expired! Navigating to SplashScreen...");
+      authRepository.deleteToken();
+      notificationService.navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const SplashScreen()),
+        (route) => false,
+      );
+    },
+  );
+  authRepository = AuthRepository(apiService: apiService);
   final signatureService = SignatureService(apiService: apiService);
 
   // Callback for unauthorized responses
@@ -57,19 +66,23 @@ void main() async {
   // Setup Firebase background handler
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
 
-  // Register device automatically once user is logged in
-  final storedAuthToken = await authRepository.getToken();
-  if (storedAuthToken != null) {
-    await deviceRepository.registerDevice(authToken: storedAuthToken);
-  }
+  // Defer non-critical startup work until after the first frame to improve TTFF
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    await notificationService.initialize();
 
-  // Listen for token refresh and re-register in Firebase
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-    debugPrint("🔄 FCM Token refreshed: $newToken");
     final storedAuthToken = await authRepository.getToken();
     if (storedAuthToken != null) {
       await deviceRepository.registerDevice(authToken: storedAuthToken);
     }
+
+    // Listen for token refresh and re-register in Firebase
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      AppLogger.log("🔄 FCM Token refreshed: $newToken");
+      final storedAuthToken = await authRepository.getToken();
+      if (storedAuthToken != null) {
+        await deviceRepository.registerDevice(authToken: storedAuthToken);
+      }
+    });
   });
 
   runApp(
@@ -97,66 +110,71 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final notificationService = Provider.of<NotificationService>(context);
-
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          navigatorKey: notificationService.navigatorKey,
-          title: 'BankID App',
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('ar'),
-          ],
-          locale: languageProvider.currentLocale,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF37C293),
-              primary: const Color(0xFF37C293),
-            ),
-            primaryColor: const Color(0xFF37C293),
-            scaffoldBackgroundColor: Colors.white,
-            textTheme: GoogleFonts.rubikTextTheme(),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF37C293),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+        final notificationService =
+            Provider.of<NotificationService>(context, listen: false);
+
+        return Consumer<LanguageProvider>(
+          builder: (context, languageProvider, _) {
+            return MaterialApp(
+              navigatorKey: notificationService.navigatorKey,
+              title: 'BankID App',
+              debugShowCheckedModeBanner: false,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en'),
+                Locale('ar'),
+              ],
+              locale: languageProvider.currentLocale,
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: const Color(0xFF37C293),
+                  primary: const Color(0xFF37C293),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-            ),
-            outlinedButtonTheme: OutlinedButtonThemeData(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF37C293),
-                side: const BorderSide(color: Color(0xFF37C293)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                primaryColor: const Color(0xFF37C293),
+                scaffoldBackgroundColor: Colors.white,
+                fontFamily: 'Rubik',
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF37C293),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                outlinedButtonTheme: OutlinedButtonThemeData(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF37C293),
+                    side: const BorderSide(color: Color(0xFF37C293)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                useMaterial3: true,
               ),
-            ),
-            useMaterial3: true,
-          ),
-          home: const SplashScreen(),
-          builder: (context, child) {
-            return Directionality(
-              textDirection: Localizations.localeOf(context).languageCode == 'ar'
-                  ? TextDirection.rtl
-                  : TextDirection.ltr,
-              child: child!,
+              home: const SplashScreen(),
+              builder: (context, child) {
+                return Directionality(
+                  textDirection:
+                      Localizations.localeOf(context).languageCode == 'ar'
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                  child: child!,
+                );
+              },
             );
           },
         );

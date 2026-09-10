@@ -117,6 +117,28 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       body: SafeArea(
         child: Column(
           children: [
+            // Skip Button
+            Align(
+              alignment: isRTL ? Alignment.centerLeft : Alignment.centerRight,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const AppProtectionScreen()),
+                    );
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)?.skipButton ?? 'Skip',
+                    style: TextStyle(
+                      color: const Color(0xFF637381),
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -163,7 +185,9 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                     elevation: 0,
                   ),
                   child: Text(
-                    AppLocalizations.of(context)?.getStartedButton ?? 'Get started now',
+                    _currentPage == onboardingData.length - 1
+                        ? (AppLocalizations.of(context)?.getStartedButton ?? 'Get started now')
+                        : (AppLocalizations.of(context)?.nextButton ?? 'Next'),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w700,

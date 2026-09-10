@@ -5,8 +5,8 @@ import 'package:bankid_app/screens/two_factor_auth_screen.dart';
 import 'package:bankid_app/services/biometric_service.dart';
 import 'package:flutter/material.dart';
 import 'package:bankid_app/screens/delete_account_screen.dart';
+import 'package:bankid_app/features/authenticator/presentation/screens/authenticator_home_screen.dart';
 import 'package:bankid_app/l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:bankid_app/providers/language_provider.dart';
@@ -71,7 +71,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  static final TextStyle _rubikTextStyle = GoogleFonts.rubik(
+  static const TextStyle _rubikTextStyle = TextStyle(
+    fontFamily: 'Rubik',
     fontSize: 14,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
@@ -79,13 +80,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     letterSpacing: 0,
   );
 
-  static final TextStyle _rubikAppBarTextStyle = GoogleFonts.rubik(
+  static const TextStyle _rubikAppBarTextStyle = TextStyle(
+    fontFamily: 'Rubik',
     fontSize: 16,
     fontWeight: FontWeight.w700,
     fontStyle: FontStyle.normal,
     height: 1.0,
     letterSpacing: 0,
-    color: const Color(0xFF172A47),
+    color: Color(0xFF172A47),
   );
 
   void _showLanguagePopup() {
@@ -268,6 +270,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -337,6 +340,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AppLocalizations.of(context)!.helpAndSupportTitle,
               style: _rubikTextStyle,
             ),
+            onTap: () {
+              // TODO: Implement Help & Support
+            },
           ),
           ListTile(
             leading: HugeIcon(
@@ -397,6 +403,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
               size: 20.0,
             ),
             title: Text(
+              AppLocalizations.of(context)!.authenticatorTitle,
+              style: _rubikTextStyle,
+            ),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AuthenticatorScope(
+                  child: AuthenticatorHomeScreen(),
+                ),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const HugeIcon(
+              icon: HugeIcons.strokeRoundedTwoFactorAccess,
+              size: 20.0,
+            ),
+            title: Text(
               AppLocalizations.of(context)!.twoFactorAuthenticationTitle,
               style: _rubikTextStyle,
             ),
@@ -432,6 +456,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AppLocalizations.of(context)!.changePasswordTitle,
               style: _rubikTextStyle,
             ),
+            onTap: () {
+              // TODO: Implement Change Password
+            },
           ),
           ListTile(
             leading: const HugeIcon(
@@ -442,6 +469,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AppLocalizations.of(context)!.transactionHistoryTitle,
               style: _rubikTextStyle,
             ),
+            onTap: () {
+              // TODO: Implement Transaction History
+            },
           ),
           ListTile(
             leading: const HugeIcon(
@@ -459,6 +489,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 color: const Color(0xFF919EAB),
               ),
             ),
+            onTap: () {
+              // TODO: Implement ID Card
+            },
           ),
           ListTile(
             leading: const HugeIcon(
@@ -499,6 +532,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AppLocalizations.of(context)!.addNewAccountTitle,
               style: _rubikTextStyle,
             ),
+            onTap: () {
+              // TODO: Implement Add New Account
+            },
           ),
         ],
       ),

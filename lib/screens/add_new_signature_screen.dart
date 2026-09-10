@@ -130,7 +130,11 @@ class _AddNewSignatureScreenState extends State<AddNewSignatureScreen> with Sing
                       child: TabBar(
                         controller: _tabController,
                         labelColor: Colors.black,
+                        unselectedLabelColor: const Color(0xFF6B7280),
                         indicatorColor: Theme.of(context).primaryColor,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerHeight: 0,
+                        labelPadding: EdgeInsets.zero,
                         tabs: _tabs,
                       ),
                     ),

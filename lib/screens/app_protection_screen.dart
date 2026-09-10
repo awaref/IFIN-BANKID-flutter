@@ -2,8 +2,6 @@ import 'package:bankid_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_darwin/local_auth_darwin.dart';
 import 'package:bankid_app/screens/setup_passcode_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 
@@ -58,10 +56,7 @@ class _AppProtectionScreenState extends State<AppProtectionScreen> {
         localizedReason: localizedReason,
         biometricOnly: true,
         persistAcrossBackgrounding: true,
-        authMessages: const [
-          AndroidAuthMessages(),
-          IOSAuthMessages(),
-        ],
+        authMessages: const [],
       );
 
       if (authenticated && mounted) {

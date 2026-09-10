@@ -1,3 +1,4 @@
+import 'package:bankid_app/core/utils/app_logger.dart';
 import 'package:bankid_app/services/device_api.dart';
 import 'package:flutter/foundation.dart'; // Required for VoidCallback
 
@@ -9,7 +10,7 @@ class DeviceRepository {
 
   Future<void> registerDevice({required String authToken, VoidCallback? onUnauthorized}) async {
     if (_isRegisteredInSession) {
-      debugPrint("Device already registered in this session. Skipping registration.");
+      AppLogger.log("Device already registered in this session. Skipping registration.");
       return;
     }
     await _deviceApi.registerDevice(authToken: authToken);

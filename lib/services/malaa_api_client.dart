@@ -1,3 +1,4 @@
+import 'package:bankid_app/core/utils/app_logger.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -103,41 +104,41 @@ class MalaaApiClient {
       dynamic decoded;
       try {
         decoded = jsonDecode(response.body);
-        debugPrint('🔵 First decode, type: ${decoded.runtimeType}');
+        AppLogger.log('🔵 First decode, type: ${decoded.runtimeType}');
 
         // Handle double-encoded JSON (response is a JSON string containing another JSON string)
         if (decoded is String) {
-          debugPrint('🔵 Response is double-encoded, decoding again...');
+          AppLogger.log('🔵 Response is double-encoded, decoding again...');
           decoded = jsonDecode(decoded);
-          debugPrint('🔵 Second decode, type: ${decoded.runtimeType}');
+          AppLogger.log('🔵 Second decode, type: ${decoded.runtimeType}');
         }
 
         if (decoded is List && decoded.isNotEmpty) {
-          debugPrint('🔵 List detected, taking first element');
+          AppLogger.log('🔵 List detected, taking first element');
           decoded = decoded[0];
         }
 
-        debugPrint(
+        AppLogger.log(
           '🔵 Top-level keys: ${decoded is Map ? decoded.keys : "Not a map"}',
         );
 
         if (decoded is! Map<String, dynamic>) {
-          debugPrint('⚠ Response is not a Map, converting to empty map');
+          AppLogger.log('⚠ Response is not a Map, converting to empty map');
           decoded = <String, dynamic>{};
         }
 
         // 🔹 Safely decode EncryptObject
         decoded['Data'] ??= {};
-        debugPrint('🔵 Data type: ${decoded['Data'].runtimeType}');
-        debugPrint(
+        AppLogger.log('🔵 Data type: ${decoded['Data'].runtimeType}');
+        AppLogger.log(
           '🔵 Data keys: ${decoded['Data'] is Map ? decoded['Data'].keys : "Not a map"}',
         );
 
         final encryptStr = decoded['Data']['EncryptObject'];
-        debugPrint('🔵 EncryptObject type: ${encryptStr.runtimeType}');
+        AppLogger.log('🔵 EncryptObject type: ${encryptStr.runtimeType}');
 
         if (encryptStr != null) {
-          debugPrint(
+          AppLogger.log(
             '🔵 EncryptObject first 200 chars: ${encryptStr.toString().substring(0, encryptStr.toString().length > 200 ? 200 : encryptStr.toString().length)}',
           );
         }
@@ -146,31 +147,31 @@ class MalaaApiClient {
           try {
             // First try normal decode
             decoded['Data']['EncryptObject'] = jsonDecode(encryptStr);
-            debugPrint('✅ Successfully decoded EncryptObject');
+            AppLogger.log('✅ Successfully decoded EncryptObject');
           } catch (e) {
-            debugPrint('⚠ Failed to decode EncryptObject (single-escaped): $e');
+            AppLogger.log('⚠ Failed to decode EncryptObject (single-escaped): $e');
             // Sometimes it's double-escaped
             try {
               final doubleDecoded = jsonDecode(encryptStr);
               if (doubleDecoded is String) {
                 decoded['Data']['EncryptObject'] = jsonDecode(doubleDecoded);
-                debugPrint(
+                AppLogger.log(
                   '✅ Successfully decoded double-escaped EncryptObject',
                 );
               }
             } catch (e2) {
-              debugPrint(
+              AppLogger.log(
                 '⚠ Failed to decode EncryptObject (double-escaped): $e2',
               );
               decoded['Data']['EncryptObject'] = {};
             }
           }
         } else {
-          debugPrint('⚠ EncryptObject is not a valid string');
+          AppLogger.log('⚠ EncryptObject is not a valid string');
           decoded['Data']['EncryptObject'] = {};
         }
       } catch (e) {
-        debugPrint('⚠ JSON Decoding Error: $e');
+        AppLogger.log('⚠ JSON Decoding Error: $e');
         return MalaaPhoneNumbersResult(
           numbers: [],
           error: 'Invalid response format',
@@ -188,19 +189,19 @@ class MalaaApiClient {
       }
 
       // 🔹 Extract mobile numbers from both Data and EncryptObject
-      debugPrint('🔵 Starting extraction from entire response...');
+      AppLogger.log('🔵 Starting extraction from entire response...');
       final allNumbers = _extractMobileNumbers(decoded);
-      debugPrint('🔵 All numbers found: $allNumbers');
+      AppLogger.log('🔵 All numbers found: $allNumbers');
 
-      debugPrint('🔵 Starting extraction from Data...');
+      AppLogger.log('🔵 Starting extraction from Data...');
       final dataNumbers = _extractMobileNumbers(decoded['Data']);
-      debugPrint('🔵 Data numbers: $dataNumbers');
+      AppLogger.log('🔵 Data numbers: $dataNumbers');
 
-      debugPrint('🔵 Starting extraction from EncryptObject...');
+      AppLogger.log('🔵 Starting extraction from EncryptObject...');
       final encryptNumbers = _extractMobileNumbers(
         decoded['Data']['EncryptObject'],
       );
-      debugPrint('🔵 EncryptObject numbers: $encryptNumbers');
+      AppLogger.log('🔵 EncryptObject numbers: $encryptNumbers');
 
       final numbers = <String>{
         ...allNumbers,
@@ -208,7 +209,7 @@ class MalaaApiClient {
         ...encryptNumbers,
       }.toList();
 
-      debugPrint('🟢 Found ${numbers.length} mobile numbers: $numbers');
+      AppLogger.log('🟢 Found ${numbers.length} mobile numbers: $numbers');
 
       if (numbers.isEmpty) {
         final id = _extractIdentityFields(decoded);
@@ -248,7 +249,7 @@ class MalaaApiClient {
     } on http.ClientException {
       return const MalaaPhoneNumbersResult(numbers: [], error: 'Network error');
     } catch (e) {
-      debugPrint('⚠ Unexpected Malaa Error: $e');
+      AppLogger.log('⚠ Unexpected Malaa Error: $e');
       return const MalaaPhoneNumbersResult(
         numbers: [],
         error: 'Unexpected error',
@@ -272,7 +273,7 @@ class MalaaApiClient {
 
   void _log(String message) {
     if (kDebugMode) {
-      debugPrint('[MalaaApiClient] $message');
+      AppLogger.log('[MalaaApiClient] $message');
     }
   }
 
@@ -344,7 +345,7 @@ class MalaaApiClient {
               value is String &&
               value.trim().isNotEmpty) {
             result.add(value.trim());
-            debugPrint('📱 Found mobile in key "$key": $value');
+            AppLogger.log('📱 Found mobile in key "$key": $value');
           }
 
           // Handle ExtraInfo array with EKYCMobileNumbers
@@ -358,7 +359,7 @@ class MalaaApiClient {
                     .map((e) => e.trim())
                     .where((e) => e.isNotEmpty);
                 result.addAll(parts);
-                debugPrint('📱 Found numbers in ExtraInfo: $parts');
+                AppLogger.log('📱 Found numbers in ExtraInfo: $parts');
               }
             }
           }

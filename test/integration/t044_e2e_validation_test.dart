@@ -128,7 +128,8 @@ void main() {
       await tester.pumpWidget(wrap(const AuthenticatorHomeScreen()));
       await tester.pumpAndSettle();
       expect(find.text('No accounts yet'), findsOneWidget);
-      expect(find.text('Add account'), findsOneWidget);
+      expect(find.text('Add account'), findsNWidgets(2));
+      expect(find.byType(FloatingActionButton), findsOneWidget);
       timerProvider.stop();
     });
 
@@ -138,7 +139,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final fields = find.byType(TextFormField);
-      expect(fields, findsNWidgets(4));
+      expect(fields, findsNWidgets(3));
       await tester.enterText(fields.at(0), 'test@example.com');
       await tester.enterText(fields.at(1), 'TestService');
       await tester.enterText(fields.at(2), secret);
